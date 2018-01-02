@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.*
 
 internal class PointTest {
     @Test
-    fun neighbors() {
+    fun neighborsOfAPoint() {
         val n = Point(3,5).neighbors()
 
         assertEquals(4, n.size)
