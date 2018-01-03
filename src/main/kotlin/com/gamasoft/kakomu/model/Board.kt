@@ -2,6 +2,10 @@ package com.gamasoft.kakomu.model
 
 class Board (val numCols: Int, val numRows: Int){
 
+    constructor(board: Board) : this(board.numCols, board.numRows){
+        grid.putAll( board.grid)
+    }
+
     private val grid = mutableMapOf<Point, GoString>()
 
     fun placeStone(player: Player, point: Point) {
@@ -70,6 +74,10 @@ class Board (val numCols: Int, val numRows: Int){
             }
             grid.remove(point)
         }
+    }
+
+    fun getString(point: Point): GoString? {
+        return grid[point]
     }
 
 
