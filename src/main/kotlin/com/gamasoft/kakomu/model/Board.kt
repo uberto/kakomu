@@ -28,7 +28,7 @@ class Board (val numCols: Int, val numRows: Int){
         var newString = GoString(player, setOf(point), liberties)
 
         // 1. Merge any adjacent strings of the same color.
-        for (sameColorString:GoString in adjacentSameColor) {
+        for (sameColorString in adjacentSameColor) {
             newString = newString.mergeWith(sameColorString)
         }
         for (newStringPoint in newString.stones) {
@@ -57,7 +57,7 @@ class Board (val numCols: Int, val numRows: Int){
     fun isFree(point: Point) = !grid.containsKey(point)
 
     private fun removeString(string: GoString){
-        for (point:Point in string.stones){
+        for (point in string.stones){
             //Removing a string can create liberties for other strings.
             for (neighbor: Point in point.neighbors()){
                 val neighborString = grid[neighbor]
