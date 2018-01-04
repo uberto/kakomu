@@ -14,7 +14,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun applyMove(player: Player, move: Move): GameState{
         assert (player == nextPlayer)
 
-        val nextBoard = Board( board)
+        val nextBoard = board.deepCopy()
 
         if (move.point != null){
             nextBoard.placeStone(player, move.point)
@@ -38,7 +38,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun isMoveSelfCapture(player: Player, move: Move): Boolean{
         if (move.point == null)
             return false
-        val nextBoard = Board(board)
+        val nextBoard = board.deepCopy()
         nextBoard.placeStone(player, move.point)
 
         val newString = nextBoard.getString(move.point)
@@ -51,13 +51,11 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun doesMoveViolateKo(player: Player, move: Move): Boolean {
         if (move.point == null)
             return false
-        val nextBoard = Board(board)
+        val nextBoard = board.deepCopy()
         nextBoard.placeStone(player, move.point)
-        val nextSituation = Pair(player.other(), nextBoard)
         var pastState = previous
         while (pastState != null){
-            val pastStateSituation = Pair<Player, Board>(pastState.nextPlayer.other(), pastState.board)
-            if (pastStateSituation == nextSituation)
+            if (pastState.nextPlayer.other() == player && pastState.board == nextBoard)
                 return true
             pastState = pastState.previous
         }

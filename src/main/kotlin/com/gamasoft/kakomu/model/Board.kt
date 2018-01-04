@@ -2,10 +2,6 @@ package com.gamasoft.kakomu.model
 
 class Board (val numCols: Int, val numRows: Int){
 
-    constructor(board: Board) : this(board.numCols, board.numRows){
-        grid.putAll( board.grid)
-    }
-
     private val grid = mutableMapOf<Point, GoString>()
 
     fun placeStone(player: Player, point: Point) {
@@ -53,6 +49,15 @@ class Board (val numCols: Int, val numRows: Int){
 
     }
 
+    fun deepCopy(): Board {
+        val newBoard = Board(numCols, numRows)
+        for ((p, s) in grid) {
+            //we need to copy the GoString because is not immutable
+            newBoard.grid.put(p, s.copy(liberties = s.liberties.toMutableSet()))
+        }
+        return newBoard
+    }
+
     fun isOnTheGrid(p: Point): Boolean{
         return p.row in (1 .. numRows) && p.col in (1 ..numCols)
     }
@@ -78,6 +83,26 @@ class Board (val numCols: Int, val numRows: Int){
 
     fun getString(point: Point): GoString? {
         return grid[point]
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Board
+
+        if (numCols != other.numCols) return false
+        if (numRows != other.numRows) return false
+        if (grid != other.grid) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = numCols
+        result = 31 * result + numRows
+        result = 31 * result + grid.hashCode()
+        return result
     }
 
 
