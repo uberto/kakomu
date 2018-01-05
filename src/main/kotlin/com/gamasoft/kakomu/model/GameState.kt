@@ -62,4 +62,12 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return false
     }
 
+    fun isValidMove(move: Move):Boolean {
+        if (move.point == null)
+            return true
+        return (board.isFree(move.point) &&
+                ! isMoveSelfCapture(nextPlayer, move) &&
+                ! doesMoveViolateKo(nextPlayer, move))
+    }
+
 }

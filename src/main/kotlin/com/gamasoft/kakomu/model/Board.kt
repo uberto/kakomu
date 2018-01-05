@@ -4,6 +4,7 @@ class Board (val numCols: Int, val numRows: Int){
 
     private val grid = mutableMapOf<Point, GoString>()
 
+    //it should probably return a new immutable board
     fun placeStone(player: Player, point: Point) {
         assert(isOnTheGrid(point))
         assert(isFree(point))
@@ -52,7 +53,7 @@ class Board (val numCols: Int, val numRows: Int){
     fun deepCopy(): Board {
         val newBoard = Board(numCols, numRows)
         for ((p, s) in grid) {
-            //we need to copy the GoString because is not immutable
+            //we need to copy the GoString and its liberties because is not immutable
             newBoard.grid.put(p, s.copy(liberties = s.liberties.toMutableSet()))
         }
         return newBoard
