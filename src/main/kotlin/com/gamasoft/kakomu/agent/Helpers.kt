@@ -1,6 +1,7 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.Board
+import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.Point
 
@@ -53,5 +54,36 @@ fun isAnEye(board: Board, point: Point, color: Player): Boolean {
     return friendlyCorners >= 3
 
 }
+
+val COLS = "ABCDEFGHJKLMNOPQRSTUVWXYZ"
+
+val STONE_TO_CHAR = mapOf<Player?, Char>(
+    null to '.',
+    Player.BLACK to 'X',
+    Player.WHITE to 'O'
+)
+
+fun printMove(player: Player, move: Move) {
+    if (move.isPass) {
+        println("$player passes")
+    } else if (move.point == null) {
+        println("$player resign")
+    } else {
+        println("$player " + COLS[move.point.col - 1] + move.point.row )
+    }
+}
+
+fun printBoard(board: Board){
+    for (row in (board.numRows downTo 1)){
+        val line = StringBuilder()
+        for (col in (1 ..board.numCols)){
+            val stone = board.getString(Point(row=row, col=col))?.color
+            line.append(STONE_TO_CHAR[stone])
+        }
+        println("$row $line")
+    }
+    println("  " + COLS.substring(0, board.numCols))
+}
+
 
 
