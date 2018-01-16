@@ -10,7 +10,6 @@ class ZobristTest{
     @Test
     fun createFullTable(){
 
-        val s = System.currentTimeMillis()
         val t = HelpersTest.crono("calculate table 19x19"){  Zobrist.calcTable(19)}
 
         val eb = Zobrist.calcEmptyBoard(t)
@@ -19,6 +18,19 @@ class ZobristTest{
         println("empty board $eb")
 
         println(t)
+    }
+
+    @Test
+    fun saveAndLoadSmallTable(){
+
+        val t = Zobrist.calcTable(5)
+
+
+        val json = Zobrist.saveAsJson(t)
+        println(json)
+
+        val t2 = Zobrist.loadFromJson(json)
+        assertEquals(t.toString(), t2.toString())
     }
 
 

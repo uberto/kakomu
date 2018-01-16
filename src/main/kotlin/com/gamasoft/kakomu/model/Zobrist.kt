@@ -1,7 +1,11 @@
 package com.gamasoft.kakomu.model
 
-import java.util.*
+import com.google.gson.Gson
 import java.util.concurrent.ThreadLocalRandom
+import com.google.gson.LongSerializationPolicy
+import com.google.gson.GsonBuilder
+
+
 
 class Zobrist {
 
@@ -39,6 +43,22 @@ class Zobrist {
             }
             return emptyBoard
         }
+
+        fun saveAsJson(table: Map<Point, Map<Player?, Long>>): String {
+
+            val gsonBuilder = GsonBuilder()
+            gsonBuilder.setLongSerializationPolicy(LongSerializationPolicy.STRING)
+            gsonBuilder.disableHtmlEscaping()
+            val gson = gsonBuilder.create()
+
+            return gson.toJson(table)
+        }
+
+        fun loadFromJson(json: String): Map<*,*> {
+            val gson = Gson()
+            return gson.fromJson(json, Map::class.java)
+        }
+
     }
 
 }
