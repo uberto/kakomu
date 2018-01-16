@@ -45,7 +45,7 @@ internal class HelpersTest {
 
     @Test
     fun selfGame(){
-        val finalState = playSelfGame(5, RandomBot(), RandomBot(), 0)
+        val finalState = playSelfGame(5, RandomBot(), RandomBot()) {m, g -> Unit}
 
         assertTrue(finalState.lastMove!!.isPass)
 

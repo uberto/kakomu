@@ -9,7 +9,14 @@ fun main(args : Array<String>) {
 
     val boardSize = 9
 
-    playSelfGame(boardSize, RandomBot(), RandomBot(), 100)
+    val printState: (Move, GameState)->Unit =  {
+        move, game ->
+            Thread.sleep(100)
+            printBoard(move, game) //TODO make it lambda
+
+    }
+
+    playSelfGame(boardSize, RandomBot(), RandomBot(), printState)
 
 }
 

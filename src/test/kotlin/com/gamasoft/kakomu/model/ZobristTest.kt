@@ -9,13 +9,18 @@ class ZobristTest{
     @Test
     fun createFullTable(){
 
-        val z = Zobrist()
-
         val s = System.currentTimeMillis()
-        val t =z.calcTable(19)
+        val t = Zobrist.calcTable(19)
 
         println("done " + (System.currentTimeMillis() - s))
 
+        val eb = Zobrist.calcEmptyBoard(t)
+        assertTrue(eb > 0)
+
+        println("empty board $eb")
+
         println(t)
     }
+
+
 }

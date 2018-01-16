@@ -91,7 +91,7 @@ fun printBoard(board: Board){
 }
 
 
-fun playSelfGame(boardSize: Int, black: Agent, white: Agent, delayMillis: Long): GameState {
+fun playSelfGame(boardSize: Int, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
     var game = GameState.newGame(boardSize)
     val bots = mapOf(Player.BLACK to black,
             Player.WHITE to white)
@@ -100,16 +100,15 @@ fun playSelfGame(boardSize: Int, black: Agent, white: Agent, delayMillis: Long):
         val botMove = bots[game.nextPlayer]!!.selectMove(game)
         game = game.applyMove(game.nextPlayer, botMove)
 
-        Thread.sleep(delayMillis)
-        printBoard(botMove, game.board, game.nextPlayer) //TODO make it lambda
+        afterMove(botMove, game)
     }
     return game
 }
 
-fun printBoard(move: Move, board: Board, nextPlayer: Player){
+fun printBoard(move: Move, game: GameState){
     println(27.toChar() + "[2J")
-    printBoard(board)
-    printMove(nextPlayer, move)
+    printBoard(game.board)
+    printMove(game.nextPlayer, move)
 }
 
 
