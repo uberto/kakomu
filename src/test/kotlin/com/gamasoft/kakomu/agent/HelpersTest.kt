@@ -1,9 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Player
-import com.gamasoft.kakomu.model.Point
+import com.gamasoft.kakomu.model.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -50,8 +47,17 @@ internal class HelpersTest {
 
 
     @Test
-    fun drawMove(){
+    fun drawMoveResign(){
+        val resign = drawMove(Player.BLACK, Move.resign())
 
+        assertEquals("BLACK resigns", resign)
+    }
+
+    @Test
+    fun drawMove(){
+        val tenten = drawMove(Player.WHITE, Move.play(Point(10, 10)))
+
+        assertEquals("WHITE K10", tenten)
     }
 
     @Test
@@ -59,7 +65,6 @@ internal class HelpersTest {
         val finalState = playSelfGame(5, RandomBot(), RandomBot()) {m, g -> Unit}
 
         assertTrue(finalState.lastMove!!.isPass)
-
     }
 
 
@@ -68,7 +73,7 @@ internal class HelpersTest {
         val finalState = crono("play self game 9x9") {
             playSelfGame(9, RandomBot(), RandomBot()) { m, g -> Unit }
         }
-        assertTrue(finalState!!.lastMove!!.isPass)
+        assertTrue(finalState.lastMove!!.isPass)
 
     }
 

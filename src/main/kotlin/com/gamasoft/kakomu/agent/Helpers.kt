@@ -60,15 +60,16 @@ val STONE_TO_CHAR = mapOf<Player?, Char>(
     Player.WHITE to 'o'
 )
 
-fun printMove(player: Player, move: Move) {
+fun drawMove(player: Player, move: Move): String {
     if (move.isPass) {
-        println("$player passes")
+        return "$player passes"
     } else if (move.point == null) {
-        println("$player resign")
+        return "$player resigns"
     } else {
-        println("$player " + COLS[move.point.col - 1] + move.point.row )
+        return "$player ${COLS[move.point.col - 1]}${move.point.row}"
     }
 }
+
 
 fun drawBoard(board: Board): List<String> {
     val out = mutableListOf<String>()
@@ -108,7 +109,7 @@ fun printBoard(move: Move, game: GameState){
     println()
     println()
     printBoard(game.board)
-    printMove(game.nextPlayer, move)
+    println(drawMove(game.nextPlayer, move))
 }
 
 
