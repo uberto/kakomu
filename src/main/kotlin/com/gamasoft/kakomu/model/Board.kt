@@ -6,7 +6,7 @@ class Board (val numCols: Int, val numRows: Int){
 
     //it should probably return a new immutable board
     fun placeStone(player: Player, point: Point) {
-        assert(isOnTheGrid(point))
+        assert(isOnTheGrid(point)){ println(point)}
         assert(isFree(point))
 
         //0. Examine the adjacent points.

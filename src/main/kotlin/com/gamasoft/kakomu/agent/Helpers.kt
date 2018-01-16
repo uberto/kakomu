@@ -1,9 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.Move
-import com.gamasoft.kakomu.model.Player
-import com.gamasoft.kakomu.model.Point
+import com.gamasoft.kakomu.model.*
 
 
 fun isAnEye(board: Board, point: Point, color: Player): Boolean {
@@ -59,8 +56,8 @@ val COLS = "ABCDEFGHJKLMNOPQRSTUVWXYZ"
 
 val STONE_TO_CHAR = mapOf<Player?, Char>(
     null to '.',
-    Player.BLACK to 'X',
-    Player.WHITE to 'O'
+    Player.BLACK to 'x',
+    Player.WHITE to 'o'
 )
 
 fun printMove(player: Player, move: Move) {
@@ -73,17 +70,46 @@ fun printMove(player: Player, move: Move) {
     }
 }
 
-fun printBoard(board: Board){
+fun drawBoard(board: Board): List<String> {
+    val out = mutableListOf<String>()
+    out.add("  " + COLS.substring(0, board.numCols))
     for (row in (board.numRows downTo 1)){
         val line = StringBuilder()
         for (col in (1 ..board.numCols)){
             val stone = board.getString(Point(row=row, col=col))?.color
             line.append(STONE_TO_CHAR[stone])
         }
-        println("$row $line")
+        out.add("$row $line")
     }
-    println("  " + COLS.substring(0, board.numCols))
+    return out
 }
 
+
+
+fun printBoard(board: Board){
+    drawBoard(board).forEach{l -> println(l)}
+}
+
+
+fun playSelfGame(boardSize: Int, black: Agent, white: Agent, delayMillis: Long): GameState {
+    var game = GameState.newGame(boardSize)
+    val bots = mapOf(Player.BLACK to black,
+            Player.WHITE to white)
+
+    while (!game.isOver()) {
+        val botMove = bots[game.nextPlayer]!!.selectMove(game)
+        game = game.applyMove(game.nextPlayer, botMove)
+
+        Thread.sleep(delayMillis)
+        printBoard(botMove, game.board, game.nextPlayer) //TODO make it lambda
+    }
+    return game
+}
+
+fun printBoard(move: Move, board: Board, nextPlayer: Player){
+    println(27.toChar() + "[2J")
+    printBoard(board)
+    printMove(nextPlayer, move)
+}
 
 

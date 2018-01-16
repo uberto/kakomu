@@ -21,5 +21,36 @@ internal class HelpersTest {
 
     }
 
+    @Test
+    fun drawBoard(){
+
+        val board = Board(9,9)
+        board.placeStone(Player.BLACK, Point(2, 1))
+        board.placeStone(Player.BLACK, Point(2, 2))
+        board.placeStone(Player.BLACK, Point(1, 2))
+
+        val lines = drawBoard(board)
+
+        assertEquals("  ABCDEFGHJ", lines[0])
+        assertEquals("9 .........", lines[1])
+        assertEquals("2 xx.......", lines[8])
+        assertEquals("1 .x.......", lines[9])
+    }
+
+
+    @Test
+    fun drawMove(){
+
+    }
+
+    @Test
+    fun selfGame(){
+        val finalState = playSelfGame(5, RandomBot(), RandomBot(), 0)
+
+        assertTrue(finalState.lastMove!!.isPass)
+
+    }
+
+
 }
 
