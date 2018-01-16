@@ -87,14 +87,13 @@ fun drawBoard(board: Board): List<String> {
 
 
 fun printBoard(board: Board){
-    drawBoard(board).forEach{l -> println(l)}
+    drawBoard(board).forEach{ println(it)}
 }
 
 
 fun playSelfGame(boardSize: Int, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
     var game = GameState.newGame(boardSize)
-    val bots = mapOf(Player.BLACK to black,
-            Player.WHITE to white)
+    val bots = mapOf(Player.BLACK to black, Player.WHITE to white)
 
     while (!game.isOver()) {
         val botMove = bots[game.nextPlayer]!!.selectMove(game)
@@ -106,7 +105,8 @@ fun playSelfGame(boardSize: Int, black: Agent, white: Agent, afterMove: (move: M
 }
 
 fun printBoard(move: Move, game: GameState){
-    println(27.toChar() + "[2J")
+    println()
+    println()
     printBoard(game.board)
     printMove(game.nextPlayer, move)
 }

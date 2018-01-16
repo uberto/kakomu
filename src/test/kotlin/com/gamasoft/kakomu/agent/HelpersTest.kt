@@ -1,12 +1,23 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.Board
+import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.Point
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class HelpersTest {
+
+    companion object {
+        fun <T> crono(msg: String, function: () -> T): T {
+            val start = System.currentTimeMillis()
+            val res = function()
+            val elapsed = System.currentTimeMillis() - start
+            println("$msg in $elapsed millisec")
+            return res
+        }
+    }
 
     @Test
     fun trueEyeOnTheCorner(){
@@ -50,6 +61,18 @@ internal class HelpersTest {
         assertTrue(finalState.lastMove!!.isPass)
 
     }
+
+
+    @Test
+    fun perfSelfGame(){
+        val finalState = crono("play self game 9x9") {
+            playSelfGame(9, RandomBot(), RandomBot()) { m, g -> Unit }
+        }
+        assertTrue(finalState!!.lastMove!!.isPass)
+
+    }
+
+
 
 
 }
