@@ -53,7 +53,7 @@ internal class GameStateTest {
 
         assertFalse(autoCapt.isMoveSelfCapture(Player.BLACK, Move.play(Point(1, 1))))
 
-        assertTrue(autoCapt.isValidMove(Move.play(Point(1, 1))))
+        assertTrue(autoCapt.isValidMoveIncludingSuperko(Move.play(Point(1, 1))))
 
     }
 
@@ -76,7 +76,7 @@ internal class GameStateTest {
 
         assertFalse(koViol.isMoveSelfCapture(Player.BLACK, Move.play(Point(2, 3))))
 
-        assertFalse(koViol.isValidMove(Move.play(Point(1, 1))))
+        assertFalse(koViol.isValidMoveIncludingSuperko(Move.play(Point(1, 1))))
     }
 
 

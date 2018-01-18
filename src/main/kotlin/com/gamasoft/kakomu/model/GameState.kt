@@ -1,5 +1,7 @@
 package com.gamasoft.kakomu.model
 
+import com.gamasoft.kakomu.agent.isAnEye
+
 data class GameState(val board: Board, val nextPlayer: Player, val previous: GameState?, val lastMove: Move?) {
 
     companion object {
@@ -25,7 +27,6 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         assert (player == nextPlayer)
 
         val nextBoard = board.deepCopy()
-
         if (move.point != null){
             nextBoard.placeStone(player, move.point)
         }
@@ -48,17 +49,32 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun isMoveSelfCapture(player: Player, move: Move): Boolean{
         if (move.point == null)
             return false
-        val nextBoard = board.deepCopy()
-        nextBoard.placeStone(player, move.point)
 
-        val newString = nextBoard.getString(move.point)
-        if (newString == null)
-            return true // throw exception?
-        return newString.liberties.size == 0
+        //if one of neighbors is same color and with more than 1 liberty is not self capture
+        //if one of neighbors is different color and with exactly 1 liberty is not self capture
+        for (neighbor in move.point.neighbors()) {
+            if (board.isOnTheGrid(neighbor)) {
+                val string = board.getString(neighbor)
+                if (string == null
+                        || (string.color == player && string.liberties.size > 1)
+                        || (string.color == player.other() && string.liberties.size == 1) )
+                    return false
+            }
+        }
+
+        return true
+//        val nextBoard = board.deepCopy()
+//        nextBoard.placeStone(player, move.point)
+//
+//        val newString = nextBoard.getString(move.point)
+//        if (newString == null)
+//            return true // throw exception?
+//        return newString.liberties.size == 0
 
     }
 
     fun doesMoveViolateKo(player: Player, move: Move): Boolean {
+
         if (move.point == null)
             return false
         val nextBoard = board.deepCopy()
@@ -77,7 +93,14 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 //        return false
     }
 
-    fun isValidMove(move: Move):Boolean {
+    fun isValidMoveApartFromKo(move: Move):Boolean {
+        if (move.point == null)
+            return true
+        return (board.isFree(move.point) &&
+                ! isMoveSelfCapture(nextPlayer, move))
+    }
+
+    fun isValidMoveIncludingSuperko(move: Move):Boolean {
         if (move.point == null)
             return true
         return (board.isFree(move.point) &&
