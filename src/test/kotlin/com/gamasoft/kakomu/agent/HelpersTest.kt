@@ -62,7 +62,7 @@ internal class HelpersTest {
 
     @Test
     fun selfGame(){
-        val finalState = playSelfGame(5, RandomBot(), RandomBot()) {m, g -> Unit}
+        val finalState = playSelfGame(5, RandomBot(), RandomBot()) {_, _ -> Unit}
 
         assertTrue(finalState.lastMove!!.isPass)
     }
@@ -70,11 +70,12 @@ internal class HelpersTest {
 
     @Test
     fun perfSelfGame(){
-        val finalState = crono("play self game 9x9") {
-            playSelfGame(9, RandomBot(), RandomBot()) { m, g -> Unit }
+        for ( i in (1..10)) {
+            val finalState = crono("play self game 9x9") {
+                playSelfGame(9, RandomBot(), RandomBot()) { _, _ -> Unit }
+            }
+            assertTrue(finalState.lastMove!!.isPass)
         }
-        assertTrue(finalState.lastMove!!.isPass)
-
     }
 
 

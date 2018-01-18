@@ -11,6 +11,16 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
+    val previousStates: Set<Pair<Player, Long>>
+
+    init{
+        if (previous == null)
+            previousStates = emptySet()
+        else {
+            previousStates = previous.previousStates.plus(Pair(previous.nextPlayer, previous.board.zobristHash()))
+        }
+    }
+
     fun applyMove(player: Player, move: Move): GameState{
         assert (player == nextPlayer)
 
@@ -53,13 +63,18 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
             return false
         val nextBoard = board.deepCopy()
         nextBoard.placeStone(player, move.point)
-        var pastState = previous
-        while (pastState != null){
-            if (pastState.nextPlayer.other() == player && pastState.board == nextBoard)
-                return true
-            pastState = pastState.previous
-        }
-        return false
+
+        val nextSituation = Pair(player.other(), nextBoard.zobristHash())
+        return nextSituation in previousStates
+
+// without ZobristCache
+//        var pastState = previous
+//        while (pastState != null){
+//            if (pastState.nextPlayer.other() == player && pastState.board == nextBoard)
+//                return true
+//            pastState = pastState.previous
+//        }
+//        return false
     }
 
     fun isValidMove(move: Move):Boolean {

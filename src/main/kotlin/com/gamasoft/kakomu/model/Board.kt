@@ -2,7 +2,15 @@ package com.gamasoft.kakomu.model
 
 class Board (val numCols: Int, val numRows: Int){
 
+    companion object {
+        val zobristTable = Zobrist.calcTable(19)
+
+        val empytBoardHash = Zobrist.calcEmptyBoard(zobristTable)
+    }
+
     private val grid = mutableMapOf<Point, GoString>()
+
+    private var zHash = empytBoardHash
 
     //it should probably return a new immutable board
     fun placeStone(player: Player, point: Point) {
@@ -36,6 +44,11 @@ class Board (val numCols: Int, val numRows: Int){
             grid[newStringPoint] = newString
         }
 
+        //Remove empty-point hash code.
+        zHash = zHash.xor(zobristTable.get(point)!!.get(null)!!)
+        //Add filled point hash code.
+        zHash = zHash.xor(zobristTable.get(point)!!.get(player)!!)
+
         //2. Reduce liberties of any adjacent strings of the opposite color.
         for (otherColorString in adjacentOppositeColor) {
             otherColorString.removeLiberty(point)
@@ -52,10 +65,12 @@ class Board (val numCols: Int, val numRows: Int){
 
     fun deepCopy(): Board {
         val newBoard = Board(numCols, numRows)
+
         for ((p, s) in grid) {
             //we need to copy the GoString and its liberties because is not immutable
             newBoard.grid.put(p, s.copy(liberties = s.liberties.toMutableSet()))
         }
+        newBoard.zHash = zHash
         return newBoard
     }
 
@@ -79,6 +94,11 @@ class Board (val numCols: Int, val numRows: Int){
                 }
             }
             grid.remove(point)
+
+            //Remove stone from hash
+            zHash = zHash.xor(zobristTable.get(point)!!.get(string.color)!!)
+            zHash = zHash.xor(zobristTable.get(point)!!.get(null)!!)
+
         }
     }
 
@@ -106,6 +126,9 @@ class Board (val numCols: Int, val numRows: Int){
         return result
     }
 
+    fun zobristHash(): Long {
+        return zHash
+    }
 
 
 }
