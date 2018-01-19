@@ -42,7 +42,7 @@ internal class GameStateTest {
     W . .
      */
     @Test
-    fun isAutoCapture() {
+    fun isAutoCaptureSingle() {
         val autoCapt = GameState.newGame(9)
              .applyMove(Player.BLACK, Move.play(Point(2,1)))
              .applyMove(Player.WHITE, Move.play(Point(3,1)))
@@ -54,6 +54,28 @@ internal class GameStateTest {
         assertFalse(autoCapt.isMoveSelfCapture(Player.BLACK, Move.play(Point(1, 1))))
 
         assertTrue(autoCapt.isValidMoveIncludingSuperko(Move.play(Point(1, 1))))
+
+    }
+
+
+    /*
+    B . W
+    B W .
+    W . B
+ */
+    @Test
+    fun isAutoCapture() {
+        val autoCapt = GameState.newGame(9)
+                .applyMove(Player.BLACK, Move.play(Point(2,1)))
+                .applyMove(Player.WHITE, Move.play(Point(3,1)))
+                .applyMove(Player.BLACK, Move.play(Point(1,2)))
+                .applyMove(Player.WHITE, Move.play(Point(1,3)))
+                .applyMove(Player.BLACK, Move.play(Point(3,3)))
+                .applyMove(Player.WHITE, Move.play(Point(2,2)))
+
+        assertFalse(autoCapt.isMoveSelfCapture(Player.WHITE, Move.play(Point(1, 1))))
+
+        assertTrue(autoCapt.isMoveSelfCapture(Player.BLACK, Move.play(Point(1, 1))))
 
     }
 

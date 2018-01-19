@@ -70,14 +70,14 @@ internal class HelpersTest {
 
     @Test
     fun perfSelfGame(){
-        for ( i in (1..10)) {
+        for ( i in (1..100)) {
             val finalState = crono("play self game 9x9") {
-                playSelfGame(9, RandomBot(), RandomBot()) { _, _ -> Unit }
+                playSelfGame(19, RandomBot(), RandomBot()) { _, _ -> Unit }
             }
             assertTrue(finalState.lastMove!!.isPass)
         }
     }
-
+//about 12 msec on 9x9 and 170 on 19x19
 
 
 
