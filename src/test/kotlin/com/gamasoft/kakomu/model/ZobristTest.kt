@@ -12,7 +12,7 @@ class ZobristTest{
 
         val t = HelpersTest.crono("calculate table 19x19"){  Zobrist.calcTable(19)}
 
-        val eb = Zobrist.calcEmptyBoard(t)
+        val eb = t.getValue(Pair(Player.WHITE, Point(1,1)))
         assertTrue(eb > 0)
 
         println("empty board $eb")
@@ -24,7 +24,6 @@ class ZobristTest{
     fun saveAndLoadSmallTable(){
 
         val t = Zobrist.calcTable(5)
-
 
         val json = Zobrist.saveAsJson(t)
         println(json)

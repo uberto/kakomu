@@ -5,7 +5,7 @@ class Board (val numCols: Int, val numRows: Int){
     companion object {
         val zobristTable = Zobrist.calcTable(19)
 
-        val empytBoardHash = Zobrist.calcEmptyBoard(zobristTable)
+        val empytBoardHash = 0L
     }
 
     private val grid = mutableMapOf<Point, GoString>()
@@ -34,43 +34,40 @@ class Board (val numCols: Int, val numRows: Int){
                 adjacentOppositeColor.add(neighborString)
             }
         }
-        var newString = GoString(player, setOf(point), liberties)
+
+        //Update hash code.
+        zHash = zHash.xor(zobristTable.getValue(Pair(player, point)))
 
         // 1. Merge any adjacent strings of the same color.
+        var newString = GoString(player, setOf(point), liberties)
         for (sameColorString in adjacentSameColor) {
             newString = newString.mergeWith(sameColorString)
         }
-        for (newStringPoint in newString.stones) {
-            grid[newStringPoint] = newString
-        }
-
-        //Remove empty-point hash code.
-        zHash = zHash.xor(zobristTable.get(point)!!.get(null)!!)
-        //Add filled point hash code.
-        zHash = zHash.xor(zobristTable.get(point)!!.get(player)!!)
+        updateStringOnGrid(newString)
 
         //2. Reduce liberties of any adjacent strings of the opposite color.
         for (otherColorString in adjacentOppositeColor) {
-            otherColorString.removeLiberty(point)
-        }
+            val attachedString =  otherColorString.removeLiberty(point)
 
-        //3. If any opposite color strings now have zero liberties, remove them.
-        for (otherColorString in adjacentOppositeColor){
-            if (otherColorString.liberties.size == 0) {
+            if (attachedString.liberties.size == 0) { //If now have zero liberties, remove it.
                 removeString(otherColorString)
+            } else {
+                updateStringOnGrid(attachedString) //otherwise update the grid
             }
         }
 
     }
 
+    private fun updateStringOnGrid(newString: GoString) {
+        for (newStringPoint in newString.stones) {
+            grid[newStringPoint] = newString
+        }
+    }
+
     fun deepCopy(): Board {
         val newBoard = Board(numCols, numRows)
-        for ((p, s) in grid) {
-            //we need to copy the GoString and its liberties because is not immutable
-            newBoard.grid.put(p, s.copy(liberties = s.liberties.toMutableSet()))
-        }
+        newBoard.grid.putAll(grid)
         newBoard.zHash = zHash
-
         return newBoard
     }
 
@@ -82,23 +79,27 @@ class Board (val numCols: Int, val numRows: Int){
     fun isFree(point: Point) = !grid.containsKey(point)
 
     private fun removeString(string: GoString){
+//first pass remove the string
+        for (point in string.stones) {
+            grid.remove(point)
+            zHash = zHash.xor(zobristTable.getValue(Pair(string.color, point)))
+        }
+//then add the liberties around
         for (point in string.stones){
-            //Removing a string can create liberties for other strings.
+            val neighborStrings = mutableSetOf<GoString>()
+
             for (neighbor: Point in point.neighbors()){
                 val neighborString = grid[neighbor]
                 if (neighborString == null) {
                     continue
                 }
-                if (neighborString != string) {
-                    neighborString.addLiberty(point)
-                }
+                neighborStrings.add(neighborString)
             }
-            grid.remove(point)
 
-            //Remove stone from hash
-            zHash = zHash.xor(zobristTable.get(point)!!.get(string.color)!!)
-            zHash = zHash.xor(zobristTable.get(point)!!.get(null)!!)
-
+            for (neighborString in neighborStrings) {
+                val newString = neighborString.addLiberty(point)
+                updateStringOnGrid(newString)
+            }
         }
     }
 
@@ -120,10 +121,7 @@ class Board (val numCols: Int, val numRows: Int){
     }
 
     override fun hashCode(): Int {
-        var result = numCols
-        result = 31 * result + numRows
-        result = 31 * result + grid.hashCode()
-        return result
+        return zHash.hashCode()
     }
 
     fun zobristHash(): Long {

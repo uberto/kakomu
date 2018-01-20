@@ -24,14 +24,89 @@ internal class BoardTest {
     }
 
     @Test
+    fun mergeStringsWhenUnited() {
+        /*
+         B1 .  B3 .
+         .  B2 .  .
+         .  B4 .
+         .  .  .
+         */
+        val board = Board(9,9)
+        board.placeStone(Player.BLACK,Point(1, 1))
+        board.placeStone(Player.BLACK,Point(2, 2))
+        board.placeStone(Player.BLACK,Point(3, 1))
+        board.placeStone(Player.BLACK,Point(2, 3))
+
+        assertEquals(2, board.getString(Point(1, 1))!!.liberties.size)
+        assertEquals(3, board.getString(Point(3, 1))!!.liberties.size)
+        assertEquals(6, board.getString(Point(2, 2))!!.liberties.size)
+        assertEquals(2, board.getString(Point(2, 3))!!.stones.size)
+
+
+        board.placeStone(Player.BLACK,Point(2, 1))
+        val goString = board.getString(Point(2, 1))!!
+        assertEquals(6, goString.liberties.size)
+        assertEquals(5, goString.stones.size)
+        assertEquals(goString, board.getString(Point(1, 1))!!)
+        assertEquals(goString, board.getString(Point(3, 1))!!)
+        assertEquals(goString, board.getString(Point(2, 2))!!)
+        assertEquals(goString, board.getString(Point(2, 3))!!)
+    }
+
+
+    @Test
+    fun removeLibertiesWhenAttached() {
+        /*
+         B1 B2 B3 .
+         .  W4 .
+         */
+        val board = Board(9,9)
+        board.placeStone(Player.BLACK,Point(1, 1))
+        board.placeStone(Player.BLACK,Point(2, 1))
+        board.placeStone(Player.BLACK,Point(3, 1))
+        assertEquals(4, board.getString(Point(1, 1))!!.liberties.size)
+
+
+        board.placeStone(Player.WHITE,Point(2, 2))
+        assertEquals(3, board.getString(Point(2, 1))!!.liberties.size)
+        assertEquals(3, board.getString(Point(2, 2))!!.liberties.size)
+    }
+
+    @Test
+    fun addLibertiesWhenCapture() {
+        /*
+         B1 B3 W4 B5
+         W2 W6 .  .
+         .  .  .  .
+         */
+        val board = Board(9,9)
+        board.placeStone(Player.BLACK,Point(1, 1))
+        board.placeStone(Player.WHITE,Point(1, 2))
+        board.placeStone(Player.BLACK,Point(2, 1))
+        board.placeStone(Player.WHITE,Point(3, 1))
+        board.placeStone(Player.BLACK,Point(4, 1))
+        assertEquals(1, board.getString(Point(1, 1))!!.liberties.size)
+        assertEquals(2, board.getString(Point(1, 2))!!.liberties.size)
+
+
+        board.placeStone(Player.WHITE,Point(2, 2))
+        assertTrue(board.isFree(Point(1, 1)))
+        assertTrue(board.isFree(Point(2, 1)))
+
+        assertEquals(5, board.getString(Point(2, 2))!!.liberties.size)
+        assertEquals(2, board.getString(Point(3, 1))!!.liberties.size)
+    }
+
+
+    @Test
     fun removeStonesWhenSurrounded() {
 
         /*
-         1 2 3 8
-         6 4 9 a
-         5 7 .
+         B1 W2 B3 W8
+         W6 W4 B9 W10
+         B5 B7 .
          */
-        val board = Board(4,4)
+        val board = Board(9,9)
 
         //1
         board.placeStone(Player.BLACK,Point(1, 1))

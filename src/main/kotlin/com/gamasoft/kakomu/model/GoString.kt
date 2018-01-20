@@ -2,7 +2,7 @@ package com.gamasoft.kakomu.model
 
 //Stones that are linked by a chain of connected stones of the same color.
 
-data class GoString(val color: Player, val stones: Set<Point>, val liberties: MutableSet<Point>) {
+data class GoString(val color: Player, val stones: Set<Point>, val liberties: Set<Point>) {
     
     fun mergeWith(string: GoString): GoString {
 
@@ -14,12 +14,12 @@ data class GoString(val color: Player, val stones: Set<Point>, val liberties: Mu
         return GoString(this.color, newStones, newLiberties)
     }
 
-    fun removeLiberty(point: Point) {
-        liberties.remove(point)
+    fun removeLiberty(point: Point): GoString {
+        return GoString(color, stones, liberties.minus(point))
     }
 
-    fun addLiberty(point:Point){
-        liberties.add(point)
+    fun addLiberty(point:Point): GoString{
+        return GoString(color, stones, liberties.plus(point))
     }
 
 }

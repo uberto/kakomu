@@ -13,38 +13,27 @@ class Zobrist {
 
         val MAX63 = 0x7fffffffffffffff
 
-        fun calcTable(boardSize: Int): Map<Point, Map<Player?, Long>> {
-            val table = mutableMapOf<Point, Map<Player?, Long>>()
+        fun calcTable(boardSize: Int): Map<Pair<Player, Point>, Long> {
+            val table = mutableMapOf<Pair<Player, Point>, Long>()
 
-            val states = setOf(null, Player.BLACK, Player.WHITE)
+            val players = setOf(Player.BLACK, Player.WHITE)
 
             for (row in 1..boardSize) {
                 for (col in 1..boardSize) {
-                    val innerMap = mutableMapOf<Player?, Long>()
-                    for (state in states) {
+                    for (player in players) {
                         val code = ThreadLocalRandom.current().nextLong(0, MAX63)
-                        innerMap[state] = code
+
+                        val key = Pair(player, Point(row, col))
+                        table[key] = code
 
                     }
-                    table[Point(row, col)] = innerMap
                 }
             }
 
             return table
         }
 
-        fun calcEmptyBoard(table: Map<Point, Map<Player?, Long>>): Long {
-
-            var emptyBoard = 0L
-
-            for (v in table.values) {
-                val code = v.get(null)!!
-                emptyBoard = emptyBoard.xor(code)
-            }
-            return emptyBoard
-        }
-
-        fun saveAsJson(table: Map<Point, Map<Player?, Long>>): String {
+        fun saveAsJson(table: Map<Pair<Player, Point>, Long>): String {
 
             val gsonBuilder = GsonBuilder()
             gsonBuilder.setLongSerializationPolicy(LongSerializationPolicy.STRING)

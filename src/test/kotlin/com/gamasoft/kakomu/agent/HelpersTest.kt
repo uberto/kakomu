@@ -70,15 +70,24 @@ internal class HelpersTest {
 
     @Test
     fun perfSelfGame(){
-        for ( i in (1..100)) {
-            val finalState = crono("play self game 9x9") {
-                playSelfGame(19, RandomBot(), RandomBot()) { _, _ -> Unit }
+        val boardSize = 19
+        //warmup
+        for ( i in (1..1000)) {
+            val finalState = playSelfGame(boardSize, RandomBot(), RandomBot()) { _, _ -> Unit }
+            assertTrue(finalState.lastMove!!.isPass)
+
+        }
+        for ( i in (1..10)) {
+            val finalState = crono("play self game ${boardSize}x${boardSize}") {
+                playSelfGame(boardSize, RandomBot(), RandomBot()) { _, _ -> Unit }
             }
             assertTrue(finalState.lastMove!!.isPass)
         }
     }
-//about 12 msec on 9x9 and 170 on 19x19
-
+//with validmove without deepcopy:
+//about 10 msec on 9x9 and 160 on 19x19
+//with immutable goStrings:
+//about 6 msec on 9x9 and 65 on 19x19
 
 
 }
