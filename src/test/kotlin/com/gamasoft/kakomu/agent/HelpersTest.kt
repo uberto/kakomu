@@ -67,12 +67,21 @@ internal class HelpersTest {
         assertTrue(finalState.lastMove!!.isPass)
     }
 
+    @Test
+    fun pointFromCoords(){
+        val p1 = Point.fromCoords("A1")
+        assertEquals(Point(1,1), p1)
+        val p2 = Point.fromCoords("c7")
+        assertEquals(Point(3,7), p2)
+        val p3 = Point.fromCoords("Z17")
+        assertEquals(Point(25,17), p3)
+    }
 
     @Test
     fun perfSelfGame(){
-        val boardSize = 19
+        val boardSize = 9
         //warmup
-        for ( i in (1..1000)) {
+        for ( i in (1..100)) {
             val finalState = playSelfGame(boardSize, RandomBot(), RandomBot()) { _, _ -> Unit }
             assertTrue(finalState.lastMove!!.isPass)
 
