@@ -73,15 +73,17 @@ fun drawMove(player: Player, move: Move): String {
 
 fun drawBoard(board: Board): List<String> {
     val out = mutableListOf<String>()
-    out.add("  " + COLS.substring(0, board.numCols))
+    out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     for (row in (board.numRows downTo 1)){
         val line = StringBuilder()
         for (col in (1 ..board.numCols)){
             val stone = board.getString(Point(row=row, col=col))?.color
             line.append(STONE_TO_CHAR[stone])
+            line.append(" ")
         }
-        out.add("$row $line")
+        out.add("$row $line $row")
     }
+    out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     return out
 }
 
@@ -105,7 +107,37 @@ fun playSelfGame(boardSize: Int, black: Agent, white: Agent, afterMove: (move: M
     return game
 }
 
-fun printBoard(move: Move, game: GameState){
+fun playAgainstHuman(boardSize: Int){
+    var game = GameState.newGame(boardSize)
+    val bot = RandomBot()
+    while (!game.isOver()) {
+        printBoard(game.board)
+
+        val move = if (game.nextPlayer == Player.BLACK){
+            askMove(game)
+        }
+        else {
+            val move = bot.selectMove(game)
+            println(drawMove(game.nextPlayer, move))
+            move
+        }
+        game = game.applyMove(game.nextPlayer, move)
+
+    }
+}
+
+private fun askMove(game: GameState): Move {
+    while (true) {
+        print("insert move coords:")
+        val humanMove = readLine()!!
+        val point = Point.fromCoords(humanMove.trim())
+        val move = Move.play(point)
+        if (game.isValidMoveIncludingSuperko(move))
+            return move
+    }
+}
+
+fun printMoveAndBoard(move: Move, game: GameState){
     println()
     println()
     printBoard(game.board)
