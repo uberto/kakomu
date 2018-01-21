@@ -87,7 +87,7 @@ class Board (val numCols: Int, val numRows: Int,
 
         //2. Reduce liberties of any adjacent strings of the opposite color.
         for (otherColorString in adjacentOppositeColor) {
-            val attachedString =  otherColorString.removeLiberty(point)
+            val attachedString = otherColorString.removeLiberty(point)
 
             if (attachedString.liberties.size == 0) { //If now have zero liberties, remove it.
                 removeString(otherColorString)

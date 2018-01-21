@@ -21,16 +21,18 @@ class RandomBot: Agent {
                 val move = Move.play(candidate)
                 val st0 = System.nanoTime()
                 val validMove = gameState.isValidMoveApartFromKo(move)
-
                 val st1 = System.nanoTime()
-                val isAnEye = Evaluator.isAnEye(gameState.board, candidate, gameState.nextPlayer)
-                val st2 = System.nanoTime()
-                teye += (st2-st1)
+
                 tval += (st1-st0)
                 tmov += (st0-st9)
 
-                if (validMove && !isAnEye){
-                    candidates.add(candidate)
+                if (validMove) {
+                    val isAnEye = Evaluator.isAnEye(gameState.board, candidate, gameState.nextPlayer)
+                    val st2 = System.nanoTime()
+                    teye += (st2-st1)
+                    if (!isAnEye) {
+                        candidates.add(candidate)
+                    }
                 }
             }
         }
@@ -48,8 +50,6 @@ class RandomBot: Agent {
         val t2 = System.nanoTime()
 
 //        println("generate candidates ${t1- t0} play the move ${t2- t1}    eyes $teye move $tmov  valid $tval  ")
-
-
 
         return nextMove
     }

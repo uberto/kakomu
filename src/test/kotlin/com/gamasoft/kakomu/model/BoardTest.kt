@@ -24,6 +24,32 @@ internal class BoardTest {
     }
 
     @Test
+    fun neighborsOfAPoint() {
+        val p1 = Point(3,5)
+        val b = Board(9,9)
+        val n = b.neighbors(p1)
+
+        assertEquals(4, n.size)
+        assertTrue(n.contains(Point(3,4)))
+        assertTrue(n.contains(Point(3,6)))
+        assertTrue(n.contains(Point(2,5)))
+        assertTrue(n.contains(Point(4,5)))
+
+    }
+
+    @Test
+    fun neighborsOfCorners() {
+        val p1 = Point(3,5)
+        val b = Board(9,9)
+
+        assertEquals(2, b.neighbors(Point(1,1)).size)
+        assertEquals(2, b.neighbors(Point(1,9)).size)
+        assertEquals(2, b.neighbors(Point(9,1)).size)
+        assertEquals(2, b.neighbors(Point(9,9)).size)
+
+    }
+
+    @Test
     fun mergeStringsWhenUnited() {
         /*
          B1 .  B3 .

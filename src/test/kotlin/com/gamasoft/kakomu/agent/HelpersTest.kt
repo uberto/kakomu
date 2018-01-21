@@ -61,7 +61,7 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
 
         //warmup
@@ -70,19 +70,20 @@ internal class HelpersTest {
             assertTrue(finalState.lastMove!!.isPass)
 
         }
-        for ( i in (1..9)) {
+        for ( i in (1..19)) {
             val finalState = crono("play self game ${boardSize}x${boardSize}") {
                 playSelfGame(startingState, RandomBot(), RandomBot()) { _, _ -> Unit }
             }
             assertTrue(finalState.lastMove!!.isPass)
         }
     }
+//on laptop i7 2Ghz
 //with validmove without deepcopy:
 //about 10 msec on 9x9 and 160 on 19x19
 //with immutable goStrings:
 //about 6 msec on 9x9 and 65 on 19x19
 //with neighbors map:
-//about 4.5 msec on 9x9 and 50 on 19x19
+//about 4 msec on 9x9 and 45 on 19x19
 
 
 }

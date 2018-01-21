@@ -6,10 +6,8 @@ data class GoString(val color: Player, val stones: Set<Point>, val liberties: Se
     
     fun mergeWith(string: GoString): GoString {
 
-        assert(string.color == this.color)
-        val newStones = string.stones.union(this.stones)
-        val newLiberties = mutableSetOf<Point>()
-        newLiberties.addAll(string.liberties.union(this.liberties).minus(newStones))
+        val newStones = string.stones.plus(this.stones)
+        val newLiberties = string.liberties.plus(this.liberties).minus(newStones)
 
         return GoString(this.color, newStones, newLiberties)
     }
