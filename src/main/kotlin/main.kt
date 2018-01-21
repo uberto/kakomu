@@ -7,14 +7,7 @@ fun main(args : Array<String>) {
 
     val boardSize = 9
 
-//    val printState: (Move, GameState)->Unit =  {
-//        move, game ->
-//            Thread.sleep(100)
-//            printMoveAndBoard(move, game) //TODO make it lambda
-//
-//    }
-//
-//    playSelfGame(boardSize, RandomBot(), RandomBot(), printState)
+    //playAndPrintSelfGame(boardSize)
 
     playAgainstHuman(boardSize)
 

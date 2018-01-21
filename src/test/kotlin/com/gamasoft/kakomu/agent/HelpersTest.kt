@@ -39,10 +39,10 @@ internal class HelpersTest {
 
         val lines = drawBoard(board)
 
-        assertEquals("  ABCDEFGHJ", lines[0])
-        assertEquals("9 .........", lines[1])
-        assertEquals("2 xx.......", lines[8])
-        assertEquals("1 .x.......", lines[9])
+        assertEquals("  A B C D E F G H J ", lines[0])
+        assertEquals("9 . . . . . . . . . 9", lines[1])
+        assertEquals("2 x x . . . . . . . 2", lines[8])
+        assertEquals("1 . x . . . . . . . 1", lines[9])
     }
 
 
@@ -61,10 +61,20 @@ internal class HelpersTest {
     }
 
     @Test
-    fun selfGame(){
-        val finalState = playSelfGame(5, RandomBot(), RandomBot()) {_, _ -> Unit}
+    fun selfGameValuation(){
 
-        assertTrue(finalState.lastMove!!.isPass)
+        var blackWins = 0
+        for (times in 1 .. 100) {
+
+            val finalState = playSelfGame(9, RandomBot(), RandomBot()) { _, _ -> Unit }
+            val scoreWhite = countTerritory(finalState.board, Player.WHITE)
+            val scoreBlack = countTerritory(finalState.board, Player.BLACK)
+            if (scoreBlack - 5 > scoreWhite)
+                blackWins++
+            println("play number $times black wins $blackWins")
+
+        }
+        println("Final black wins $blackWins")
     }
 
     @Test
@@ -78,7 +88,21 @@ internal class HelpersTest {
     }
 
     @Test
-    fun perfSelfGame(){
+    fun selfGame(){
+        val finalState = playSelfGame(9, RandomBot(), RandomBot()) {_, _ -> Unit}
+
+        assertTrue(finalState.lastMove!!.isPass)
+        val scoreWhite = countTerritory(finalState.board, Player.WHITE)
+        val scoreBlack = countTerritory(finalState.board, Player.BLACK)
+
+        println("Final score black: $scoreBlack white: $scoreWhite")
+        assertEquals(81, scoreBlack+scoreWhite)
+
+    }
+
+
+    @Test
+    fun performanceSelfGame(){
         val boardSize = 9
         //warmup
         for ( i in (1..100)) {

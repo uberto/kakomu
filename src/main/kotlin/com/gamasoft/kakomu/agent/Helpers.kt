@@ -81,7 +81,7 @@ fun drawBoard(board: Board): List<String> {
             line.append(STONE_TO_CHAR[stone])
             line.append(" ")
         }
-        out.add("$row $line $row")
+        out.add("$row $line$row")
     }
     out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     return out
@@ -143,5 +143,36 @@ fun printMoveAndBoard(move: Move, game: GameState){
     printBoard(game.board)
     println(drawMove(game.nextPlayer, move))
 }
+
+
+fun playAndPrintSelfGame(boardSize:Int){
+    val printState: (Move, GameState)->Unit =  {
+        move, game ->
+            Thread.sleep(100)
+            printMoveAndBoard(move, game)
+
+    }
+
+    playSelfGame(boardSize, RandomBot(), RandomBot(), printState)
+}
+
+fun countTerritory(board: Board, player: Player): Int {
+    //count all stones and eyes, works only after all possible stones are placed
+    var tot = 0
+
+    for(col in 1 .. board.numCols){
+        for (row in 1.. board.numRows){
+            val point = Point(col, row)
+            val string = board.getString(point)
+            if (string == null) {
+               if (isAnEye(board, point, player))
+                   tot++
+            } else if (string.color == player)
+                tot++
+            }
+        }
+    return tot
+    }
+
 
 
