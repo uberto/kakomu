@@ -145,7 +145,7 @@ internal class BoardTest {
         board1.placeStone(Player.BLACK, Point(1, 1))
         board1.placeStone(Player.BLACK, Point(2, 1))
 
-        val board2 = board1.deepCopy()
+        val board2 = board1.clone()
         val string2 = board2.getString(Point(1, 1))!!
         assertEquals(3, string2.liberties.size)
 

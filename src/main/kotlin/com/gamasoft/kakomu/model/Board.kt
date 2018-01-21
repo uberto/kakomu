@@ -1,11 +1,53 @@
 package com.gamasoft.kakomu.model
 
-class Board (val numCols: Int, val numRows: Int){
+class Board (val numCols: Int, val numRows: Int,
+             val neighborsMap: MutableMap<Point, Set<Point>> = mutableMapOf()
+){
 
     companion object {
         val zobristTable = Zobrist.calcTable(19)
 
         val empytBoardHash = 0L
+
+        fun newBoard(size: Int): Board{
+            val neighbors = mutableMapOf<Point, Set<Point>> ()
+
+            for (col in 1.. size)
+                for (row in 1..size)
+                    neighbors.getOrPut(Point(col, row)){
+                        calculateNeighbors(Point(col, row), size, size)}
+
+            return Board(size, size, neighbors)
+        }
+
+        fun calculateNeighbors(point: Point, numRows: Int, numCols: Int):Set<Point>{
+
+            fun isOnTheGrid(p: Point): Boolean{
+                return p.row in (1 .. numRows) && p.col in (1 ..numCols)
+            }
+
+            val col = point.col
+            val row = point.row
+
+            val p1 = Point(col, row - 1)
+            val p2 = Point(col, row + 1)
+            val p3 = Point(col - 1, row)
+            val p4 = Point(col + 1, row)
+
+            val set = mutableSetOf<Point>()
+            if (isOnTheGrid(p1))
+                set.add(p1)
+            if (isOnTheGrid(p2))
+                set.add(p2)
+            if (isOnTheGrid(p3))
+                set.add(p3)
+            if (isOnTheGrid(p4))
+                set.add(p4)
+
+            return set
+        }
+
+
     }
 
     private val grid = mutableMapOf<Point, GoString>()
@@ -22,9 +64,7 @@ class Board (val numCols: Int, val numRows: Int){
         val adjacentOppositeColor = mutableSetOf<GoString>()
         val liberties = mutableSetOf<Point>()
 
-        for (neighbor in point.neighbors()) {
-            if (!isOnTheGrid(neighbor))
-                continue
+        for (neighbor in neighbors(point)) {
             val neighborString = grid[neighbor]
             if (neighborString == null) {
                 liberties.add(neighbor)
@@ -64,8 +104,8 @@ class Board (val numCols: Int, val numRows: Int){
         }
     }
 
-    fun deepCopy(): Board {
-        val newBoard = Board(numCols, numRows)
+    fun clone(): Board {
+        val newBoard = Board(numCols, numRows, neighborsMap)
         newBoard.grid.putAll(grid)
         newBoard.zHash = zHash
         return newBoard
@@ -75,6 +115,10 @@ class Board (val numCols: Int, val numRows: Int){
         return p.row in (1 .. numRows) && p.col in (1 ..numCols)
     }
 
+
+    fun neighbors(point: Point): Set<Point>{
+        return neighborsMap.getOrPut(point){ calculateNeighbors(point, numRows, numCols)}
+    }
 
     fun isFree(point: Point) = !grid.containsKey(point)
 
@@ -88,7 +132,7 @@ class Board (val numCols: Int, val numRows: Int){
         for (point in string.stones){
             val neighborStrings = mutableSetOf<GoString>()
 
-            for (neighbor: Point in point.neighbors()){
+            for (neighbor: Point in neighbors(point)){
                 val neighborString = grid[neighbor]
                 if (neighborString == null) {
                     continue

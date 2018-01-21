@@ -45,8 +45,9 @@ fun printBoard(board: Board){
 }
 
 
-fun playSelfGame(boardSize: Int, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
-    var game = GameState.newGame(boardSize)
+fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
+    var game = startingState
+
     val bots = mapOf(Player.BLACK to black, Player.WHITE to white)
 
     while (!game.isOver()) {
@@ -103,8 +104,8 @@ fun playAndPrintSelfGame(boardSize:Int){
             printMoveAndBoard(move, game)
 
     }
-
-    playSelfGame(boardSize, RandomBot(), RandomBot(), printState)
+    var game = GameState.newGame(boardSize)
+    playSelfGame(game, RandomBot(), RandomBot(), printState)
 }
 
 

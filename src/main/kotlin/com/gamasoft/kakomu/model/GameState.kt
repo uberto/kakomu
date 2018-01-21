@@ -7,7 +7,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 
         fun newGame(boardSize: Int): GameState{
             assert(boardSize > 1)
-            val board = Board(boardSize, boardSize)
+            val board = Board.newBoard(boardSize)
             return GameState(board, Player.BLACK, null, null)
         }
     }
@@ -25,7 +25,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun applyMove(player: Player, move: Move): GameState{
         assert (player == nextPlayer)
 
-        val nextBoard = board.deepCopy()
+        val nextBoard = board.clone()
         if (move.point != null){
             nextBoard.placeStone(player, move.point)
         }
@@ -51,18 +51,16 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 
         //if one of neighbors is same color and with more than 1 liberty is not self capture
         //if one of neighbors is different color and with exactly 1 liberty is not self capture
-        for (neighbor in move.point.neighbors()) {
-            if (board.isOnTheGrid(neighbor)) {
+        for (neighbor in board.neighbors(move.point)) {
                 val string = board.getString(neighbor)
                 if (string == null
                         || (string.color == player && string.liberties.size > 1)
                         || (string.color == player.other() && string.liberties.size == 1) )
                     return false
-            }
         }
 
         return true
-//        val nextBoard = board.deepCopy()
+//        val nextBoard = board.clone()
 //        nextBoard.placeStone(player, move.point)
 //
 //        val newString = nextBoard.getString(move.point)
@@ -76,7 +74,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 
         if (move.point == null)
             return false
-        val nextBoard = board.deepCopy()
+        val nextBoard = board.clone()
         nextBoard.placeStone(player, move.point)
 
         val nextSituation = Pair(player.other(), nextBoard.zobristHash())

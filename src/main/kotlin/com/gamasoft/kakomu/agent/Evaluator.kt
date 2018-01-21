@@ -34,12 +34,10 @@ class Evaluator {
             }
 
             //All adjacent points must contain friendly stones.
-            for (neighbor in point.neighbors()) {
-                if (board.isOnTheGrid(neighbor)) {
-                    val string = board.getString(neighbor)
-                    if (string == null || string.color != color)
-                        return false
-                }
+            for (neighbor in board.neighbors(point)) {
+                val string = board.getString(neighbor)
+                if (string == null || string.color != color)
+                    return false
             }
 
 
