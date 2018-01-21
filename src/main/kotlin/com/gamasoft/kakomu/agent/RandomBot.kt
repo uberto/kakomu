@@ -23,7 +23,7 @@ class RandomBot: Agent {
                 val validMove = gameState.isValidMoveApartFromKo(move)
 
                 val st1 = System.nanoTime()
-                val isAnEye = isAnEye(gameState.board, candidate, gameState.nextPlayer)
+                val isAnEye = Evaluator.isAnEye(gameState.board, candidate, gameState.nextPlayer)
                 val st2 = System.nanoTime()
                 teye += (st2-st1)
                 tval += (st1-st0)

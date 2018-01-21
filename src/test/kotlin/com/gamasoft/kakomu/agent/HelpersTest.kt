@@ -16,18 +16,7 @@ internal class HelpersTest {
         }
     }
 
-    @Test
-    fun trueEyeOnTheCorner(){
 
-        val board = Board(9,9)
-        board.placeStone(Player.BLACK, Point(2, 1))
-        board.placeStone(Player.BLACK, Point(2, 2))
-        board.placeStone(Player.BLACK, Point(1, 2))
-
-        assertTrue(isAnEye(board, Point(1,1), Player.BLACK))
-        assertFalse(isAnEye(board, Point(1,1), Player.WHITE))
-
-    }
 
     @Test
     fun drawBoard(){
@@ -61,23 +50,6 @@ internal class HelpersTest {
     }
 
     @Test
-    fun selfGameValuation(){
-
-        var blackWins = 0
-        for (times in 1 .. 100) {
-
-            val finalState = playSelfGame(9, RandomBot(), RandomBot()) { _, _ -> Unit }
-            val scoreWhite = countTerritory(finalState.board, Player.WHITE)
-            val scoreBlack = countTerritory(finalState.board, Player.BLACK)
-            if (scoreBlack - 5 > scoreWhite)
-                blackWins++
-            println("play number $times black wins $blackWins")
-
-        }
-        println("Final black wins $blackWins")
-    }
-
-    @Test
     fun pointFromCoords(){
         val p1 = Point.fromCoords("A1")
         assertEquals(Point(1,1), p1)
@@ -87,18 +59,7 @@ internal class HelpersTest {
         assertEquals(Point(25,17), p3)
     }
 
-    @Test
-    fun selfGame(){
-        val finalState = playSelfGame(9, RandomBot(), RandomBot()) {_, _ -> Unit}
 
-        assertTrue(finalState.lastMove!!.isPass)
-        val scoreWhite = countTerritory(finalState.board, Player.WHITE)
-        val scoreBlack = countTerritory(finalState.board, Player.BLACK)
-
-        println("Final score black: $scoreBlack white: $scoreWhite")
-        assertEquals(81, scoreBlack+scoreWhite)
-
-    }
 
 
     @Test

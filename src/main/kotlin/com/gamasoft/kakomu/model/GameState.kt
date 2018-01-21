@@ -1,6 +1,5 @@
 package com.gamasoft.kakomu.model
 
-import com.gamasoft.kakomu.agent.isAnEye
 
 data class GameState(val board: Board, val nextPlayer: Player, val previous: GameState?, val lastMove: Move?) {
 

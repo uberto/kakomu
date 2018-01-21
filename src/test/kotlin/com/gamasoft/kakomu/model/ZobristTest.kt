@@ -15,9 +15,8 @@ class ZobristTest{
         val eb = t.getValue(Pair(Player.WHITE, Point(1,1)))
         assertTrue(eb > 0)
 
-        println("empty board $eb")
 
-        println(t)
+     //   println(t)
     }
 
     @Test
@@ -26,7 +25,7 @@ class ZobristTest{
         val t = Zobrist.calcTable(5)
 
         val json = Zobrist.saveAsJson(t)
-        println(json)
+  //      println(json)
 
         val t2 = Zobrist.loadFromJson(json)
         assertEquals(t.toString(), t2.toString())
