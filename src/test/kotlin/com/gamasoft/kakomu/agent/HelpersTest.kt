@@ -61,7 +61,7 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 19
+        val boardSize = 9
         val startingState = GameState.newGame(boardSize)
 
         //warmup

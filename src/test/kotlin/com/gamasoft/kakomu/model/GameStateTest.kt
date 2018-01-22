@@ -11,12 +11,15 @@ internal class GameStateTest {
         val start = GameState.newGame(9)
 
         assertFalse(start.isOver())
+        assertEquals(0, start.previousStates.size)
 
         val first = start.applyMove(Player.BLACK, Move.pass())
         assertFalse(first.isOver())
+        assertEquals(1, first.previousStates.size)
 
         val second = first.applyMove(Player.WHITE, Move.pass())
         assertTrue(second.isOver())
+        assertEquals(2, second.previousStates.size)
 
     }
 

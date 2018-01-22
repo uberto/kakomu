@@ -1,7 +1,7 @@
 package com.gamasoft.kakomu.model
 
 class Board (val numCols: Int, val numRows: Int,
-             val neighborsMap: MutableMap<Point, Set<Point>> = mutableMapOf()
+             val neighborsMap: Map<Point, Set<Point>> = calculateNeighborsMap(numCols, numRows)
 ){
 
     companion object {
@@ -10,17 +10,23 @@ class Board (val numCols: Int, val numRows: Int,
         val empytBoardHash = 0L
 
         fun newBoard(size: Int): Board{
-            val neighbors = mutableMapOf<Point, Set<Point>> ()
-
-            for (col in 1.. size)
-                for (row in 1..size)
-                    neighbors.getOrPut(Point(col, row)){
-                        calculateNeighbors(Point(col, row), size, size)}
+            val neighbors = calculateNeighborsMap(size, size)
 
             return Board(size, size, neighbors)
         }
 
-        fun calculateNeighbors(point: Point, numRows: Int, numCols: Int):Set<Point>{
+        private fun calculateNeighborsMap(numCols: Int, numRows: Int): MutableMap<Point, Set<Point>> {
+            val neighbors = mutableMapOf<Point, Set<Point>>()
+
+            for (col in 1..numCols)
+                for (row in 1..numRows)
+                    neighbors.getOrPut(Point(col, row)) {
+                        calculateNeighbors(Point(col, row), numCols, numRows)
+                    }
+            return neighbors
+        }
+
+        fun calculateNeighbors(point: Point, numCols: Int, numRows: Int):Set<Point>{
 
             fun isOnTheGrid(p: Point): Boolean{
                 return p.row in (1 .. numRows) && p.col in (1 ..numCols)
@@ -50,7 +56,7 @@ class Board (val numCols: Int, val numRows: Int,
 
     }
 
-    private val grid = mutableMapOf<Point, GoString>()
+    private val grid = Grid(numCols, numRows)
 
     private var zHash = empytBoardHash
 
@@ -106,7 +112,7 @@ class Board (val numCols: Int, val numRows: Int,
 
     fun clone(): Board {
         val newBoard = Board(numCols, numRows, neighborsMap)
-        newBoard.grid.putAll(grid)
+        newBoard.grid.copyFrom(grid)
         newBoard.zHash = zHash
         return newBoard
     }
@@ -117,15 +123,15 @@ class Board (val numCols: Int, val numRows: Int,
 
 
     fun neighbors(point: Point): Set<Point>{
-        return neighborsMap.getOrPut(point){ calculateNeighbors(point, numRows, numCols)}
+        return neighborsMap.getValue(point)
     }
 
-    fun isFree(point: Point) = !grid.containsKey(point)
+    fun isFree(point: Point) = grid[point] == null
 
     private fun removeString(string: GoString){
 //first pass remove the string
         for (point in string.stones) {
-            grid.remove(point)
+            grid[point] = null
             zHash = zHash.xor(zobristTable.getValue(Pair(string.color, point)))
         }
 //then add the liberties around
