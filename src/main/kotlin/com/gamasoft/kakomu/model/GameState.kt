@@ -12,7 +12,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    var previousStates: Set<Pair<Player, Long>>
+    val previousStates: Set<Pair<Player, Long>>  //TODO we can probably do with a circular buffer of last 20
 
     init{
         if (previous == null)
