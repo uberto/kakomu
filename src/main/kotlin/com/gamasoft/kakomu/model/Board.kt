@@ -82,7 +82,8 @@ class Board (val numCols: Int, val numRows: Int,
         }
 
         //Update hash code.
-        zHash = zHash.xor(zobristTable.getValue(Pair(player, point)))
+        zHash = zHash.xor(zobristTable.getValue(Zobrist.PLAYER_BLACK)) //every move it switch
+        zHash = zHash.xor(zobristTable.getValue(point))
 
         // 1. Merge any adjacent strings of the same color.
         var newString = GoString(player, setOf(point), liberties)
@@ -132,7 +133,7 @@ class Board (val numCols: Int, val numRows: Int,
 //first pass remove the string
         for (point in string.stones) {
             grid[point] = null
-            zHash = zHash.xor(zobristTable.getValue(Pair(string.color, point)))
+            zHash = zHash.xor(zobristTable.getValue(point))
         }
 //then add the liberties around
         for (point in string.stones){
