@@ -54,20 +54,12 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         for (neighbor in board.neighbors(move.point)) {
                 val string = board.getString(neighbor)
                 if (string == null
-                        || (string.color == player && string.liberties.size > 1)
-                        || (string.color == player.other() && string.liberties.size == 1) )
+                        || (string.color == player && string.libertiesCount() > 1)
+                        || (string.color == player.other() && string.libertiesCount() == 1) )
                     return false
         }
 
         return true
-//        val nextBoard = board.clone()
-//        nextBoard.placeStone(player, move.point)
-//
-//        val newString = nextBoard.getString(move.point)
-//        if (newString == null)
-//            return true // throw exception?
-//        return newString.liberties.size == 0
-
     }
 
     fun doesMoveViolateKo(player: Player, move: Move): Boolean {
