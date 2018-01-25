@@ -12,7 +12,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    val previousStates: Set<Pair<Player, Long>>
+    var previousStates: Set<Pair<Player, Long>>
 
     init{
         if (previous == null)
@@ -101,6 +101,11 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         if (!isValidMoveApartFromKo(move))
             return false
         return !doesMoveViolateKo(nextPlayer, move)
+    }
+
+    fun clone(): GameState {
+
+        return GameState(board, nextPlayer, previous, lastMove)
     }
 
 }

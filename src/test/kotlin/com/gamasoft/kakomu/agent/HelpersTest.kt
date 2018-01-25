@@ -61,18 +61,18 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
 
         //warmup
-        for ( i in (1..1000)) {
+        for ( i in (1..100)) {
             val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) { _, _ -> Unit }
             assertTrue(finalState.lastMove!!.isPass)
 
         }
-        for ( i in (1..19)) {
+        for ( i in (1..10)) {
             val finalState = crono("play self game ${boardSize}x${boardSize}") {
-                playSelfGame(startingState, RandomBot(), RandomBot()) { _, _ -> Unit }
+                playSelfGame(startingState, RandomBot(143342332), RandomBot(443233456)) { _, _ -> Unit }
             }
             assertTrue(finalState.lastMove!!.isPass)
         }

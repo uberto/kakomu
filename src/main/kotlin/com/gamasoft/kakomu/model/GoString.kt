@@ -20,4 +20,8 @@ data class GoString(val color: Player, val stones: Set<Point>, val liberties: Se
         return GoString(color, stones, liberties.plus(point))
     }
 
+    fun libertiesCount(): Int {
+        return liberties.size
+    }
+
 }

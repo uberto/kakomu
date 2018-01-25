@@ -46,7 +46,7 @@ fun printBoard(board: Board){
 
 
 fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
-    var game = startingState
+    var game = startingState.clone()
 
     val bots = mapOf(Player.BLACK to black, Player.WHITE to white)
 

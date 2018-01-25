@@ -5,7 +5,18 @@ import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Point
 import java.util.*
 
-class RandomBot: Agent {
+class RandomBot(val seed: Long = 0): Agent {
+
+    val random: Random
+
+    init {
+        if (seed == 0L){
+            random = Random()
+        } else {
+            random = Random(seed)
+        }
+    }
+
     override fun selectMove(gameState: GameState): Move {
 
         var teye = 0L
@@ -58,7 +69,7 @@ class RandomBot: Agent {
         if (candidates.isEmpty())
             return Move.pass()
         else {
-            val random = Random()
+
             return Move.play(candidates.get(random.nextInt(candidates.size)))
         }
     }

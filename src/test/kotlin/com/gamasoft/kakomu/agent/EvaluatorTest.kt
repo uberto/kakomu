@@ -26,7 +26,8 @@ internal class EvaluatorTest{
     fun selfGame(){
         val startingState = GameState.newGame(9)
 
-        val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {_, _ -> Unit}
+//        val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {_, _ -> Unit}
+        val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {m, gs -> printBoard(gs.board)}
 
         Assertions.assertTrue(finalState.lastMove!!.isPass)
         val scoreWhite = Evaluator.countTerritory(finalState.board, Player.WHITE)
