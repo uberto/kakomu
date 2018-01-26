@@ -26,7 +26,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         assert (player == nextPlayer)
 
         val nextBoard = board.clone()
-        if (move.point != null){
+        if (move is Move.Play){
             nextBoard.placeStone(player, move.point)
         }
 
@@ -37,16 +37,16 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun isOver(): Boolean{
         if (lastMove == null || previous == null)
             return false
-        if (lastMove.isResign)
+        if (lastMove is Move.Resign)
             return true
         val secondLastMove = previous.lastMove
         if (secondLastMove == null)
             return false
-        return lastMove.isPass && secondLastMove.isPass
+        return (lastMove is Move.Pass) && (secondLastMove is Move.Pass)
     }
 
     fun isMoveSelfCapture(player: Player, move: Move): Boolean{
-        if (move.point == null)
+        if (move !is Move.Play)
             return false
 
         //if one of neighbors is same color and with more than 1 liberty is not self capture
@@ -64,7 +64,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 
     fun doesMoveViolateKo(player: Player, move: Move): Boolean {
 
-        if (move.point == null)
+        if (move !is Move.Play)
             return false
         val nextBoard = board.clone()
         nextBoard.placeStone(player, move.point)
@@ -83,8 +83,8 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     }
 
     fun isValidMoveApartFromKo(move: Move):Boolean {
-        if (move.point == null)
-            return true
+        if (move !is Move.Play)
+            return false
         return (board.isFree(move.point) &&
                 ! isMoveSelfCapture(nextPlayer, move))
     }

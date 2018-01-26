@@ -29,7 +29,7 @@ class RandomBot(val seed: Long = 0): Agent {
             for (c in (1 .. gameState.board.numCols)){
                 val candidate = Point(row =r, col = c)
                 val st9 = System.nanoTime()
-                val move = Move.play(candidate)
+                val move = Move.Play(candidate)
                 val st0 = System.nanoTime()
                 val validMove = gameState.isValidMoveApartFromKo(move)
                 val st1 = System.nanoTime()
@@ -53,8 +53,11 @@ class RandomBot(val seed: Long = 0): Agent {
 
         var nextMove = getNextMove(candidates)
 
-        while (gameState.doesMoveViolateKo(gameState.nextPlayer, nextMove)){
-            candidates.remove(nextMove.point)
+        while (gameState.doesMoveViolateKo(gameState.nextPlayer, nextMove)) {
+
+            if (nextMove is Move.Play) {
+                candidates.remove(nextMove.point)
+            }
             nextMove = getNextMove(candidates)
         }
 
@@ -67,10 +70,10 @@ class RandomBot(val seed: Long = 0): Agent {
 
     private fun getNextMove(candidates: MutableList<Point>): Move {
         if (candidates.isEmpty())
-            return Move.pass()
+            return Move.Pass
         else {
 
-            return Move.play(candidates.get(random.nextInt(candidates.size)))
+            return Move.Play(candidates.get(random.nextInt(candidates.size)))
         }
     }
 }

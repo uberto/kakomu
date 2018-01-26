@@ -12,12 +12,10 @@ val STONE_TO_CHAR = mapOf<Player?, Char>(
 )
 
 fun drawMove(player: Player, move: Move): String {
-    if (move.isPass) {
-        return "$player passes"
-    } else if (move.point == null) {
-        return "$player resigns"
-    } else {
-        return "$player ${COLS[move.point.col - 1]}${move.point.row}"
+    return when (move) {
+        is Move.Pass -> "$player passes"
+        is Move.Resign -> "$player resigns"
+        is Move.Play -> "$player ${COLS[move.point.col - 1]}${move.point.row}"
     }
 }
 
@@ -81,11 +79,17 @@ fun playAgainstHuman(boardSize: Int){
 private fun askMove(game: GameState): Move {
     while (true) {
         print("insert move coords:")
-        val humanMove = readLine()!!
-        val point = Point.fromCoords(humanMove.trim())
-        val move = Move.play(point)
-        if (game.isValidMoveIncludingSuperko(move))
-            return move
+        val humanMove = readLine()!!.trim().toLowerCase()
+        when (humanMove) {
+            "resign" -> return Move.Resign
+            "pass" -> return Move.Pass
+            else -> {
+                val point = Point.fromCoords(humanMove)
+                val move = Move.Play(point)
+                if (game.isValidMoveIncludingSuperko(move))
+                    return move
+            }
+        }
     }
 }
 

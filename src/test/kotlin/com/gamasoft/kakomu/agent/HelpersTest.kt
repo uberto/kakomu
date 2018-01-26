@@ -37,14 +37,14 @@ internal class HelpersTest {
 
     @Test
     fun drawMoveResign(){
-        val resign = drawMove(Player.BLACK, Move.resign())
+        val resign = drawMove(Player.BLACK, Move.Resign)
 
         assertEquals("BLACK resigns", resign)
     }
 
     @Test
     fun drawMove(){
-        val tenten = drawMove(Player.WHITE, Move.play(Point(10, 10)))
+        val tenten = drawMove(Player.WHITE, Move.Play(Point(10, 10)))
 
         assertEquals("WHITE K10", tenten)
     }
@@ -67,14 +67,14 @@ internal class HelpersTest {
         //warmup
         for ( i in (1..100)) {
             val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) { _, _ -> Unit }
-            assertTrue(finalState.lastMove!!.isPass)
+            assertTrue(finalState.lastMove!! is Move.Pass)
 
         }
         for ( i in (1..10)) {
             val finalState = crono("play self game ${boardSize}x${boardSize}") {
                 playSelfGame(startingState, RandomBot(234345), RandomBot(767655)) { _, _ -> Unit }
             }
-            assertTrue(finalState.lastMove!!.isPass)
+            assertTrue(finalState.lastMove!! is Move.Pass)
         }
     }
 //on laptop i7 2Ghz

@@ -1,9 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Player
-import com.gamasoft.kakomu.model.Point
+import com.gamasoft.kakomu.model.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -29,7 +26,7 @@ internal class EvaluatorTest{
 //        val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {_, _ -> Unit}
         val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {m, gs -> printBoard(gs.board)}
 
-        Assertions.assertTrue(finalState.lastMove!!.isPass)
+        Assertions.assertTrue(finalState.lastMove!! is Move.Pass)
         val scoreWhite = Evaluator.countTerritory(finalState.board, Player.WHITE)
         val scoreBlack = Evaluator.countTerritory(finalState.board, Player.BLACK)
 
