@@ -2,6 +2,7 @@ package com.gamasoft.kakomu.model
 
 import com.gamasoft.kakomu.agent.COLS
 
+//flyweight? alias of Int?
 data class Point(val col: Int, val row: Int) {
 
     companion object {

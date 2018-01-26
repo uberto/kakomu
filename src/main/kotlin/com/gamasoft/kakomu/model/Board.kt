@@ -60,7 +60,6 @@ class Board (val numCols: Int, val numRows: Int,
 
     private var zHash = empytBoardHash
 
-    //it should probably return a new immutable board
     fun placeStone(player: Player, point: Point) {
         assert(isOnTheGrid(point)){ println(point)}
         assert(isFree(point))
@@ -86,18 +85,17 @@ class Board (val numCols: Int, val numRows: Int,
         zHash = zHash.xor(zobristTable.getValue(point))
 
         // 1. Merge any adjacent strings of the same color.
-        var newString = GoString(player, setOf(point), liberties)
-        newString = newString.mergeWith(adjacentSameColor)
+        val newString = GoString(player, setOf(point), liberties)
+                .mergeWith(adjacentSameColor)
         updateStringOnGrid(newString)
 
         //2. Reduce liberties of any adjacent strings of the opposite color.
         for (otherColorString in adjacentOppositeColor) {
-            val attachedString = otherColorString.removeLiberty(point)
-
-            if (attachedString.liberties.size == 0) { //If now have zero liberties, remove it.
-                removeString(otherColorString)
+            if (otherColorString.libertiesCount() == 1 && otherColorString.liberties.contains(point)){
+                removeString(otherColorString) //if it was the only liberty, remove the string
             } else {
-                updateStringOnGrid(attachedString) //otherwise update the grid
+                val attachedString = otherColorString.removeLiberty(point)
+                updateStringOnGrid(attachedString) //otherwise remove liberty from the string
             }
         }
 
