@@ -1,6 +1,5 @@
 package com.gamasoft.kakomu.model
 
-import io.vavr.collection.HashSet
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -16,7 +15,7 @@ internal class GoStringTest {
         val p2 = Point(2,3)
         val s2 = GoString(Player.BLACK, stones = setOf(p2), liberties = b.neighbors(p2))
 
-        val newString = s2.mergeWith(s1)
+        val newString = s2.mergeWith(listOf(s1))
 
         assertEquals(2, newString.stones.size)
         assertTrue( newString.stones.contains(p1))
@@ -45,7 +44,7 @@ internal class GoStringTest {
 
 
 
-        val newString = s0.mergeWith(s1).mergeWith(s2).mergeWith(s3).mergeWith(s4)
+        val newString = s0.mergeWith(listOf(s1, s2, s3,s4))
 
         println("Final liberties ${newString.liberties}")
 

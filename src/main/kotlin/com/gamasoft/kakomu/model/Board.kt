@@ -66,8 +66,8 @@ class Board (val numCols: Int, val numRows: Int,
         assert(isFree(point))
 
         //0. Examine the adjacent points.
-        val adjacentSameColor = mutableSetOf<GoString>()
-        val adjacentOppositeColor = mutableSetOf<GoString>()
+        val adjacentSameColor = mutableListOf<GoString>()
+        val adjacentOppositeColor = mutableListOf<GoString>()
         val liberties = mutableSetOf<Point>()
 
         for (neighbor in neighbors(point)) {
@@ -87,9 +87,7 @@ class Board (val numCols: Int, val numRows: Int,
 
         // 1. Merge any adjacent strings of the same color.
         var newString = GoString(player, setOf(point), liberties)
-        for (sameColorString in adjacentSameColor) {
-            newString = newString.mergeWith(sameColorString)
-        }
+        newString = newString.mergeWith(adjacentSameColor)
         updateStringOnGrid(newString)
 
         //2. Reduce liberties of any adjacent strings of the opposite color.
