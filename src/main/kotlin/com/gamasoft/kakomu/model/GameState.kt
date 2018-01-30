@@ -12,13 +12,13 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    val previousStates: Set<Pair<Player, Long>>  //TODO we can probably do with a circular buffer of last 20
+    val previousStates: Set<Long>  //TODO we can probably do with a circular buffer of last 20
 
     init{
         if (previous == null)
             previousStates = emptySet()
         else {
-            previousStates = previous.previousStates.plus(Pair(previous.nextPlayer, previous.board.zobristHash()))
+            previousStates = previous.previousStates.plus(previous.board.zobristHash())
         }
     }
 
@@ -69,8 +69,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         val nextBoard = board.clone()
         nextBoard.placeStone(player, move.point)
 
-        val nextSituation = Pair(player.other(), nextBoard.zobristHash())
-        return nextSituation in previousStates
+        return nextBoard.zobristHash() in previousStates
 
 // without ZobristCache
 //        var pastState = previous
@@ -98,6 +97,33 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     fun clone(): GameState {
 
         return GameState(board, nextPlayer, previous, lastMove)
+    }
+
+    fun legalMoves(): Set<Move> {
+        val moves = mutableSetOf<Move>()
+        for (row in 1 .. board.numRows){
+            for (col in 1 .. board.numCols){
+                val move = Move.Play(Point(row, col))
+                if (isValidMoveIncludingSuperko(move)){
+                    moves.add(move)
+                }
+            }
+        }
+        // These two moves are always legal .
+        moves.add(Move.Pass)
+        moves.add(Move.Resign)
+
+        return moves
+    }
+
+    fun winner(): Player?{
+        if (!isOver())
+            return null
+        if (lastMove is Move.Resign)
+            return nextPlayer
+
+        val gameResult = computeGameResult(this)
+        return gameResult.winner()
     }
 
 }

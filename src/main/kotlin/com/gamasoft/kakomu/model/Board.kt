@@ -1,8 +1,11 @@
 package com.gamasoft.kakomu.model
 
 class Board (val numCols: Int, val numRows: Int,
-             val neighborsMap: Map<Point, Set<Point>> = calculateNeighborsMap(numCols, numRows)
-){
+             val neighborsMap: Map<Point, Set<Point>> = calculateNeighborsMap(numCols, numRows)){
+
+
+    //TODO adding cornersLookupTable for quick isEye
+
 
     companion object {
         val zobristTable = Zobrist.calcTable(19)
