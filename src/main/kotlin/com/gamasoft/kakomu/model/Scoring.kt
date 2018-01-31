@@ -1,11 +1,6 @@
 package com.gamasoft.kakomu.model
 
-
-
-
 enum class TerritoryEnum {BLACK, WHITE, TerritoryB, TerritoryW, Dame }
-
-
 
 fun evaluateTerritory(board:Board): Territory {
     /*Map a board into territory and dame.
@@ -17,62 +12,68 @@ fun evaluateTerritory(board:Board): Territory {
 
     val status = mutableMapOf<Point, TerritoryEnum>()
 
+    for (r in 1.. board.numRows){
+        for (c in 1.. board.numCols){
+            val p = Point(row = r, col = c)
+            if (p in status){
+                continue //already done
+            }
+            val string = board.getString(p)
+            if (string != null){
+                status[p] = when (string.color){
+                    Player.WHITE -> TerritoryEnum.WHITE
+                    Player.BLACK -> TerritoryEnum.BLACK
+                }
+            } else {
+                val (group, neighbours) = collectRegion(p, board)
+                val fillWith = if (neighbours.size == 1){//Completely surrended by black or white
+                    if (neighbours.first() == Player.WHITE)
+                        TerritoryEnum.TerritoryW
+                    else
+                        TerritoryEnum.TerritoryB
+                } else {
+                    TerritoryEnum.Dame
+                }
+                for (pos in group){
+                    status[pos] = fillWith
+                }
+            }
+
+        }
+
+    }
+
     return Territory(status)
 }
-/*
-    status = {}
-    for r in range(1, board.num_rows + 1):
-        for c in range(1, board.num_cols + 1):
-            p = Point(row=r, col=c)
-            if p in status:
-                # Already visited this as part of a different group.
-                continue
-            stone = board.get(p)
-            if stone is not None:
-                # It's a stone.
-                status[p] = board.get(p)
-            else:
-                group, neighbors = _collect_region(p, board)
-                if len(neighbors) == 1:
-                    # Completely surrounded by black or white.
-                    neighbor_stone = neighbors.pop()
-                    stone_str = 'b' if neighbor_stone == Player.black else 'w'
-                    fill_with = 'territory_' + stone_str
-                else:
-                    # Dame.
-                    fill_with = 'dame'
-                for pos in group:
-                    status[pos] = fill_with
-    return Territory(status)
 
-
-
-def _collect_region(start_pos, board, visited=None):
-    """Find the contiguous section of a board containing a point. Also
-    identify all the boundary points.
-    """
-    if visited is None:
-        visited = {}
-    if start_pos in visited:
-        return [], set()
-    all_points = [start_pos]
-    all_borders = set()
-    visited[start_pos] = True
-    here = board.get(start_pos)
-    deltas = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    for delta_r, delta_c in deltas:
-        next_p = Point(row=start_pos.row + delta_r, col=start_pos.col + delta_c)
-        if not board.is_on_grid(next_p):
-            continue
-        neighbor = board.get(next_p)
-        if neighbor == here:
-            points, borders = _collect_region(next_p, board, visited)
-            all_points += points
-            all_borders |= borders
-        else:
-            all_borders.add(neighbor)
-    return all_points, all_borders
-*/
+fun collectRegion(startPos: Point, board: Board, visited: MutableMap<Point, Boolean> = mutableMapOf()): Pair<Set<Point>, Set<Player>> {
+    //Find the contiguous section of a board containing a point.
+    // Also identify all the boundary points.
+    if (startPos in visited){
+        return Pair(emptySet(), emptySet())
+    }
+    val allPoints = mutableSetOf<Point>()
+    val allBorders = mutableSetOf<Player>()
+    visited[startPos] = true
+    val here = board.getString(startPos)?.color //not completely sure if can be null
+    val deltas = listOf(Pair(-1,0), Pair(1,0), Pair(0, -1), Pair(0, 1))
+    for (d in deltas){
+        val deltaRow = d.first
+        val deltaCol = d.second
+        val nextPoint = Point(row = startPos.row + deltaRow,
+                                col = startPos.col + deltaCol)
+        if (board.isOnTheGrid(nextPoint)){
+            val neighbor = board.getString(nextPoint)?.color
+            if (neighbor == here){
+                val pb = collectRegion(nextPoint, board, visited)
+                allPoints.addAll(pb.first)
+                allBorders.addAll(pb.second)
+            } else if (neighbor != null)
+                allBorders.add(neighbor)
+            }
+        }
+    return Pair(allPoints, allBorders)
+    }
 
 fun computeGameResult(gameState: GameState): GameResult {
     val territory = evaluateTerritory(gameState.board)
