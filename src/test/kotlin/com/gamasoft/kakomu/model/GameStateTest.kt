@@ -7,6 +7,30 @@ import org.junit.jupiter.api.Assertions.*
 internal class GameStateTest {
 
     @Test
+    fun previousZobrist() {
+        val start = GameState.newGame(9)
+        val gs1= start.applyMove(Player.BLACK, Move.Play(Point(2,1)))
+        val gs2= gs1.applyMove(Player.WHITE, Move.Play(Point(3,1)))
+        val gs3= gs2.applyMove(Player.BLACK, Move.Play(Point(1,2)))
+        val gs4= gs3.applyMove(Player.WHITE, Move.Play(Point(1,3)))
+
+        assertEquals(0, start.board.zobristHash())
+        assertNotEquals(0, gs1.board.zobristHash())
+        assertNotEquals(0, gs2.board.zobristHash())
+        assertNotEquals(0, gs3.board.zobristHash())
+        assertNotEquals(0, gs4.board.zobristHash())
+
+        assertEquals(0, start.previousStates.size)
+        assertEquals(1, gs1.previousStates.size)
+        assertEquals(2, gs2.previousStates.size)
+        assertEquals(3, gs3.previousStates.size)
+        assertEquals(4, gs4.previousStates.size)
+
+
+    }
+
+
+    @Test
     fun isOverForPassing() {
         val start = GameState.newGame(9)
 
@@ -15,11 +39,9 @@ internal class GameStateTest {
 
         val first = start.applyMove(Player.BLACK, Move.Pass)
         assertFalse(first.isOver())
-        assertEquals(1, first.previousStates.size)
 
         val second = first.applyMove(Player.WHITE, Move.Pass)
         assertTrue(second.isOver())
-        assertEquals(2, second.previousStates.size)
 
     }
 

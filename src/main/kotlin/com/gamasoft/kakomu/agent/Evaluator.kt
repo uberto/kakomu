@@ -7,6 +7,10 @@ import com.gamasoft.kakomu.model.Point
 class Evaluator {
 
     companion object {
+
+        val MAX_SCORE = 999999
+        val MIN_SCORE = -999999
+
         fun countTerritory(board: Board, player: Player): Int {
             //count all stones and eyes, works only after all possible stones are placed
             var tot = 0
