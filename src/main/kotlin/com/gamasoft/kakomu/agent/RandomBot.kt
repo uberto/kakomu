@@ -17,7 +17,7 @@ class RandomBot(val seed: Long = 0): Agent {
         }
     }
 
-    override fun selectMove(gameState: GameState): Move {
+    override fun selectMove(gameState: GameState): GameState {
 
         var teye = 0L
         var tval = 0L
@@ -53,19 +53,22 @@ class RandomBot(val seed: Long = 0): Agent {
 
         var nextMove = getNextMove(candidates)
 
-        while (gameState.doesMoveViolateKo(gameState.nextPlayer, nextMove)) {
+        var nextState = gameState.applyMove(gameState.nextPlayer, nextMove)
+
+        while (nextState == null) {
 
             if (nextMove is Move.Play) {
                 candidates.remove(nextMove.point)
             }
             nextMove = getNextMove(candidates)
+            nextState = gameState.applyMove(gameState.nextPlayer, nextMove)
         }
 
         val t2 = System.nanoTime()
 
 //        println("generate candidates ${t1- t0} play the move ${t2- t1}    eyes $teye move $tmov  valid $tval  ")
 
-        return nextMove
+        return nextState
     }
 
     private fun getNextMove(candidates: MutableList<Point>): Move {

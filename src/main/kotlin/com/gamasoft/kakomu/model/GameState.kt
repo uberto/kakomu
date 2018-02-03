@@ -33,14 +33,15 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    fun applyMove(player: Player, move: Move): GameState{
+    fun applyMove(player: Player, move: Move): GameState? {
         assert (player == nextPlayer)
 
         val nextBoard = board.clone()
-        if (move is Move.Play){
+        if (move is Move.Play) {
             nextBoard.placeStone(player, move.point)
+            if (doesMoveViolateKo(nextBoard))
+                return null
         }
-
         return GameState(nextBoard, player.other(), this, move)
     }
 
@@ -73,14 +74,9 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return true
     }
 
-    fun doesMoveViolateKo(player: Player, move: Move): Boolean {
+    fun doesMoveViolateKo(nextBoard: Board): Boolean {
 
-        if (move !is Move.Play)
-            return false
-        val nextBoard = board.clone()
-        nextBoard.placeStone(player, move.point)
-
-        return nextBoard.zobristHash() == previousState //simpleKo
+        return previousState != 0L && nextBoard.zobristHash() == previousState //simpleKo
 //        return nextBoard.zobristHash() in previousStates   //superKo
 
 // without ZobristCache
@@ -100,11 +96,6 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
                 ! isMoveSelfCapture(nextPlayer, move))
     }
 
-    fun isValidMoveIncludingSuperko(move: Move):Boolean {
-        if (!isValidMoveApartFromKo(move))
-            return false
-        return !doesMoveViolateKo(nextPlayer, move)
-    }
 
     fun clone(): GameState {
 
@@ -116,7 +107,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         for (row in 1 .. board.numRows){
             for (col in 1 .. board.numCols){
                 val move = Move.Play(Point(row, col))
-                if (isValidMoveIncludingSuperko(move)){
+                if (isValidMoveApartFromKo(move)){
                     moves.add(move)
                 }
             }

@@ -36,6 +36,11 @@ class AlfaBetaPruning {
 
                 //See what the board would look like if we play this move.
                 val nextState = gameState.applyMove(gameState.nextPlayer, candidateMove)
+
+                if (nextState == null) //ko invalid
+                    continue
+
+
                 //Find out our opponent's best result from that position.
                 val opponentBestResult = alphaBetaResult(
                         nextState, maxDepth - 1,

@@ -4,16 +4,17 @@ import com.gamasoft.kakomu.model.*
 
 
 
-fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove: (move: Move, game: GameState) -> Unit): GameState {
+fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove: (game: GameState) -> Unit): GameState {
     var game = startingState.clone()
 
     val bots = mapOf(Player.BLACK to black, Player.WHITE to white)
 
     while (!game.isOver()) {
-        val botMove = bots[game.nextPlayer]!!.selectMove(game)
-        game = game.applyMove(game.nextPlayer, botMove)
 
-        afterMove(botMove, game)
+        game = bots[game.nextPlayer]!!.selectMove(game)
+
+        afterMove(game)
+
     }
     return game
 }
@@ -29,10 +30,13 @@ fun playAgainstHuman(boardSize: Int){
         }
         else {
             val move = bot.selectMove(game)
-            println(drawMove(game.nextPlayer, move))
-            move
+            println(drawMove(game.nextPlayer, move.lastMove!!))
+            move.lastMove
         }
-        game = game.applyMove(game.nextPlayer, move)
+        val newGame = game.applyMove(game.nextPlayer, move)
+
+        if (newGame != null)
+            game = newGame
 
     }
 }
@@ -47,26 +51,26 @@ private fun askMove(game: GameState): Move {
             else -> {
                 val point = Point.fromCoords(humanMove)
                 val move = Move.Play(point)
-                if (game.isValidMoveIncludingSuperko(move))
+                if (game.isValidMoveApartFromKo(move))
                     return move
             }
         }
     }
 }
 
-fun printMoveAndBoard(move: Move, game: GameState){
+fun printMoveAndBoard(game: GameState){
     println()
     println()
     printBoard(game.board)
-    println(drawMove(game.nextPlayer, move))
+    println(drawMove(game.nextPlayer, game.lastMove!!))
 }
 
 
 fun playAndPrintSelfGame(boardSize:Int){
-    val printState: (Move, GameState)->Unit =  {
-        move, game ->
+    val printState: (GameState)->Unit =  {
+        game ->
             Thread.sleep(100)
-            printMoveAndBoard(move, game)
+            printMoveAndBoard(game)
 
     }
     var game = GameState.newGame(boardSize)

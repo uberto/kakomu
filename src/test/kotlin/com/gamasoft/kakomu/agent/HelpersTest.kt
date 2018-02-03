@@ -61,18 +61,18 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
 
         //warmup
-        for ( i in (1..100)) {
-            val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) { _, _ -> Unit }
+        for ( i in (1..1000)) {
+            val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {  _ -> Unit }
             assertTrue(finalState.lastMove!! is Move.Pass)
 
         }
         for ( i in (1..10)) {
             val finalState = crono("play self game ${boardSize}x${boardSize}") {
-                playSelfGame(startingState, RandomBot(234345), RandomBot(767655)) { _, _ -> Unit }
+                playSelfGame(startingState, RandomBot(234345), RandomBot(767655)) { _ -> Unit }
             }
             assertTrue(finalState.lastMove!! is Move.Pass)
         }
@@ -88,6 +88,8 @@ internal class HelpersTest {
 //about 1.5 msec on 9x9 and 31 on 19x19
 //with simpleKo:
 //about 1.3 msec on 9x9 and 27 on 19x19
+//with selectMove returning State:
+//about 1.25 msec on 9x9 and 25 on 19x19
 
 }
 
