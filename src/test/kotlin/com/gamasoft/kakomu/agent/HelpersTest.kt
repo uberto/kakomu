@@ -8,9 +8,9 @@ internal class HelpersTest {
 
     companion object {
         fun <T> crono(msg: String, function: () -> T): T {
-            val start = System.currentTimeMillis()
+            val start = System.nanoTime()
             val res = function()
-            val elapsed = System.currentTimeMillis() - start
+            val elapsed = (System.nanoTime() - start) / 1000000.0
             println("$msg in $elapsed millisec")
             return res
         }
@@ -77,14 +77,17 @@ internal class HelpersTest {
             assertTrue(finalState.lastMove!! is Move.Pass)
         }
     }
-//on laptop i7 2Ghz
+//on my laptop i7 2Ghz
 //with validmove without deepcopy:
 //about 10 msec on 9x9 and 160 on 19x19
 //with immutable goStrings:
 //about 6 msec on 9x9 and 65 on 19x19
 //with neighbors map:
-//about 3.5 msec on 9x9 and 40 on 19x19
-
+//about 3.5 msec on 9x9 and 38 on 19x19
+//with faster isAnEye:
+//about 1.5 msec on 9x9 and 31 on 19x19
+//with simpleKo:
+//about 1.3 msec on 9x9 and 27 on 19x19
 
 }
 

@@ -20,11 +20,11 @@ internal class GameStateTest {
         assertNotEquals(0, gs3.board.zobristHash())
         assertNotEquals(0, gs4.board.zobristHash())
 
-        assertEquals(0, start.previousStates.size)
-        assertEquals(1, gs1.previousStates.size)
-        assertEquals(2, gs2.previousStates.size)
-        assertEquals(3, gs3.previousStates.size)
-        assertEquals(4, gs4.previousStates.size)
+//        assertEquals(0, start.previousStates.size)
+//        assertEquals(1, gs1.previousStates.size)
+//        assertEquals(2, gs2.previousStates.size)
+//        assertEquals(3, gs3.previousStates.size)
+//        assertEquals(4, gs4.previousStates.size)
 
 
     }
@@ -33,9 +33,7 @@ internal class GameStateTest {
     @Test
     fun isOverForPassing() {
         val start = GameState.newGame(9)
-
         assertFalse(start.isOver())
-        assertEquals(0, start.previousStates.size)
 
         val first = start.applyMove(Player.BLACK, Move.Pass)
         assertFalse(first.isOver())

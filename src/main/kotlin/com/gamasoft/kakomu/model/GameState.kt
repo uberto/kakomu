@@ -12,13 +12,24 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    val previousStates: Set<Long>  //TODO we can probably do with a circular buffer of last 20
+// Full SuperKo
+//    val previousStates: Set<Long>
+//
+//    init{
+//        if (previous == null)
+//            previousStates = emptySet()
+//        else {
+//            previousStates = previous.previousStates.plus(previous.board.zobristHash())
+//        }
+//    }
+
+    val previousState: Long  //SimpleKo
 
     init{
         if (previous == null)
-            previousStates = emptySet()
+            previousState = 0
         else {
-            previousStates = previous.previousStates.plus(previous.board.zobristHash())
+            previousState = previous.board.zobristHash()
         }
     }
 
@@ -69,7 +80,8 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         val nextBoard = board.clone()
         nextBoard.placeStone(player, move.point)
 
-        return nextBoard.zobristHash() in previousStates
+        return nextBoard.zobristHash() == previousState //simpleKo
+//        return nextBoard.zobristHash() in previousStates   //superKo
 
 // without ZobristCache
 //        var pastState = previous
