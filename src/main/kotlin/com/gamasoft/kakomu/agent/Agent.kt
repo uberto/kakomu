@@ -5,5 +5,6 @@ import com.gamasoft.kakomu.model.Move
 
 //Interface for a go-playing bot.
 interface Agent {
+
     fun playNextMove(gameState: GameState): GameState
 }

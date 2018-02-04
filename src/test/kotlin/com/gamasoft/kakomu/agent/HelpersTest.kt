@@ -61,18 +61,20 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
 
         //warmup
         for ( i in (1..1000)) {
-            val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {  _ -> Unit }
+            val finalState = playSelfGame(startingState, RandomBot(boardSize), RandomBot(boardSize)) {  _ -> Unit }
             assertTrue(finalState.lastMove!! is Move.Pass)
 
         }
+        val bot1 = RandomBot(boardSize, 234345)
+        val bot2 = RandomBot(boardSize, 767655)
         for ( i in (1..10)) {
             val finalState = crono("play self game ${boardSize}x${boardSize}") {
-                playSelfGame(startingState, RandomBot(234345), RandomBot(767655)) { _ -> Unit }
+                playSelfGame(startingState, bot1, bot2) { _ -> Unit }
             }
             assertTrue(finalState.lastMove!! is Move.Pass)
         }
@@ -92,6 +94,7 @@ internal class HelpersTest {
 //about 1.25 msec on 9x9 and 25 on 19x19
 //without System.nanotime:
 //about 0.7 msec on 9x9 and 12 on 19x19
-
+//without fastRandomBot:
+//about 0.5 msec on 9x9 and 4.5 on 19x19
 }
 

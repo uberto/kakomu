@@ -21,7 +21,7 @@ fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove
 
 fun playAgainstHuman(boardSize: Int){
     var game = GameState.newGame(boardSize)
-    val bot = RandomBot()
+    val bot = RandomBot(boardSize)
     while (!game.isOver()) {
         printBoard(game.board)
 
@@ -74,7 +74,7 @@ fun playAndPrintSelfGame(boardSize:Int){
 
     }
     var game = GameState.newGame(boardSize)
-    playSelfGame(game, RandomBot(), RandomBot(), printState)
+    playSelfGame(game, RandomBot(boardSize), RandomBot(boardSize), printState)
 }
 
 
