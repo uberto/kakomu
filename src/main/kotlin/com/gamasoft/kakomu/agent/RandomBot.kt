@@ -19,28 +19,31 @@ class RandomBot(val seed: Long = 0): Agent {
 
     override fun selectMove(gameState: GameState): GameState {
 
-        var teye = 0L
-        var tval = 0L
-        var tmov = 0L
-        val t0 = System.nanoTime()
+//        var teye = 0L
+//        var tval = 0L
+//        var tmov = 0L
+//        var tcre = 0L
+    //    val t0 = System.nanoTime()
 
         val candidates = mutableListOf<Point>()
         for (r in (1..gameState.board.numRows)){
             for (c in (1 .. gameState.board.numCols)){
-                val candidate = Point(row =r, col = c)
-                val st9 = System.nanoTime()
+      //          val st8 = System.nanoTime()
+                val candidate = Point(row = r, col = c)
+      //          val st9 = System.nanoTime()
                 val move = Move.Play(candidate)
-                val st0 = System.nanoTime()
+      //          val st0 = System.nanoTime()
                 val validMove = gameState.isValidMoveApartFromKo(move)
-                val st1 = System.nanoTime()
+//                val st1 = System.nanoTime()
 
-                tval += (st1-st0)
-                tmov += (st0-st9)
+//                tval += (st1-st0)
+//                tmov += (st0-st9)
+//                tcre += (st9-st8)
 
                 if (validMove) {
                     val isAnEye = Evaluator.isAnEye(gameState.board, candidate, gameState.nextPlayer)
-                    val st2 = System.nanoTime()
-                    teye += (st2-st1)
+//                    val st2 = System.nanoTime()
+//                    teye += (st2-st1)
                     if (!isAnEye) {
                         candidates.add(candidate)
                     }
@@ -49,7 +52,7 @@ class RandomBot(val seed: Long = 0): Agent {
         }
 
 
-        val t1 = System.nanoTime()
+   //     val t1 = System.nanoTime()
 
         var nextMove = getNextMove(candidates)
 
@@ -64,9 +67,9 @@ class RandomBot(val seed: Long = 0): Agent {
             nextState = gameState.applyMove(gameState.nextPlayer, nextMove)
         }
 
-        val t2 = System.nanoTime()
+     //   val t2 = System.nanoTime()
 
-//        println("generate candidates ${t1- t0} play the move ${t2- t1}    eyes $teye move $tmov  valid $tval  ")
+//        println("generate candidates ${t1- t0} play the move ${t2- t1}    pointcreation $tcre eyes $teye move $tmov  valid $tval  ")
 
         return nextState
     }

@@ -33,7 +33,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-    fun applyMove(player: Player, move: Move): GameState? {
+     fun applyMove(player: Player, move: Move): GameState? {
         assert (player == nextPlayer)
 
         val nextBoard = board.clone()
@@ -46,7 +46,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
     }
 
 
-    fun isOver(): Boolean{
+     fun isOver(): Boolean{
         if (lastMove == null || previous == null)
             return false
         if (lastMove is Move.Resign)
@@ -57,24 +57,28 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return (lastMove is Move.Pass) && (secondLastMove is Move.Pass)
     }
 
-    fun isMoveSelfCapture(player: Player, move: Move): Boolean{
+     fun isMoveSelfCapture(player: Player, move: Move): Boolean{
         if (move !is Move.Play)
             return false
 
         //if one of neighbors is same color and with more than 1 liberty is not self capture
         //if one of neighbors is different color and with exactly 1 liberty is not self capture
         for (neighbor in board.neighbors(move.point)) {
-                val string = board.getString(neighbor)
-                if (string == null
-                        || (string.color == player && string.libertiesCount() > 1)
-                        || (string.color == player.other() && string.libertiesCount() == 1) )
+            val string = board.getString(neighbor)
+            if (string == null)
+                return false
+            else {
+                val color = string.color
+                val libertiesCount = string.libertiesCount()
+                if ((color == player && libertiesCount > 1) || (color == player.other() && libertiesCount == 1))
                     return false
+            }
         }
 
         return true
     }
 
-    fun doesMoveViolateKo(nextBoard: Board): Boolean {
+     fun doesMoveViolateKo(nextBoard: Board): Boolean {
 
         return previousState != 0L && nextBoard.zobristHash() == previousState //simpleKo
 //        return nextBoard.zobristHash() in previousStates   //superKo
@@ -89,7 +93,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 //        return false
     }
 
-    fun isValidMoveApartFromKo(move: Move):Boolean {
+     fun isValidMoveApartFromKo(move: Move):Boolean {
         if (move !is Move.Play)
             return false
         return (board.isFree(move.point) &&

@@ -57,9 +57,9 @@ class Board (val numCols: Int, val numRows: Int,
 
     }
 
-    private val grid = Grid(numCols, numRows)
+    val grid = Grid(numCols, numRows)
 
-    private var zHash = empytBoardHash
+    var zHash = empytBoardHash
 
     fun placeStone(player: Player, point: Point) {
         assert(isOnTheGrid(point)){ println(point)}
@@ -120,11 +120,11 @@ class Board (val numCols: Int, val numRows: Int,
     }
 
 
-    fun neighbors(point: Point): Set<Point>{
+     fun neighbors(point: Point): Set<Point>{
         return neighborsMap.getValue(point)
     }
 
-    fun isFree(point: Point) = grid[point] == null
+     fun isFree(point: Point) = grid[point] == null
 
     private fun removeString(string: GoString){
 //first pass remove the string
@@ -151,7 +151,7 @@ class Board (val numCols: Int, val numRows: Int,
         }
     }
 
-    fun getString(point: Point): GoString? {
+     fun getString(point: Point): GoString? {
         return grid[point]
     }
 
@@ -172,7 +172,7 @@ class Board (val numCols: Int, val numRows: Int,
         return zHash.hashCode()
     }
 
-    fun zobristHash(): Long {
+     fun zobristHash(): Long {
         return zHash
     }
 
