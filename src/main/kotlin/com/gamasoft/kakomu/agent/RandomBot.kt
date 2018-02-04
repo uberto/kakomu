@@ -17,7 +17,7 @@ class RandomBot(val seed: Long = 0): Agent {
         }
     }
 
-    override fun selectMove(gameState: GameState): GameState {
+    override fun playNextMove(gameState: GameState): GameState {
 
 //        var teye = 0L
 //        var tval = 0L
@@ -78,7 +78,6 @@ class RandomBot(val seed: Long = 0): Agent {
         if (candidates.isEmpty())
             return Move.Pass
         else {
-
             return Move.Play(candidates.get(random.nextInt(candidates.size)))
         }
     }

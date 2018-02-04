@@ -11,7 +11,7 @@ fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove
 
     while (!game.isOver()) {
 
-        game = bots[game.nextPlayer]!!.selectMove(game)
+        game = bots[game.nextPlayer]!!.playNextMove(game)
 
         afterMove(game)
 
@@ -29,9 +29,9 @@ fun playAgainstHuman(boardSize: Int){
             askMove(game)
         }
         else {
-            val move = bot.selectMove(game)
-            println(drawMove(game.nextPlayer, move.lastMove!!))
-            move.lastMove
+            val gameState = bot.playNextMove(game)
+            println(drawMove(game.nextPlayer, gameState.lastMove!!))
+            gameState.lastMove
         }
         val newGame = game.applyMove(game.nextPlayer, move)
 

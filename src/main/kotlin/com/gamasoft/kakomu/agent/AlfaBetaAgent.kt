@@ -5,7 +5,7 @@ import com.gamasoft.kakomu.model.Move
 
 class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
 
-    override fun selectMove(gameState: GameState): GameState {
+    override fun playNextMove(gameState: GameState): GameState {
         val bestMoves = mutableListOf<Move>()
         var bestScore = null
         var bestBlack = Evaluator.MIN_SCORE

@@ -6,7 +6,7 @@ import com.gamasoft.kakomu.model.Move
 
 class MCTSAgent(val numNounds: Int, val temperature: Double): Agent {
 
-    override fun selectMove(gameState: GameState): GameState{
+    override fun playNextMove(gameState: GameState): GameState{
         return GameState.newGame(5)
     }
 }
