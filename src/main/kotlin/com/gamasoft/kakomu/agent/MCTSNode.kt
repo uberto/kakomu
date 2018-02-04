@@ -2,8 +2,51 @@ package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
+import com.gamasoft.kakomu.model.Player
+import java.util.*
 
-data class MCTSNode(val gameState: GameState, val parent:MCTSNode? = null, val move: Move? = null ){
+data class MCTSNode(val gameState: GameState, val parent:MCTSNode? = null){
+
+    companion object {
+        val random = Random()
+    }
+
+    val winCounts: MutableMap<Player, Int> = mutableMapOf(Pair(Player.BLACK, 0), Pair(Player.WHITE, 0))
+
+    var rollouts = 0
+
+    val children = mutableListOf<MCTSNode>()
+
+    val unvisitedMoves = gameState.legalMoves().toMutableList()
+
+
+    fun addRandomChild(): MCTSNode? {
+        val index = random.nextInt(unvisitedMoves.size)
+        var newGameState: GameState? = null
+        while (newGameState == null) {
+            if (unvisitedMoves.isEmpty())
+                return null
+            val newMove = unvisitedMoves.removeAt(index)
+            newGameState = gameState.applyMove(newMove)
+        }
+        val newNode = MCTSNode(newGameState, this)
+        children.add(newNode)
+        return newNode
+    }
+
+    fun recordWin(winner: Player){
+        winCounts[winner] = 1 + winCounts[winner]!!
+        rollouts += 1
+    }
+
+    fun isTerminal(): Boolean{
+        return gameState.isOver()
+    }
+
+    fun winningPct(player: Player): Double{
+        return winCounts[player]!! / rollouts.toDouble()
+    }
+
 
 }
 

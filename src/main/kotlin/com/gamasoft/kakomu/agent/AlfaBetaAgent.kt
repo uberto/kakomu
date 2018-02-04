@@ -2,12 +2,20 @@ package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
+import com.gamasoft.kakomu.model.Player
+import java.util.*
 
 class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
 
+    val random: Random
+
+    init {
+        random = Random()
+    }
+
     override fun playNextMove(gameState: GameState): GameState {
-        val bestMoves = mutableListOf<Move>()
-        var bestScore = null
+        var bestMoves = mutableListOf<GameState>()
+        var bestScore: Int? = null
         var bestBlack = Evaluator.MIN_SCORE
         var bestWhite = Evaluator.MIN_SCORE
 
@@ -18,72 +26,31 @@ class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
             val nextState = gameState.applyMove(possibleMove)
             if (nextState == null)
                 continue
+
+            // Since our opponent plays next, figure out their best
+            // possible outcome from there.
+            val opponentBestOutcome = AlfaBetaPruning.alphaBetaResult(
+                    nextState, maxDepth,
+                    bestBlack, bestWhite,
+                    evalFn)
+            // Our outcome is the opposite of our opponent's outcome.
+            val ourBestOutcome = -1 * opponentBestOutcome
+            if (bestMoves.isEmpty() || bestScore == null || (ourBestOutcome > bestScore)) {
+                // This is the best move so far.
+                bestMoves = mutableListOf(nextState)
+                bestScore = ourBestOutcome
+                if (gameState.nextPlayer == Player.BLACK) {
+                    bestBlack = bestScore
+                } else if (gameState.nextPlayer == Player.WHITE) {
+                    bestWhite = bestScore
+                }
+            } else if (ourBestOutcome == bestScore) {
+                // This is as good as our previous best move.
+                bestMoves.add(nextState)
+            }
         }
-        // Since our opponent plays next, figure out their best
-        // possible outcome from there.
-//        opponent_best_outcome = alpha_beta_result(
-//                next_state, self.max_depth,
-//                best_black, best_white,
-//                self.eval_fn)
-//        # Our outcome is the opposite of our opponent's outcome.
-//        our_best_outcome = -1 * opponent_best_outcome
-//        if (not best_moves) or our_best_outcome > best_score:
-//        # This is the best move so far.
-//        best_moves = [possible_move]
-//        best_score = our_best_outcome
-//        if game_state.next_player == Player.black:
-//        best_black = best_score
-//        elif game_state.next_player == Player.white:
-//        best_white = best_score
-//        elif our_best_outcome == best_score:
-//        # This is as good as our previous best move.
-//        best_moves.append(possible_move)
-//        # For variety, randomly select among all equally good moves.
-//        return random.choice(best_moves)
-//
+        // For variety, randomly select among all equally good moves.
+        return bestMoves.get(random.nextInt(bestMoves.size))
 
-
-
-        return GameState.newGame(5)
     }
-
-
 }
-
-/*
-class AlphaBetaAgent(Agent):
-    def __init__(self, ):
-        self.max_depth = max_depth
-        self.eval_fn = eval_fn
-
-    def select_move(self, game_state):
-        best_moves = []
-        best_score = None
-        best_black = MIN_SCORE
-        best_white = MIN_SCORE
-        # Loop over all legal moves.
-        for possible_move in game_state.legal_moves():
-            # Calculate the game state if we select this move.
-            next_state = game_state.apply_move(possible_move)
-            # Since our opponent plays next, figure out their best
-            # possible outcome from there.
-            opponent_best_outcome = alpha_beta_result(
-                next_state, self.max_depth,
-                best_black, best_white,
-                self.eval_fn)
-            # Our outcome is the opposite of our opponent's outcome.
-            our_best_outcome = -1 * opponent_best_outcome
-            if (not best_moves) or our_best_outcome > best_score:
-                # This is the best move so far.
-                best_moves = [possible_move]
-                best_score = our_best_outcome
-                if game_state.next_player == Player.black:
-                    best_black = best_score
-                elif game_state.next_player == Player.white:
-                    best_white = best_score
-            elif our_best_outcome == best_score:
-                # This is as good as our previous best move.
-                best_moves.append(possible_move)
-        # For variety, randomly select among all equally good moves.
-        return random.choice(best_moves)
-*/
