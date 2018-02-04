@@ -9,10 +9,10 @@ internal class GameStateTest {
     @Test
     fun previousZobrist() {
         val start = GameState.newGame(9)
-        val gs1= start.applyMove(Player.BLACK, Move.Play(Point(2,1)))!!
-        val gs2= gs1.applyMove(Player.WHITE, Move.Play(Point(3,1)))!!
-        val gs3= gs2.applyMove(Player.BLACK, Move.Play(Point(1,2)))!!
-        val gs4= gs3.applyMove(Player.WHITE, Move.Play(Point(1,3)))!!
+        val gs1= start.applyMove(Move.Play(Point(2,1)))!!
+        val gs2= gs1.applyMove(Move.Play(Point(3,1)))!!
+        val gs3= gs2.applyMove(Move.Play(Point(1,2)))!!
+        val gs4= gs3.applyMove(Move.Play(Point(1,3)))!!
 
         assertEquals(0, start.board.zobristHash())
         assertNotEquals(0, gs1.board.zobristHash())
@@ -35,10 +35,10 @@ internal class GameStateTest {
         val start = GameState.newGame(9)
         assertFalse(start.isOver())
 
-        val first = start.applyMove(Player.BLACK, Move.Pass)!!
+        val first = start.applyMove(Move.Pass)!!
         assertFalse(first.isOver())
 
-        val second = first.applyMove(Player.WHITE, Move.Pass)!!
+        val second = first.applyMove(Move.Pass)!!
         assertTrue(second.isOver())
 
     }
@@ -49,10 +49,10 @@ internal class GameStateTest {
 
         assertFalse(start.isOver())
 
-        val first = start.applyMove(Player.BLACK, Move.Play(Point(5,5)))!!
+        val first = start.applyMove(Move.Play(Point(5,5)))!!
         assertFalse(first.isOver())
 
-        val second = first.applyMove(Player.WHITE, Move.Resign)!!
+        val second = first.applyMove(Move.Resign)!!
         assertTrue(second.isOver())
 
     }
@@ -67,10 +67,10 @@ internal class GameStateTest {
     @Test
     fun isAutoCaptureSingle() {
         val autoCapt = GameState.newGame(9)
-             .applyMove(Player.BLACK, Move.Play(Point(2,1)))!!
-             .applyMove(Player.WHITE, Move.Play(Point(3,1)))!!
-             .applyMove(Player.BLACK, Move.Play(Point(1,2)))!!
-             .applyMove(Player.WHITE, Move.Play(Point(1,3)))!!
+             .applyMove( Move.Play(Point(2,1)))!!
+             .applyMove(Move.Play(Point(3,1)))!!
+             .applyMove(Move.Play(Point(1,2)))!!
+             .applyMove(Move.Play(Point(1,3)))!!
 
         assertTrue(autoCapt.isMoveSelfCapture(Player.WHITE, Move.Play(Point(1, 1))))
 
@@ -90,12 +90,12 @@ internal class GameStateTest {
     @Test
     fun isAutoCapture() {
         val autoCapt = GameState.newGame(9)
-                .applyMove(Player.BLACK, Move.Play(Point(2,1)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(3,1)))!!
-                .applyMove(Player.BLACK, Move.Play(Point(1,2)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(1,3)))!!
-                .applyMove(Player.BLACK, Move.Play(Point(3,3)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(2,2)))!!
+                .applyMove(Move.Play(Point(2,1)))!!
+                .applyMove(Move.Play(Point(3,1)))!!
+                .applyMove(Move.Play(Point(1,2)))!!
+                .applyMove(Move.Play(Point(1,3)))!!
+                .applyMove(Move.Play(Point(3,3)))!!
+                .applyMove(Move.Play(Point(2,2)))!!
 
         assertFalse(autoCapt.isMoveSelfCapture(Player.WHITE, Move.Play(Point(1, 1))))
 
@@ -111,12 +111,12 @@ internal class GameStateTest {
     @Test
     fun doesMoveViolateKo() {
         val koViol = GameState.newGame(9)
-                .applyMove(Player.BLACK, Move.Play(Point(2,1)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(3,1)))!!
-                .applyMove(Player.BLACK, Move.Play(Point(1,2)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(2,2)))!!
-                .applyMove(Player.BLACK, Move.Play(Point(3,2)))!!
-                .applyMove(Player.WHITE, Move.Play(Point(1,1)))!!  //capture
+                .applyMove(Move.Play(Point(2,1)))!!
+                .applyMove(Move.Play(Point(3,1)))!!
+                .applyMove(Move.Play(Point(1,2)))!!
+                .applyMove(Move.Play(Point(2,2)))!!
+                .applyMove(Move.Play(Point(3,2)))!!
+                .applyMove(Move.Play(Point(1,1)))!!  //capture
 
 //        assertTrue(koViol.doesMoveViolateKo(Player.BLACK, Move.Play(Point(2, 1))))
 

@@ -61,7 +61,7 @@ internal class HelpersTest {
 
     @Test
     fun performanceSelfGame(){
-        val boardSize = 19
+        val boardSize = 9
         val startingState = GameState.newGame(boardSize)
 
         //warmup
@@ -94,7 +94,7 @@ internal class HelpersTest {
 //about 1.25 msec on 9x9 and 25 on 19x19
 //without System.nanotime:
 //about 0.7 msec on 9x9 and 12 on 19x19
-//without fastRandomBot:
+//with fastRandomBot:
 //about 0.5 msec on 9x9 and 4.5 on 19x19
 }
 

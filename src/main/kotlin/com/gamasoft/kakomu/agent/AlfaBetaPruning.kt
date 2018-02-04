@@ -35,7 +35,7 @@ class AlfaBetaPruning {
             for (candidateMove in gameState.legalMoves()) {
 
                 //See what the board would look like if we play this move.
-                val nextState = gameState.applyMove(gameState.nextPlayer, candidateMove)
+                val nextState = gameState.applyMove(candidateMove)
 
                 if (nextState == null) //ko invalid
                     continue

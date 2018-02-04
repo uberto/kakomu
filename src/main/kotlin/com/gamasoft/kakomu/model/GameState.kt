@@ -33,16 +33,15 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
-     fun applyMove(player: Player, move: Move): GameState? {
-        assert (player == nextPlayer)
+     fun applyMove(move: Move): GameState? {
 
         val nextBoard = board.clone()
         if (move is Move.Play) {
-            nextBoard.placeStone(player, move.point)
+            nextBoard.placeStone(nextPlayer, move.point)
             if (doesMoveViolateKo(nextBoard))
                 return null
         }
-        return GameState(nextBoard, player.other(), this, move)
+        return GameState(nextBoard, nextPlayer.other(), this, move)
     }
 
 

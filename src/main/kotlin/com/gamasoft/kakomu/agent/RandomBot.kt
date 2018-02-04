@@ -41,13 +41,13 @@ class RandomBot(val boardSize: Int, val seed: Long = 0): Agent {
             val move = Move.Play(candidate)
             if (gameState.isValidMoveApartFromKo(move) &&
                    !Evaluator.isAnEye(gameState.board, candidate, gameState.nextPlayer)){
-                val newState = gameState.applyMove(gameState.nextPlayer, move)
+                val newState = gameState.applyMove(move)
                 if (newState != null)
                     return newState
             }
         }
 
-        return gameState.applyMove(gameState.nextPlayer, Move.Pass)!!
+        return gameState.applyMove(Move.Pass)!!
     }
 
     /*
@@ -123,7 +123,7 @@ class FastRandomBot(Agent):
 
         var nextMove = getNextMove(candidates)
 
-        var nextState = gameState.applyMove(gameState.nextPlayer, nextMove)
+        var nextState = gameState.applyMove(nextMove)
 
         while (nextState == null) {
 
@@ -131,7 +131,7 @@ class FastRandomBot(Agent):
                 candidates.remove(nextMove.point)
             }
             nextMove = getNextMove(candidates)
-            nextState = gameState.applyMove(gameState.nextPlayer, nextMove)
+            nextState = gameState.applyMove(nextMove)
         }
 
      //   val t2 = System.nanoTime()

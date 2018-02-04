@@ -33,7 +33,7 @@ fun playAgainstHuman(boardSize: Int){
             println(drawMove(game.nextPlayer, gameState.lastMove!!))
             gameState.lastMove
         }
-        val newGame = game.applyMove(game.nextPlayer, move)
+        val newGame = game.applyMove(move)
 
         if (newGame != null)
             game = newGame

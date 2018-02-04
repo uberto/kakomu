@@ -12,8 +12,35 @@ class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
         var bestWhite = Evaluator.MIN_SCORE
 
 
-
-
+        // Loop over all legal moves.
+        for (possibleMove in gameState.legalMoves()) {
+            // Calculate the game state if we select this move.
+            val nextState = gameState.applyMove(possibleMove)
+            if (nextState == null)
+                continue
+        }
+        // Since our opponent plays next, figure out their best
+        // possible outcome from there.
+//        opponent_best_outcome = alpha_beta_result(
+//                next_state, self.max_depth,
+//                best_black, best_white,
+//                self.eval_fn)
+//        # Our outcome is the opposite of our opponent's outcome.
+//        our_best_outcome = -1 * opponent_best_outcome
+//        if (not best_moves) or our_best_outcome > best_score:
+//        # This is the best move so far.
+//        best_moves = [possible_move]
+//        best_score = our_best_outcome
+//        if game_state.next_player == Player.black:
+//        best_black = best_score
+//        elif game_state.next_player == Player.white:
+//        best_white = best_score
+//        elif our_best_outcome == best_score:
+//        # This is as good as our previous best move.
+//        best_moves.append(possible_move)
+//        # For variety, randomly select among all equally good moves.
+//        return random.choice(best_moves)
+//
 
 
 
