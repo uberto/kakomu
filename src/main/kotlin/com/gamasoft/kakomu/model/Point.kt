@@ -14,6 +14,10 @@ data class Point(val col: Int, val row: Int) {
             val row = rowS.toInt()
             return Point(row = row, col = col)
         }
+
+        fun toCoords(point: Point): String{
+            return COLS[point.col] + point.row.toString()
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.Board
+import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.Point
 
@@ -45,6 +46,14 @@ class Evaluator {
             }
 
             return true
+        }
+
+        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): Player {
+            var currGame = game
+            while (!currGame.isOver()) {
+                currGame = bots[game.nextPlayer]!!.playNextMove(currGame)
+            }
+            return currGame.winner()!!
         }
     }
 

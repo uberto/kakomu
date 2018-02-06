@@ -12,4 +12,13 @@ sealed class Move {
 
     object Resign : Move()
 
+    fun humanReadable(): String {
+        return when (this) {
+            Pass -> "pass"
+            Resign -> "resign"
+            is Play -> Point.toCoords(this.point)
+        }
+    }
+
+
 }

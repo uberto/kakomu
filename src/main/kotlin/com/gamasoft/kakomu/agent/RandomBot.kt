@@ -3,7 +3,6 @@ package com.gamasoft.kakomu.agent
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Point
-import java.util.*
 import java.util.Random
 
 

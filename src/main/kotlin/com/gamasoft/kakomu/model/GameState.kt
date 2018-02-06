@@ -105,7 +105,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return GameState(board, nextPlayer, previous, lastMove)
     }
 
-    fun legalMoves(): Set<Move> {
+    fun legalMoves(): Set<Move> { //TODO lazeSeq?
         val moves = mutableSetOf<Move>()
         for (row in 1 .. board.numRows){
             for (col in 1 .. board.numCols){
@@ -115,9 +115,6 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
                 }
             }
         }
-        // These two moves are always legal .
-        moves.add(Move.Pass)
-        moves.add(Move.Resign)
 
         return moves
     }

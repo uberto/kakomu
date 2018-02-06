@@ -21,7 +21,8 @@ fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove
 
 fun playAgainstHuman(boardSize: Int){
     var game = GameState.newGame(boardSize)
-    val bot = RandomBot(boardSize)
+//    val bot = RandomBot(boardSize)
+    val bot = MCTSAgent(10000, 1.5, boardSize)
     while (!game.isOver()) {
         printBoard(game.board)
 
@@ -50,9 +51,11 @@ private fun askMove(game: GameState): Move {
             "pass" -> return Move.Pass
             else -> {
                 val point = Point.fromCoords(humanMove)
-                val move = Move.Play(point)
-                if (game.isValidMoveApartFromKo(move))
-                    return move
+                if (game.board.isOnTheGrid(point)) {
+                    val move = Move.Play(point)
+                    if (game.isValidMoveApartFromKo(move))
+                        return move
+                }
             }
         }
     }

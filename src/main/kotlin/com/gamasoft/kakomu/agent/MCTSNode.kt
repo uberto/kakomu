@@ -1,11 +1,10 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import java.util.*
 
-data class MCTSNode(val gameState: GameState, val parent:MCTSNode? = null){
+data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
 
     companion object {
         val random = Random()
@@ -17,13 +16,13 @@ data class MCTSNode(val gameState: GameState, val parent:MCTSNode? = null){
 
     val children = mutableListOf<MCTSNode>()
 
-    val unvisitedMoves = gameState.legalMoves().toMutableList()
+    val unvisitedMoves = gameState.legalMoves().toMutableList() //TODO legal moves to a lazy seq
 
 
     fun addRandomChild(): MCTSNode? {
-        val index = random.nextInt(unvisitedMoves.size)
         var newGameState: GameState? = null
         while (newGameState == null) {
+            val index = random.nextInt(unvisitedMoves.size)
             if (unvisitedMoves.isEmpty())
                 return null
             val newMove = unvisitedMoves.removeAt(index)
@@ -34,17 +33,22 @@ data class MCTSNode(val gameState: GameState, val parent:MCTSNode? = null){
         return newNode
     }
 
-    fun recordWin(winner: Player){
+    fun recordWin(winner: Player) {
         winCounts[winner] = 1 + winCounts[winner]!!
         rollouts += 1
     }
 
-    fun isTerminal(): Boolean{
+    fun isTerminal(): Boolean {
         return gameState.isOver()
     }
 
-    fun winningPct(player: Player): Double{
+    fun winningPct(player: Player): Double {
         return winCounts[player]!! / rollouts.toDouble()
+    }
+
+
+    fun canAddChild(): Boolean {
+        return unvisitedMoves.size > 0
     }
 
 
