@@ -23,12 +23,11 @@ internal class EvaluatorTest{
     fun selfGame(){
         val startingState = GameState.newGame(9)
 
-//        val finalState = playSelfGame(startingState, RandomBot(), RandomBot()) {_, _ -> Unit}
-        val finalState = playSelfGame(startingState, RandomBot(9), RandomBot(9)) {gs -> printBoard(gs.board)}
+        val finalState = playSelfGame(startingState, RandomBot(9), RandomBot(9)) {gs -> drawBoard(gs.board, gs.lastMove).forEach{println(it)} }
 
         Assertions.assertTrue(finalState.lastMove!! is Move.Pass)
-        val scoreWhite = Evaluator.countTerritory(finalState.board, Player.WHITE)
-        val scoreBlack = Evaluator.countTerritory(finalState.board, Player.BLACK)
+        val scoreWhite = Evaluator.countTerritoryAndStones(finalState.board, Player.WHITE)
+        val scoreBlack = Evaluator.countTerritoryAndStones(finalState.board, Player.BLACK)
 
         println("Final score black: $scoreBlack white: $scoreWhite")
         Assertions.assertEquals(81, scoreBlack + scoreWhite)
@@ -43,8 +42,8 @@ internal class EvaluatorTest{
 //        for (times in 1 .. 100000) {
 //
 //            val finalState = playSelfGame(9, RandomBot(), RandomBot()) { _, _ -> Unit }
-//            val scoreWhite = countTerritory(finalState.board, Player.WHITE)
-//            val scoreBlack = countTerritory(finalState.board, Player.BLACK)
+//            val scoreWhite = countTerritoryAndStones(finalState.board, Player.WHITE)
+//            val scoreBlack = countTerritoryAndStones(finalState.board, Player.BLACK)
 //            if (scoreBlack - 5 > scoreWhite)
 //                blackWins++
 //            println("play number $times black wins $blackWins")

@@ -16,7 +16,7 @@ data class Point(val col: Int, val row: Int) {
         }
 
         fun toCoords(point: Point): String{
-            return COLS[point.col] + point.row.toString()
+            return COLS[point.col - 1] + point.row.toString()
         }
     }
 

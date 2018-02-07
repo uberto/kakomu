@@ -22,18 +22,19 @@ fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove
 fun playAgainstHuman(boardSize: Int){
     var game = GameState.newGame(boardSize)
 //    val bot = RandomBot(boardSize)
-    val bot = MCTSAgent(10000, 1.5, boardSize)
+    val bot = MCTSAgent(30000, 1.5, boardSize)
     while (!game.isOver()) {
-        printBoard(game.board)
+        drawBoard(game.board, game.lastMove).forEach{ println(it)}
 
-        val move = if (game.nextPlayer == Player.BLACK){
+        val player = game.nextPlayer
+        val move = if (player == Player.BLACK){
             askMove(game)
+        } else {
+            val nextMove = bot.playNextMove(game).lastMove!!
+            println(drawMove(player, nextMove))
+            nextMove
         }
-        else {
-            val gameState = bot.playNextMove(game)
-            println(drawMove(game.nextPlayer, gameState.lastMove!!))
-            gameState.lastMove
-        }
+
         val newGame = game.applyMove(move)
 
         if (newGame != null)
@@ -64,7 +65,7 @@ private fun askMove(game: GameState): Move {
 fun printMoveAndBoard(game: GameState){
     println()
     println()
-    printBoard(game.board)
+    drawBoard(game.board).forEach{println(it)}
     println(drawMove(game.nextPlayer, game.lastMove!!))
 }
 

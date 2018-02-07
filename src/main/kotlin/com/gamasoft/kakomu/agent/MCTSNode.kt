@@ -16,16 +16,16 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
 
     val children = mutableListOf<MCTSNode>()
 
-    val unvisitedMoves = gameState.legalMoves().toMutableList() //TODO legal moves to a lazy seq
+    val unvisitedMoves = gameState.allMoves() //TODO legal moves to a lazy seq
 
 
-    fun addRandomChild(): MCTSNode? {
+    fun addRandomChild(): MCTSNode {
         var newGameState: GameState? = null
         while (newGameState == null) {
-            val index = random.nextInt(unvisitedMoves.size)
-            if (unvisitedMoves.isEmpty())
-                return null
-            val newMove = unvisitedMoves.removeAt(index)
+            val newMove = unvisitedMoves.removeAt(0) //they are already random
+            if (!gameState.isValidMoveApartFromKo(newMove))
+                continue //pick up next
+
             newGameState = gameState.applyMove(newMove)
         }
         val newNode = MCTSNode(newGameState, this)

@@ -1,5 +1,6 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
 
@@ -32,7 +33,7 @@ class AlfaBetaPruning {
             var bestSoFar = Evaluator.MIN_SCORE
 
             // Loop over all valid moves.
-            for (candidateMove in gameState.legalMoves()) {
+            for (candidateMove in gameState.allMoves()) {
 
                 //See what the board would look like if we play this move.
                 val nextState = gameState.applyMove(candidateMove)

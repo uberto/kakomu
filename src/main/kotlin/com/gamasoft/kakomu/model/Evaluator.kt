@@ -1,9 +1,6 @@
-package com.gamasoft.kakomu.agent
+package com.gamasoft.kakomu.model
 
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Player
-import com.gamasoft.kakomu.model.Point
+import com.gamasoft.kakomu.agent.Agent
 
 class Evaluator {
 
@@ -12,7 +9,7 @@ class Evaluator {
         val MAX_SCORE = 999999
         val MIN_SCORE = -999999
 
-        fun countTerritory(board: Board, player: Player): Int {
+        fun countTerritoryAndStones(board: Board, player: Player): Int {
             //count all stones and eyes, works only after all possible stones are placed
             var tot = 0
 
@@ -28,6 +25,12 @@ class Evaluator {
                 }
             }
             return tot
+        }
+
+        fun computeGameResultFullBoard(gameState: GameState):GameResult{
+            val black = countTerritoryAndStones(gameState.board, Player.BLACK)
+            val white = countTerritoryAndStones(gameState.board, Player.WHITE)
+            return GameResult(black, white, komi = 7.5)
         }
 
 
@@ -49,7 +52,7 @@ class Evaluator {
         }
 
         fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): Player {
-            var currGame = game
+            var currGame = game.clone()
             while (!currGame.isOver()) {
                 currGame = bots[game.nextPlayer]!!.playNextMove(currGame)
             }

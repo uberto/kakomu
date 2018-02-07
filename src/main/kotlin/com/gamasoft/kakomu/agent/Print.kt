@@ -18,12 +18,12 @@ fun drawMove(player: Player, move: Move): String {
     return when (move) {
         is Move.Pass -> "$player passes"
         is Move.Resign -> "$player resigns"
-        is Move.Play -> "$player ${COLS[move.point.col - 1]}${move.point.row}"
+        is Move.Play -> "$player ${move.humanReadable()}"
     }
 }
 
 
-fun drawBoard(board: Board): List<String> {
+fun drawBoard(board: Board, lastMove: Move? = null): List<String> {
     val out = mutableListOf<String>()
     out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     for (row in (board.numRows downTo 1)){
@@ -31,7 +31,12 @@ fun drawBoard(board: Board): List<String> {
         for (col in (1 ..board.numCols)){
             val stone = board.getString(Point(row=row, col=col))?.color
             line.append(STONE_TO_CHAR[stone])
-            line.append(" ")
+            if (lastMove is Move.Play &&
+                    lastMove.point.row == row &&
+                    lastMove.point.col == col)
+                line.append("←")
+            else
+                line.append(" ")
         }
         out.add("$row $line$row")
     }
@@ -40,7 +45,3 @@ fun drawBoard(board: Board): List<String> {
 }
 
 
-
-fun printBoard(board: Board){
-    drawBoard(board).forEach{ println(it)}
-}

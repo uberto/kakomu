@@ -1,5 +1,7 @@
 package com.gamasoft.kakomu.model
 
+import com.gamasoft.kakomu.model.Evaluator.Companion.computeGameResultFullBoard
+
 
 data class GameState(val board: Board, val nextPlayer: Player, val previous: GameState?, val lastMove: Move?) {
 
@@ -105,16 +107,16 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return GameState(board, nextPlayer, previous, lastMove)
     }
 
-    fun legalMoves(): Set<Move> { //TODO lazeSeq?
-        val moves = mutableSetOf<Move>()
+    fun allMoves(): MutableList<Move> { //TODO lazeSeq?
+        val moves = mutableListOf<Move>()
         for (row in 1 .. board.numRows){
             for (col in 1 .. board.numCols){
-                val move = Move.Play(Point(row, col))
-                if (isValidMoveApartFromKo(move)){
-                    moves.add(move)
-                }
+                val point = Point(row, col)
+                if (board.isFree(point))
+                    moves.add(Move.Play(point))
             }
         }
+        moves.shuffle()
 
         return moves
     }
@@ -125,7 +127,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         if (lastMove is Move.Resign)
             return nextPlayer
 
-        val gameResult = computeGameResult(this)
+        val gameResult = computeGameResultFullBoard(this)
         return gameResult.winner()
     }
 

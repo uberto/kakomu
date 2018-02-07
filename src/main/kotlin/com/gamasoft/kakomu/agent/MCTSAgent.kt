@@ -1,6 +1,8 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.GameState
+import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 
 
@@ -17,7 +19,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
     }
 
 
-    fun selectChild(node: MCTSNode): MCTSNode? {
+    fun selectChild(node: MCTSNode): MCTSNode {
         //Select a child according to the upper confidence bound for trees (UCT) metric.
 
         val totalRollouts = node.children.sumBy { c -> c.rollouts }
@@ -38,7 +40,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             }
         }
 
-        return bestChild
+        return bestChild!!
     }
 
     override fun playNextMove(gameState: GameState): GameState {
@@ -49,12 +51,12 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             var node = root
 
             while (!node.canAddChild() && !node.isTerminal()) {
-                node = selectChild(node)!!  //TODO
+                node = selectChild(node)
             }
 
             //Add a new child node into the tree.
             if (node.canAddChild()) {
-                node = node.addRandomChild()!!
+                node = node.addRandomChild()
             }
 
             //Simulate a random game from this node.
@@ -67,6 +69,8 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
                 parent = parent.parent
             }
 
+            if (i % 5000 == 0)
+                println(i)
         }
 
 //        val scoredMoves = root.children.map { c -> ScoreMove(c.winningPct(gameState.nextPlayer), c.gameState.lastMove!!, c.rollouts ) }
@@ -86,6 +90,10 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             }
             println("    considered move ${child.gameState.lastMove!!.humanReadable()} with win pct $childPct")
         }
+
+        if (bestPct <= 0.15) //let's do the right thing
+            bestMove = GameState(gameState.board, gameState.nextPlayer,gameState.previous, Move.Resign)
+
         println("Select move ${bestMove.lastMove!!.humanReadable()} with win pct $bestPct")
         return bestMove
 

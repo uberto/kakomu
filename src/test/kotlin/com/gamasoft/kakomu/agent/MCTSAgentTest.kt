@@ -1,6 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.agent.Evaluator.Companion.simulateRandomGame
+import com.gamasoft.kakomu.model.Evaluator.Companion.simulateRandomGame
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
 import org.junit.jupiter.api.Test

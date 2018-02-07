@@ -1,7 +1,7 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import java.util.*
 
@@ -21,7 +21,7 @@ class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
 
 
         // Loop over all legal moves.
-        for (possibleMove in gameState.legalMoves()) {
+        for (possibleMove in gameState.allMoves()) {
             // Calculate the game state if we select this move.
             val nextState = gameState.applyMove(possibleMove)
             if (nextState == null)
