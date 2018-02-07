@@ -1,6 +1,7 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.GameState
+import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import java.util.*
 
@@ -22,9 +23,11 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
     fun addRandomChild(): MCTSNode {
         var newGameState: GameState? = null
         while (newGameState == null) {
-            val newMove = unvisitedMoves.removeAt(0) //they are already random
+            if (unvisitedMoves.isEmpty()) //no more children
+                return this
+            val newMove = Move.Play( unvisitedMoves.removeAt(0)) //they are already random
             if (!gameState.isValidMoveApartFromKo(newMove))
-                continue //pick up next
+                continue
 
             newGameState = gameState.applyMove(newMove)
         }

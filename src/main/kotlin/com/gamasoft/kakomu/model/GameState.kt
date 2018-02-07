@@ -107,18 +107,34 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return GameState(board, nextPlayer, previous, lastMove)
     }
 
-    fun allMoves(): MutableList<Move> { //TODO lazeSeq?
-        val moves = mutableListOf<Move>()
+    fun allMoves(): MutableList<Point> { //TODO lazeSeq?
+        val atari = mutableSetOf<Point>()
+        val almostAtari = mutableSetOf<Point>()
+        val moves = mutableSetOf<Point>()
         for (row in 1 .. board.numRows){
             for (col in 1 .. board.numCols){
                 val point = Point(row, col)
-                if (board.isFree(point))
-                    moves.add(Move.Play(point))
+                val string = board.getString(point)
+                if (string == null) {
+                    moves.add(point)
+                } else if (string.libertiesCount() == 1) {
+                    atari.addAll(string.liberties)
+                } else if (string.libertiesCount() == 2) {
+                    almostAtari.addAll(string.liberties)
+                }
             }
         }
-        moves.shuffle()
 
-        return moves
+        almostAtari.removeAll(atari)
+        moves.removeAll(atari)
+        moves.removeAll(almostAtari)
+
+        val moveList = moves.toMutableList()
+        moveList.shuffle()
+
+        moveList.addAll(0, almostAtari)
+        moveList.addAll(0, atari)
+        return moveList
     }
 
     fun winner(): Player?{
