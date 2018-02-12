@@ -37,13 +37,17 @@ private fun askMove(game: GameState): Move {
             "pass" -> return Move.Pass
             else -> {
                 val point = Point.fromCoords(humanMove)
-                if (game.board.isOnTheGrid(point)) {
+                if (point != null && game.board.isOnTheGrid(point)) {
                     if (game.isValidPointToPlay(point))
                         return Move.Play(point)
                 }
             }
         }
     }
+}
+
+fun validMove(humanMove: String): Boolean {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
 
 

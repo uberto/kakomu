@@ -12,6 +12,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
 //colder will evaluate better but can miss completely the best move
 
     val bots: Map<Player, Agent>
+    val maxSecsForMove = 30
 
     init {
         bots = mapOf<Player, Agent>(
@@ -45,10 +46,15 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
     }
 
     override fun playNextMove(gameState: GameState): GameState {
+        println()
+        print("Thinking")
 
         val root = MCTSNode(gameState)
 
-        for (i in 1..numRounds) {
+        var i = 0
+        val start = System.currentTimeMillis()
+        while (true) {
+            i++
             var node = root
 
             while (!node.canAddChild() && !node.isTerminal()) {
@@ -70,8 +76,15 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
                 parent = parent.parent
             }
 
-            if (i % 5000 == 0)
-                println(i)
+            if (i % 5000 == 0) {
+                print('.')
+                val elapsed = System.currentTimeMillis() - start
+                if (elapsed > maxSecsForMove * 1000) {
+                    println(" $i rollouts in $elapsed millisecs")
+                    break
+                }
+            }
+
         }
 
         //Having performed as many MCTS rounds as we have time for, we

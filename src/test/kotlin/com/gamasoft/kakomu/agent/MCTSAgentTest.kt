@@ -9,16 +9,17 @@ internal class MCTSAgentTest {
 
     @Test
     fun performanceSelfGame() {
-        val boardSize = 19
+        val boardSize = 9
         val startingState = GameState.newGame(boardSize)
-        val bots = mapOf(Player.BLACK to RandomBot(boardSize, 234345), Player.WHITE to RandomBot(boardSize, 767655))
+        val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
         //warmup
         for (i in (1..1000)) {
             simulateRandomGame(startingState, bots)
         }
         for (i in (1..10)) {
+            val fixedBots = mapOf(Player.BLACK to RandomBot(boardSize, 234345), Player.WHITE to RandomBot(boardSize, 767655))
             PrintTest.crono("play self game ${boardSize}x${boardSize}") {
-                simulateRandomGame(startingState, bots)
+                simulateRandomGame(startingState, fixedBots)
             }
         }
     }
@@ -41,5 +42,5 @@ internal class MCTSAgentTest {
 //with fastRandomBot:
 //about 0.5 msec on 9x9 and 4.5 on 19x19
 //with single swap instead of shuffle:
-//about 0.33 msec on 9x9 and 1.8 on 19x19
+//about 0.33 msec on 9x9 and 2.4 on 19x19
 }
