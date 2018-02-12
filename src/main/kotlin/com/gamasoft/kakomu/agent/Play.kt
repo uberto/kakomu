@@ -4,21 +4,6 @@ import com.gamasoft.kakomu.model.*
 
 
 
-fun playSelfGame(startingState: GameState, black: Agent, white: Agent, afterMove: (game: GameState) -> Unit): GameState {
-    var game = startingState.clone()
-
-    val bots = mapOf(Player.BLACK to black, Player.WHITE to white)
-
-    while (!game.isOver()) {
-
-        game = bots[game.nextPlayer]!!.playNextMove(game)
-
-        afterMove(game)
-
-    }
-    return game
-}
-
 fun playAgainstHuman(boardSize: Int){
     var game = GameState.newGame(boardSize)
 //    val bot = RandomBot(boardSize)
@@ -53,33 +38,15 @@ private fun askMove(game: GameState): Move {
             else -> {
                 val point = Point.fromCoords(humanMove)
                 if (game.board.isOnTheGrid(point)) {
-                    val move = Move.Play(point)
-                    if (game.isValidMoveApartFromKo(move))
-                        return move
+                    if (game.isValidPointToPlay(point))
+                        return Move.Play(point)
                 }
             }
         }
     }
 }
 
-fun printMoveAndBoard(game: GameState){
-    println()
-    println()
-    drawBoard(game.board).forEach{println(it)}
-    println(drawMove(game.nextPlayer, game.lastMove!!))
-}
 
-
-fun playAndPrintSelfGame(boardSize:Int){
-    val printState: (GameState)->Unit =  {
-        game ->
-            Thread.sleep(100)
-            printMoveAndBoard(game)
-
-    }
-    var game = GameState.newGame(boardSize)
-    playSelfGame(game, RandomBot(boardSize), RandomBot(boardSize), printState)
-}
 
 
 

@@ -51,12 +51,30 @@ class Evaluator {
             return true
         }
 
-        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): Player {
-            var currGame = game.clone()
+        fun isSelfCapture(board: Board, point: Point, player: Player): Boolean{
+            //if one of neighbors is same color and with more than 1 liberty is not self capture
+            //if one of neighbors is different color and with exactly 1 liberty is not self capture
+            for (neighbor in board.neighbors(point)) {
+                val string = board.getString(neighbor)
+                if (string == null)
+                    return false
+                else {
+                    val color = string.color
+                    val libertiesCount = string.libertiesCount()
+                    if ((color == player && libertiesCount > 1) || (color == player.other() && libertiesCount == 1))
+                        return false
+                }
+            }
+
+            return true
+        }
+
+        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): GameState {
+            var currGame = game
             while (!currGame.isOver()) {
                 currGame = bots[game.nextPlayer]!!.playNextMove(currGame)
             }
-            return currGame.winner()!!
+            return currGame
         }
     }
 

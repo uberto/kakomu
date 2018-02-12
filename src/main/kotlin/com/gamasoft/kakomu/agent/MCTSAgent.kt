@@ -8,8 +8,9 @@ import com.gamasoft.kakomu.model.Player
 
 class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int): Agent {
 //1.5 is a good starting point temperature
-//hotter will explore more not so promising moves
-//colder will evaluate better most promising moves
+//hotter will explore more moves but can mis-evaluate the most promising
+//colder will evaluate better but can miss completely the best move
+
     val bots: Map<Player, Agent>
 
     init {
@@ -60,7 +61,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             }
 
             //Simulate a random game from this node.
-            val winner = Evaluator.simulateRandomGame(node.gameState, bots)
+            val winner = Evaluator.simulateRandomGame(node.gameState, bots).winner()!!
 
             var parent: MCTSNode? = node
             //Propagate scores back up the tree.
@@ -87,7 +88,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             println("    considered move $coords with win pct $childPct on ${child.rollouts} rollouts")
         }
 
-        if (bestPct <= 0.15) //let's do the right thing
+        if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
             bestMove = GameState(gameState.board, gameState.nextPlayer,gameState.previous, Move.Resign)
 
         println("Select move ${bestMove.lastMove!!.humanReadable()} with win pct $bestPct")

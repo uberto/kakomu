@@ -36,7 +36,7 @@ class AlfaBetaPruning {
             // Loop over all valid moves.
             for (possiblePoint in gameState.allMoves()) {
                 val candidateMove = Move.Play(possiblePoint)
-                if (!gameState.isValidMoveApartFromKo(candidateMove))
+                if (!gameState.isValidPointToPlay(possiblePoint))
                     continue
 
                 //See what the board would look like if we play this move.

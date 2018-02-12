@@ -19,18 +19,44 @@ internal class EvaluatorTest{
 
     }
 
+    /*
+    B W . B
+    B B B B
+     */
+    @Test
+    fun notAnEyeOnTheBorder(){
+
+        val board = Board(9,9)
+        board.placeStone(Player.BLACK, Point(1, 1))
+        board.placeStone(Player.WHITE, Point(2, 1))
+        board.placeStone(Player.BLACK, Point(4, 1))
+        board.placeStone(Player.BLACK, Point(1, 2))
+        board.placeStone(Player.BLACK, Point(2, 2))
+        board.placeStone(Player.BLACK, Point(3, 2))
+        board.placeStone(Player.BLACK, Point(4, 2))
+
+        val p = Point(3, 1)
+        Assertions.assertTrue(board.isFree(p))
+        Assertions.assertFalse(Evaluator.isAnEye(board, p, Player.BLACK))
+
+    }
+
     @Test
     fun selfGame(){
-        val startingState = GameState.newGame(9)
+        val boardSize = 19
+        val startingState = GameState.newGame(boardSize)
 
-        val finalState = playSelfGame(startingState, RandomBot(9), RandomBot(9)) {gs -> drawBoard(gs.board, gs.lastMove).forEach{println(it)} }
+        val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
+
+        val finalState = Evaluator.simulateRandomGame(startingState, bots)
+        printWholeMatch(finalState)
 
         Assertions.assertTrue(finalState.lastMove!! is Move.Pass)
         val scoreWhite = Evaluator.countTerritoryAndStones(finalState.board, Player.WHITE)
         val scoreBlack = Evaluator.countTerritoryAndStones(finalState.board, Player.BLACK)
 
         println("Final score black: $scoreBlack white: $scoreWhite")
-        Assertions.assertEquals(81, scoreBlack + scoreWhite)
+        Assertions.assertEquals(boardSize * boardSize, scoreBlack + scoreWhite)
 
     }
 

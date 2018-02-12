@@ -25,10 +25,11 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
         while (newGameState == null) {
             if (unvisitedMoves.isEmpty()) //no more children
                 return this
-            val newMove = Move.Play( unvisitedMoves.removeAt(0)) //they are already random
-            if (!gameState.isValidMoveApartFromKo(newMove))
+            val point = unvisitedMoves.removeAt(0)
+            if (!gameState.isValidPointToPlay(point))
                 continue
 
+            val newMove = Move.Play(point) //they are already random
             newGameState = gameState.applyMove(newMove)
         }
         val newNode = MCTSNode(newGameState, this)

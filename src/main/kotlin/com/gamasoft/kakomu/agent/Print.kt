@@ -1,9 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.Move
-import com.gamasoft.kakomu.model.Player
-import com.gamasoft.kakomu.model.Point
+import com.gamasoft.kakomu.model.*
 
 
 val COLS = "ABCDEFGHJKLMNOPQRSTUVWXYZ"
@@ -25,7 +22,7 @@ fun drawMove(player: Player, move: Move): String {
 
 fun drawBoard(board: Board, lastMove: Move? = null): List<String> {
     val out = mutableListOf<String>()
-    out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
+    out.add("   " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     for (row in (board.numRows downTo 1)){
         val line = StringBuilder()
         for (col in (1 ..board.numCols)){
@@ -38,10 +35,35 @@ fun drawBoard(board: Board, lastMove: Move? = null): List<String> {
             else
                 line.append(" ")
         }
-        out.add("$row $line$row")
+        val prow = "$row".padStart(2)
+        out.add("$prow $line$prow")
     }
-    out.add("  " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
+    out.add("   " + COLS.substring(0, board.numCols).map { c -> c + " " }.joinToString(separator = ""))
     return out
 }
 
+fun printMoveAndBoard(game: GameState){
+    println()
+    println()
+    drawBoard(game.board).forEach{println(it)}
+    println(drawMove(game.nextPlayer, game.lastMove!!))
+}
 
+
+fun printWholeMatch(finalState: GameState){
+    val states = mutableListOf<GameState>()
+    var cs: GameState? = finalState
+    while (cs != null){
+        states.add(cs)
+        cs = cs.previous
+    }
+
+    states.reverse()
+    for (gs in states){
+        drawBoard(gs.board, gs.lastMove).forEach{println(it)}
+        println()
+        println()
+    }
+
+
+}

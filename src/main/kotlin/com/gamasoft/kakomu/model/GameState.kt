@@ -58,26 +58,6 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return (lastMove is Move.Pass) && (secondLastMove is Move.Pass)
     }
 
-     fun isMoveSelfCapture(player: Player, move: Move): Boolean{
-        if (move !is Move.Play)
-            return false
-
-        //if one of neighbors is same color and with more than 1 liberty is not self capture
-        //if one of neighbors is different color and with exactly 1 liberty is not self capture
-        for (neighbor in board.neighbors(move.point)) {
-            val string = board.getString(neighbor)
-            if (string == null)
-                return false
-            else {
-                val color = string.color
-                val libertiesCount = string.libertiesCount()
-                if ((color == player && libertiesCount > 1) || (color == player.other() && libertiesCount == 1))
-                    return false
-            }
-        }
-
-        return true
-    }
 
      fun doesMoveViolateKo(nextBoard: Board): Boolean {
 
@@ -94,13 +74,17 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 //        return false
     }
 
-     fun isValidMoveApartFromKo(move: Move):Boolean {
-        if (move !is Move.Play)
-            return false
-        return (board.isFree(move.point) &&
-                ! isMoveSelfCapture(nextPlayer, move))
+     fun isValidPointToPlay(point: Point):Boolean {
+        return (board.isFree(point) &&
+                ! Evaluator.isSelfCapture(board, point, nextPlayer))
     }
 
+    fun isValidMove(move: Move):Boolean {
+        if (move !is Move.Play)
+            return false
+        return isValidPointToPlay(move.point) &&
+                applyMove(move) != null  //Ko check
+    }
 
     fun clone(): GameState {
 
@@ -145,6 +129,10 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
 
         val gameResult = computeGameResultFullBoard(this)
         return gameResult.winner()
+    }
+
+    fun isAnEye(point: Point): Boolean {
+        return Evaluator.isAnEye(board, point, nextPlayer)
     }
 
 }

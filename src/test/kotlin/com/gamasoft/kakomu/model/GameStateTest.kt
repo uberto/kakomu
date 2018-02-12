@@ -72,12 +72,13 @@ internal class GameStateTest {
              .applyMove(Move.Play(Point(1,2)))!!
              .applyMove(Move.Play(Point(1,3)))!!
 
-        assertTrue(autoCapt.isMoveSelfCapture(Player.WHITE, Move.Play(Point(1, 1))))
+        val point = Point(1, 1)
+        assertTrue(Evaluator.isSelfCapture(autoCapt.board, point, Player.WHITE))
 
-        assertFalse(autoCapt.isMoveSelfCapture(Player.BLACK, Move.Play(Point(1, 1))))
+        assertFalse(Evaluator.isSelfCapture(autoCapt.board, point, Player.BLACK))
 
-        assertTrue(autoCapt.isValidMoveApartFromKo(Move.Play(Point(1, 1))))
-//        assertTrue(autoCapt.isValidMoveIncludingSuperko(Move.Play(Point(1, 1))))
+        assertTrue(autoCapt.isValidPointToPlay(point))
+        assertTrue(autoCapt.isValidMove(Move.Play(point)))
 
     }
 
@@ -97,9 +98,10 @@ internal class GameStateTest {
                 .applyMove(Move.Play(Point(3,3)))!!
                 .applyMove(Move.Play(Point(2,2)))!!
 
-        assertFalse(autoCapt.isMoveSelfCapture(Player.WHITE, Move.Play(Point(1, 1))))
+        val point = Point(1, 1)
+        assertFalse(Evaluator.isSelfCapture(autoCapt.board, point, Player.WHITE))
 
-        assertTrue(autoCapt.isMoveSelfCapture(Player.BLACK, Move.Play(Point(1, 1))))
+        assertTrue(Evaluator.isSelfCapture(autoCapt.board, point, Player.BLACK))
 
     }
 
@@ -118,12 +120,11 @@ internal class GameStateTest {
                 .applyMove(Move.Play(Point(3,2)))!!
                 .applyMove(Move.Play(Point(1,1)))!!  //capture
 
-//        assertTrue(koViol.doesMoveViolateKo(Player.BLACK, Move.Play(Point(2, 1))))
 
-        assertFalse(koViol.isMoveSelfCapture(Player.BLACK, Move.Play(Point(2, 3))))
+        assertFalse(Evaluator.isSelfCapture(koViol.board, Point(2, 3),  Player.BLACK))
 
-        assertFalse(koViol.isValidMoveApartFromKo(Move.Play(Point(1, 1))))
-//        assertFalse(koViol.isValidMoveIncludingSuperko(Move.Play(Point(1, 1))))
+        assertFalse(koViol.isValidPointToPlay(Point(1, 1)))
+        assertFalse(koViol.isValidMove(Move.Play(Point(1, 1))))
     }
 
 

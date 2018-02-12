@@ -24,7 +24,7 @@ class AlfaBetaAgent(val maxDepth: Int, val evalFn: StateEval): Agent {
         // Loop over all legal moves.
         for (possiblePoint in gameState.allMoves()) {
             val possibleMove = Move.Play(possiblePoint)
-            if (!gameState.isValidMoveApartFromKo(possibleMove))
+            if (!gameState.isValidPointToPlay(possiblePoint))
                 continue
 
             // Calculate the game state if we select this move.
