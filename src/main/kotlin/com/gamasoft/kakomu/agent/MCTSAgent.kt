@@ -98,14 +98,19 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
                 bestMove = child.gameState
             }
             val coords = child.gameState.lastMove!!.humanReadable()
-            println("    considered move $coords with win pct $childPct on ${child.rollouts} rollouts")
+            println("    considered move $coords with win pct $childPct on ${child.rollouts} rollouts. Sequence ${child.getBestMoveSequence()} ")
         }
 
         if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
             bestMove = GameState(gameState.board, gameState.nextPlayer,gameState.previous, Move.Resign)
 
         println("Select move ${bestMove.lastMove!!.humanReadable()} with win pct $bestPct")
+
+
+
+
         return bestMove
 
     }
+
 }

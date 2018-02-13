@@ -55,6 +55,24 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
         return unvisitedMoves.size > 0
     }
 
+    fun getBestMoveSequence(): String {
+        val bestMove = selectBestChild()
+        return bestMove?.gameState?.lastMove?.humanReadable().orEmpty() + " " + bestMove?.getBestMoveSequence().orEmpty()
+    }
+
+    private fun selectBestChild(): MCTSNode? {
+        var bestPct = -1.0
+        var bestChild: MCTSNode? = null
+        for (child in children) {
+            val childPct = child.winningPct(gameState.nextPlayer)
+            if (childPct > bestPct) {
+                bestPct = childPct
+                bestChild = child
+            }
+        }
+        return bestChild
+    }
+
 
 }
 
