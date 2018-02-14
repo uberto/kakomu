@@ -137,10 +137,7 @@ class Board (val numCols: Int, val numRows: Int,
             val neighborStrings = mutableSetOf<GoString>()
 
             for (neighbor: Point in neighbors(point)){
-                val neighborString = grid[neighbor]
-                if (neighborString == null) {
-                    continue
-                }
+                val neighborString = grid[neighbor] ?: continue
                 neighborStrings.add(neighborString)
             }
 
@@ -151,7 +148,7 @@ class Board (val numCols: Int, val numRows: Int,
         }
     }
 
-     fun getString(point: Point): GoString? {
+    fun getString(point: Point): GoString? {
         return grid[point]
     }
 

@@ -6,13 +6,12 @@ import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 
 
-class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int): Agent {
+class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int): Agent {
 //1.5 is a good starting point temperature
 //hotter will explore more moves but can mis-evaluate the most promising
 //colder will evaluate better but can miss completely the best move
 
     val bots: Map<Player, Agent>
-    val maxSecsForMove = 30
 
     init {
         bots = mapOf<Player, Agent>(
@@ -79,7 +78,7 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
             if (i % 5000 == 0) {
                 print('.')
                 val elapsed = System.currentTimeMillis() - start
-                if (elapsed > maxSecsForMove * 1000) {
+                if (elapsed > secondsForMove * 1000) {
                     println(" $i rollouts in $elapsed millisecs")
                     break
                 }
@@ -91,26 +90,24 @@ class MCTSAgent(val numRounds: Int, val temperature: Double, val boardSize: Int)
         //now pick a move.
         var bestMove: GameState = gameState
         var bestPct = -1.0
-        for (child in root.children) {
+        for (child in root.children.sortedBy { it.showMove() }) {
             val childPct = child.winningPct(gameState.nextPlayer)
             if (childPct > bestPct) {
                 bestPct = childPct
                 bestMove = child.gameState
             }
-            val coords = child.gameState.lastMove!!.humanReadable()
-            println("    considered move $coords with win pct $childPct on ${child.rollouts} rollouts. Sequence ${child.getBestMoveSequence()} ")
+            println("    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
         }
 
         if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
             bestMove = GameState(gameState.board, gameState.nextPlayer,gameState.previous, Move.Resign)
 
-        println("Select move ${bestMove.lastMove!!.humanReadable()} with win pct $bestPct")
-
-
-
+        println("Select move ${bestMove.lastMove?.humanReadable()} with win pct $bestPct")
 
         return bestMove
 
     }
+
+    private fun moveToStr(c: MCTSNode) = c.gameState.lastMove?.humanReadable()
 
 }

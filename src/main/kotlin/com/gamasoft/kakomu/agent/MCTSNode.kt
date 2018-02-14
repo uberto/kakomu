@@ -73,6 +73,8 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
         return bestChild
     }
 
+    fun showMove(): String = gameState.lastMove?.humanReadable().orEmpty()
+
 
 }
 

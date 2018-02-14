@@ -4,10 +4,10 @@ import com.gamasoft.kakomu.model.*
 
 
 
-fun playAgainstHuman(boardSize: Int){
+fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
     var game = GameState.newGame(boardSize)
 //    val bot = RandomBot(boardSize)
-    val bot = MCTSAgent(50000, 1.5, boardSize)
+    val bot = MCTSAgent(secondsForMove, 2.0, boardSize)
     while (!game.isOver()) {
         drawBoard(game.board, game.lastMove).forEach{ println(it)}
 

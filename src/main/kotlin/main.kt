@@ -9,7 +9,7 @@ fun main(args : Array<String>) {
 
     //playAndPrintSelfGame(boardSize)
 
-    playAgainstHuman(boardSize)
+    playAgainstHuman(boardSize, 30)
 
 }
 

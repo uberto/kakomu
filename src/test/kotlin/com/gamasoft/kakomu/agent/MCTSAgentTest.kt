@@ -9,7 +9,7 @@ internal class MCTSAgentTest {
 
     @Test
     fun performanceSelfGame() {
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
         val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
         //warmup
