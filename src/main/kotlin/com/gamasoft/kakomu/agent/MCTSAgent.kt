@@ -4,21 +4,27 @@ import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
+import kotlinx.coroutines.experimental.*
+import java.util.concurrent.atomic.AtomicInteger
 
 
-class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int): Agent {
-//1.5 is a good starting point temperature
-//hotter will explore more moves but can mis-evaluate the most promising
+class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int) : Agent {
 //colder will evaluate better but can miss completely the best move
+    //1.5 is a good starting point temperature
+//hotter will explore more moves but can mis-evaluate the most promising
+
+
+    //for concurrency
+    private val currentlyEvaluatingNodes: MutableSet<MCTSNode> = mutableSetOf()
 
     val bots: Map<Player, Agent>
+
 
     init {
         bots = mapOf<Player, Agent>(
                 Player.BLACK to RandomBot(boardSize),
                 Player.WHITE to RandomBot(boardSize))
     }
-
 
     fun selectChild(node: MCTSNode): MCTSNode {
         //Select a child according to the upper confidence bound for trees (UCT) metric.
@@ -30,6 +36,9 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         var bestChild: MCTSNode? = null
         //Loop over each child.
         for (child in node.children) {
+            if (child in currentlyEvaluatingNodes)
+                continue //skip this, someoneelse is already looking at it
+
             // Calculate the UCT score.
             val winPercentage = child.winningPct(node.gameState.nextPlayer)
             val explorationFactor = Math.sqrt(logRollouts / child.rollouts)
@@ -41,50 +50,17 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             }
         }
 
-        return bestChild!!
+        return bestChild?:node
     }
 
     override fun playNextMove(gameState: GameState): GameState {
         println()
-        print("Thinking")
+        println("Thinking...")
 
         val root = MCTSNode(gameState)
 
-        var i = 0
-        val start = System.currentTimeMillis()
-        while (true) {
-            i++
-            var node = root
-
-            while (!node.canAddChild() && !node.isTerminal()) {
-                node = selectChild(node)
-            }
-
-            //Add a new child node into the tree.
-            if (node.canAddChild()) {
-                node = node.addRandomChild()
-            }
-
-            //Simulate a random game from this node.
-            val winner = Evaluator.simulateRandomGame(node.gameState, bots).winner()!!
-
-            var parent: MCTSNode? = node
-            //Propagate scores back up the tree.
-            while (parent != null) {
-                parent.recordWin(winner)
-                parent = parent.parent
-            }
-
-            if (i % 5000 == 0) {
-                print('.')
-                val elapsed = System.currentTimeMillis() - start
-                if (elapsed > secondsForMove * 1000) {
-                    println(" $i rollouts in $elapsed millisecs")
-                    break
-                }
-            }
-
-        }
+        val rolls = exploreTree(root)
+        println("Done ${rolls} rollouts")
 
         //Having performed as many MCTS rounds as we have time for, we
         //now pick a move.
@@ -100,7 +76,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         }
 
         if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
-            bestMove = GameState(gameState.board, gameState.nextPlayer,gameState.previous, Move.Resign)
+            bestMove = GameState(gameState.board, gameState.nextPlayer, gameState.previous, Move.Resign)
 
         println("Select move ${bestMove.lastMove?.humanReadable()} with win pct $bestPct")
 
@@ -108,6 +84,93 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
     }
 
-    private fun moveToStr(c: MCTSNode) = c.gameState.lastMove?.humanReadable()
+
+    private inline fun exploreTree(root: MCTSNode): Int = exploreTreeNoConcurrency(root)
+//    private inline fun exploreTree(root: MCTSNode): Int = exploreTreeConcurrency(root)
+
+
+
+    private fun exploreTreeNoConcurrency(root: MCTSNode): Int {
+        var i = AtomicInteger(0)
+        val start = System.currentTimeMillis()
+        val maxMillis = secondsForMove * 1000
+        while (System.currentTimeMillis() - start < maxMillis) {
+            incRollouts(i)
+            newRolloutAndRecordWin(root)
+        }
+        println(" ${i.get()} rollouts in ${System.currentTimeMillis() - start} millisecs")
+        return i.get()
+    }
+
+    private fun incRollouts(i: AtomicInteger) {
+        i.incrementAndGet()
+        if (i.get() % 5000 == 0) {
+            print('.')
+        }
+    }
+
+    private fun exploreTreeConcurrency(root: MCTSNode): Int {
+        var i = AtomicInteger(0)
+        val start = System.currentTimeMillis()
+        val maxMillis = secondsForMove * 1000
+
+        runBlocking {
+
+            while (System.currentTimeMillis() - start < maxMillis) {
+                val jobs = mutableListOf<Job>()
+                repeat(8) {
+                    incRollouts(i)
+                    jobs.add(launch { newRolloutAndRecordWin(root) })
+                }
+                jobs.forEach{it.join()}
+            }
+        }
+        return i.get()
+    }
+
+    private fun newRolloutAndRecordWin(root: MCTSNode) {
+        var node = selectNextNode(root)
+
+        val winner = getWinnerOfRandomPlay(node)
+
+        propagateResult(node, winner)
+    }
+
+    private fun propagateResult(node: MCTSNode, winner: Player) {
+        var node1 = node
+        synchronized(this) {
+            //Propagate scores back up the tree.
+            while (true) {
+                node1.recordWin(winner)
+                val parent = node1.parent
+                node1 = if (parent != null) parent else break
+            }
+            currentlyEvaluatingNodes.remove(node)
+        }
+    }
+
+    private fun selectNextNode(root: MCTSNode): MCTSNode {
+        var node = root
+
+        synchronized(this) {
+            while (node.completelyVisited() && !node.isTerminal()) {
+                node = selectChild(node)
+            }
+            node = node.addRandomChild()
+            currentlyEvaluatingNodes.add(node)
+        }
+        return node
+    }
+
+    private inline fun getWinnerOfRandomPlay(node: MCTSNode): Player {
+        //Simulate a random game from this node.
+        //        printMoveAndBoard(node.gameState)
+        val randomGame = Evaluator.simulateRandomGame(node.gameState, bots)
+        val winner = randomGame.winner()!!
+
+        //        println("eval  $winner")
+        //        printMoveAndBoard(randomGame)
+        return winner
+    }
 
 }

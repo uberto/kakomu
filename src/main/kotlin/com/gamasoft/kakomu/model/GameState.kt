@@ -14,6 +14,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         }
     }
 
+
 // Full SuperKo
 //    val previousStates: Set<Long>
 //
@@ -86,12 +87,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
                 applyMove(move) != null  //Ko check
     }
 
-    fun clone(): GameState {
-
-        return GameState(board, nextPlayer, previous, lastMove)
-    }
-
-    fun allMoves(): MutableList<Point> { //TODO lazeSeq?
+    fun allMoves(): MutableList<Point> {
         val atari = mutableSetOf<Point>()
         val almostAtari = mutableSetOf<Point>()
         val moves = mutableSetOf<Point>()
@@ -121,7 +117,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return moveList
     }
 
-    fun winner(): Player?{
+    fun winner(): Player? {
         if (!isOver())
             return null
         if (lastMove is Move.Resign)

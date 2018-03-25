@@ -7,15 +7,12 @@ import java.util.*
 
 data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
 
-    companion object {
-        val random = Random()
-    }
 
     val winCounts: MutableMap<Player, Int> = mutableMapOf(Pair(Player.BLACK, 0), Pair(Player.WHITE, 0))
 
     var rollouts = 0
 
-    val children = mutableListOf<MCTSNode>()
+    val children = mutableSetOf<MCTSNode>()
 
     val unvisitedMoves = gameState.allMoves() //TODO legal moves to a lazy seq
 
@@ -38,8 +35,12 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
     }
 
     fun recordWin(winner: Player) {
+
         winCounts[winner] = 1 + winCounts[winner]!!
         rollouts += 1
+
+//        println("winner $winner ${winCounts[winner]} $rollouts")
+
     }
 
     fun isTerminal(): Boolean {
@@ -51,8 +52,8 @@ data class MCTSNode(val gameState: GameState, val parent: MCTSNode? = null) {
     }
 
 
-    fun canAddChild(): Boolean {
-        return unvisitedMoves.size > 0
+    fun completelyVisited(): Boolean {
+        return unvisitedMoves.isEmpty()
     }
 
     fun getBestMoveSequence(): String {
