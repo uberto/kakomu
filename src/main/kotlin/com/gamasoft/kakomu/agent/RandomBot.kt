@@ -33,11 +33,13 @@ class RandomBot(val boardSize: Int, val seed: Long = 0): Agent {
 
     override fun playNextMove(gameState: GameState): GameState {
 
-        for (i in points.size - 1 downTo 1) {
-            swap(points, i, random.nextInt(i + 1))
+        val newPoints: Array<Int> = Array(points.size){it}
 
-            val candidate = points[i]
-            if (gameState.isValidPointToPlay(candidate) &&
+        for (i in newPoints.size - 1 downTo 1) {
+            swap(newPoints, i, random.nextInt(i + 1))
+
+            val candidate = points[newPoints[i]]
+            if (gameState.isValidPointToPlay( candidate) &&
                    !gameState.isAnEye(candidate)){
                 val newState = gameState.applyMove(Move.Play(candidate))
                 if (newState != null)
@@ -45,18 +47,22 @@ class RandomBot(val boardSize: Int, val seed: Long = 0): Agent {
             }
         }
 
+//        println("playNextMove  $winner  move number after ${randomGame.state.moveNumber()}")
+//        printMoveAndBoard(randomGame.state)
+//        println("")
+
         return gameState.applyMove(Move.Pass)!!
     }
 
 }
 
-private inline fun <T> Array<T>.shuffle(random: Random) {
+private fun <T> Array<T>.shuffle(random: Random) {
     for (i in this.size - 1 downTo 1) {
         swap(this, i, random.nextInt(i + 1))
     }
 }
 
-private inline fun <T> swap(arr: Array<T>, i: Int, j: Int) {
+private fun <T> swap(arr: Array<T>, i: Int, j: Int) {
     val tmp = arr[i]
     arr[i] = arr[j]
     arr[j] = tmp

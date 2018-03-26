@@ -120,4 +120,14 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return Evaluator.isAnEye(board, point, nextPlayer)
     }
 
+    fun moveNumber():Int {
+        var mn = 1
+        var gs = previous
+        while (gs != null){
+            gs = gs.previous
+            mn++
+        }
+        return mn
+    }
+
 }

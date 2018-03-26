@@ -63,12 +63,12 @@ sealed class MCTS {
 
         fun getBestMoveSequence(): String {
             val bestMove = selectBestChild()
-            return bestMove.gameState.lastMove?.humanReadable().orEmpty() + " " + bestMove.getBestMoveSequence().orEmpty()
+            return bestMove?.gameState?.lastMove?.humanReadable().orEmpty() + " " + bestMove?.getBestMoveSequence().orEmpty()
         }
 
-        private fun selectBestChild(): Node {
+        private fun selectBestChild(): Node? {
             var bestPct = -1.0
-            var bestChild: Node = this
+            var bestChild: Node? = null
             for (child in children) {
                 val childPct = child.winningPct(gameState.nextPlayer)
                 if (childPct > bestPct) {
@@ -81,7 +81,7 @@ sealed class MCTS {
 
         fun showMove(): String = gameState.lastMove?.humanReadable().orEmpty()
 
-        fun rollouts(): Int = rollouts.get()
+        fun  rollouts(): Int = rollouts.get()
 
 
 

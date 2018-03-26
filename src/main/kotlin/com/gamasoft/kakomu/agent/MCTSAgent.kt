@@ -53,6 +53,14 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return bestChild
     }
 
+    private fun incRollouts(i: AtomicInteger) {
+        i.incrementAndGet()
+        if (i.get() % 5000 == 0) {
+            print('.')
+        }
+    }
+
+
     override fun playNextMove(gameState: GameState): GameState {
         println()
         println("Thinking...")
@@ -83,12 +91,8 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return bestMove
 
     }
-
-
-    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
-//    private inline fun exploreTree(root: MCTS): Int = exploreTreeConcurrency(root)
-
-
+//    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
+    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
 
     private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
         var i = AtomicInteger(0)
@@ -102,13 +106,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return i.get()
     }
 
-    private fun incRollouts(i: AtomicInteger) {
-        i.incrementAndGet()
-        if (i.get() % 5000 == 0) {
-            print('.')
-        }
-    }
-
     private fun exploreTreeConcurrency(root: MCTS.Node): Int {
         var i = AtomicInteger(0)
         val start = System.currentTimeMillis()
@@ -118,7 +115,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
             while (System.currentTimeMillis() - start < maxMillis) {
                 val jobs = mutableListOf<Job>()
-                repeat(8) {
+                repeat(10) {
                     incRollouts(i)
                     jobs.add(launch { newRolloutAndRecordWin(root) })
                 }
@@ -129,7 +126,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     }
 
     private fun newRolloutAndRecordWin(root: MCTS.Node) {
-        var node = selectNextNode(root)
+        val node = selectNextNode(root)
 
         val winner = getWinnerOfRandomPlay(node)
 
@@ -164,14 +161,15 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return node
     }
 
-    private inline fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
+    private fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
         //Simulate a random game from this node.
         //        printMoveAndBoard(node.gameState)
+//        println("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
         val randomGame = Evaluator.simulateRandomGame(node.gameState, bots)
         val winner = randomGame.winner
 
-        //        println("eval  $winner")
-        //        printMoveAndBoard(randomGame)
+//                println("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")
+//                printMoveAndBoard(randomGame.state)
         return winner
     }
 
