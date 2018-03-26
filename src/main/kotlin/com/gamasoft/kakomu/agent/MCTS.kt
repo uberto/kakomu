@@ -3,6 +3,8 @@ package com.gamasoft.kakomu.agent
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicIntegerArray
 
 
 sealed class MCTS {
@@ -12,13 +14,13 @@ sealed class MCTS {
         object ROOT : MCTS()
 
 
-        val winCounts: MutableMap<Player, Int> = mutableMapOf(Pair(Player.BLACK, 0), Pair(Player.WHITE, 0))
+        private val winCounts: AtomicIntegerArray = AtomicIntegerArray(2)
 
-        var rollouts = 0
+        private val rollouts: AtomicInteger = AtomicInteger()
 
         val children = mutableSetOf<Node>()
 
-        val unvisitedMoves = gameState.allMoves() //TODO legal moves to a lazy seq
+        private val unvisitedMoves = gameState.allMoves() //TODO legal moves to a lazy seq
 
 
         fun addRandomChild(): Node {
@@ -40,9 +42,8 @@ sealed class MCTS {
 
         fun recordWin(winner: Player) {
 
-            winCounts[winner] = 1 + winCounts[winner]!!
-            rollouts += 1
-
+            winCounts.incrementAndGet(winner.toInt())
+            rollouts.incrementAndGet()
 //        println("winner $winner ${winCounts[winner]} $rollouts")
 
         }
@@ -52,7 +53,7 @@ sealed class MCTS {
         }
 
         fun winningPct(player: Player): Double {
-            return winCounts[player]!! / rollouts.toDouble()
+            return winCounts[player.toInt()] / rollouts.toDouble()
         }
 
 
@@ -80,6 +81,11 @@ sealed class MCTS {
 
         fun showMove(): String = gameState.lastMove?.humanReadable().orEmpty()
 
+        fun rollouts(): Int = rollouts.get()
+
+
 
     }
 }
+
+

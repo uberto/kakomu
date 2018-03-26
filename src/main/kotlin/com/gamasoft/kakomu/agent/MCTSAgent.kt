@@ -29,7 +29,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     fun selectChild(node: MCTS.Node): MCTS.Node {
         //Select a child according to the upper confidence bound for trees (UCT) metric.
 
-        val totalRollouts = node.children.sumBy { c -> c.rollouts }
+        val totalRollouts = node.rollouts()
         val logRollouts = Math.log(totalRollouts.toDouble())
 
         var bestScore = -1.0
@@ -41,7 +41,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
             // Calculate the UCT score.
             val winPercentage = child.winningPct(node.gameState.nextPlayer)
-            val explorationFactor = Math.sqrt(logRollouts / child.rollouts)
+            val explorationFactor = Math.sqrt(logRollouts / child.rollouts())
             val uctScore = winPercentage + temperature * explorationFactor
             // Check if this is the largest we've seen so far.
             if (uctScore > bestScore) {
@@ -72,7 +72,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
                 bestPct = childPct
                 bestMove = child.gameState
             }
-            println("    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
+            println("    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts()} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
         }
 
         if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
@@ -138,18 +138,17 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
     private fun propagateResult(node: MCTS.Node, winner: Player) {
         var node1 = node
-        synchronized(this) {
-            //Propagate scores back up the tree.
-            while(true) {
-                node1.recordWin(winner)
-                val parent = node1.parent
-                if (parent is MCTS.Node)
-                    node1 = parent
-                else
-                    break
-            }
-            currentlyEvaluatingNodes.remove(node)
+        //Propagate scores back up the tree.
+        while(true) {
+            node1.recordWin(winner)
+            val parent = node1.parent
+            if (parent is MCTS.Node)
+                node1 = parent
+            else
+                break
         }
+        currentlyEvaluatingNodes.remove(node)
+
     }
 
     private fun selectNextNode(root: MCTS.Node): MCTS.Node {

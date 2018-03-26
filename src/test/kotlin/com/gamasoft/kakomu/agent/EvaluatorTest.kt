@@ -89,7 +89,7 @@ internal class EvaluatorTest{
         val startingState = GameState.newGame(boardSize)
         val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
         //warmup
-        for (i in (1..100)) {
+        for (i in (1..10000)) {
             Evaluator.simulateRandomGame(startingState, bots)
         }
         for (i in (1..10)) {
@@ -119,6 +119,8 @@ internal class EvaluatorTest{
 //about 0.5 msec on 9x9 and 4.5 on 19x19
 //with single swap instead of shuffle:
 //about 0.33 msec on 9x9 and 2.4 on 19x19
+//with array instead of map for winCount:
+//about 0.27 msec on 9x9 and 2.1 on 19x19
 
 
 
