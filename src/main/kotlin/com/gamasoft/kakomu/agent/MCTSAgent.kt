@@ -15,7 +15,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
 
     //for concurrency
-    private val currentlyEvaluatingNodes: MutableSet<MCTSNode> = mutableSetOf()
+    private val currentlyEvaluatingNodes: MutableSet<MCTS.Node> = mutableSetOf()
 
     val bots: Map<Player, Agent>
 
@@ -26,14 +26,14 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
                 Player.WHITE to RandomBot(boardSize))
     }
 
-    fun selectChild(node: MCTSNode): MCTSNode {
+    fun selectChild(node: MCTS.Node): MCTS.Node {
         //Select a child according to the upper confidence bound for trees (UCT) metric.
 
         val totalRollouts = node.children.sumBy { c -> c.rollouts }
         val logRollouts = Math.log(totalRollouts.toDouble())
 
         var bestScore = -1.0
-        var bestChild: MCTSNode? = null
+        var bestChild: MCTS.Node = node
         //Loop over each child.
         for (child in node.children) {
             if (child in currentlyEvaluatingNodes)
@@ -50,14 +50,14 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             }
         }
 
-        return bestChild?:node
+        return bestChild
     }
 
     override fun playNextMove(gameState: GameState): GameState {
         println()
         println("Thinking...")
 
-        val root = MCTSNode(gameState)
+        val root = MCTS.Node(gameState)
 
         val rolls = exploreTree(root)
         println("Done ${rolls} rollouts")
@@ -85,12 +85,12 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     }
 
 
-    private inline fun exploreTree(root: MCTSNode): Int = exploreTreeNoConcurrency(root)
-//    private inline fun exploreTree(root: MCTSNode): Int = exploreTreeConcurrency(root)
+    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
+//    private inline fun exploreTree(root: MCTS): Int = exploreTreeConcurrency(root)
 
 
 
-    private fun exploreTreeNoConcurrency(root: MCTSNode): Int {
+    private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
         var i = AtomicInteger(0)
         val start = System.currentTimeMillis()
         val maxMillis = secondsForMove * 1000
@@ -109,7 +109,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         }
     }
 
-    private fun exploreTreeConcurrency(root: MCTSNode): Int {
+    private fun exploreTreeConcurrency(root: MCTS.Node): Int {
         var i = AtomicInteger(0)
         val start = System.currentTimeMillis()
         val maxMillis = secondsForMove * 1000
@@ -128,7 +128,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return i.get()
     }
 
-    private fun newRolloutAndRecordWin(root: MCTSNode) {
+    private fun newRolloutAndRecordWin(root: MCTS.Node) {
         var node = selectNextNode(root)
 
         val winner = getWinnerOfRandomPlay(node)
@@ -136,20 +136,23 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         propagateResult(node, winner)
     }
 
-    private fun propagateResult(node: MCTSNode, winner: Player) {
+    private fun propagateResult(node: MCTS.Node, winner: Player) {
         var node1 = node
         synchronized(this) {
             //Propagate scores back up the tree.
-            while (true) {
+            while(true) {
                 node1.recordWin(winner)
                 val parent = node1.parent
-                node1 = if (parent != null) parent else break
+                if (parent is MCTS.Node)
+                    node1 = parent
+                else
+                    break
             }
             currentlyEvaluatingNodes.remove(node)
         }
     }
 
-    private fun selectNextNode(root: MCTSNode): MCTSNode {
+    private fun selectNextNode(root: MCTS.Node): MCTS.Node {
         var node = root
 
         synchronized(this) {
@@ -162,11 +165,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return node
     }
 
-    private inline fun getWinnerOfRandomPlay(node: MCTSNode): Player {
+    private inline fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
         //Simulate a random game from this node.
         //        printMoveAndBoard(node.gameState)
         val randomGame = Evaluator.simulateRandomGame(node.gameState, bots)
-        val winner = randomGame.winner()!!
+        val winner = randomGame.winner
 
         //        println("eval  $winner")
         //        printMoveAndBoard(randomGame)

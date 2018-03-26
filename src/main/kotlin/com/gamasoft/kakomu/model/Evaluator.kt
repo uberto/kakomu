@@ -30,7 +30,7 @@ class Evaluator {
         fun computeGameResultFullBoard(gameState: GameState):GameResult{
             val black = countTerritoryAndStones(gameState.board, Player.BLACK)
             val white = countTerritoryAndStones(gameState.board, Player.WHITE)
-            return GameResult(black, white, komi = 7.5)
+            return GameResult(black, white, komi = 7.5)  //TODO komi configurable
         }
 
 
@@ -69,12 +69,13 @@ class Evaluator {
             return true
         }
 
-        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): GameState {
+        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): EndGame {
             var currGame = game
             while (!currGame.isOver()) {
                 currGame = bots[game.nextPlayer]!!.playNextMove(currGame)
             }
-            return currGame
+
+            return EndGame(currGame)
         }
     }
 

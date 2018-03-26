@@ -1,9 +1,6 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Evaluator
-import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Move
-import com.gamasoft.kakomu.model.Player
+import com.gamasoft.kakomu.model.*
 
 typealias StateEval = (game: GameState) -> Int
 
@@ -19,7 +16,9 @@ class AlfaBetaPruning {
 
 
             if (gameState.isOver()) {
-                if (gameState.winner() == gameState.nextPlayer)
+                val endGame = EndGame(gameState)
+
+                if (endGame.winner == gameState.nextPlayer)
                     return Evaluator.MAX_SCORE
                 else
                     return Evaluator.MIN_SCORE

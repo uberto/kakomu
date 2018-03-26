@@ -52,11 +52,11 @@ internal class MCTSAgentTest {
 
         for (i in (1..matchesNumber)) {
             val res1 = simulateRandomGame(startingState, bots)
-            val winner1 = if (res1.winner()!! == Player.BLACK) "first" else "second"
+            val winner1 = if (res1.winner == Player.BLACK) "first" else "second"
             tots.compute(winner1) { p, v -> 1 + (v ?: 0) }
             println(winner1)
             val res2 = simulateRandomGame(startingState, botsReversed)
-            val winner2 = if (res2.winner()!! == Player.WHITE) "first" else "second"
+            val winner2 = if (res2.winner == Player.WHITE) "first" else "second"
             tots.compute(winner2) { p, v -> 1 + (v ?: 0) }
             println(winner2)
 

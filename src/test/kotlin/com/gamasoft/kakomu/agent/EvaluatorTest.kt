@@ -48,7 +48,7 @@ internal class EvaluatorTest{
 
         val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
 
-        val finalState = Evaluator.simulateRandomGame(startingState, bots)
+        val finalState = Evaluator.simulateRandomGame(startingState, bots).state
         printWholeMatch(finalState)
 
         Assertions.assertTrue(finalState.lastMove!! is Move.Pass)

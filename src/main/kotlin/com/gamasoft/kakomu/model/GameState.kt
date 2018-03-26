@@ -1,7 +1,5 @@
 package com.gamasoft.kakomu.model
 
-import com.gamasoft.kakomu.model.Evaluator.Companion.computeGameResultFullBoard
-
 
 data class GameState(val board: Board, val nextPlayer: Player, val previous: GameState?, val lastMove: Move?) {
 
@@ -117,15 +115,6 @@ data class GameState(val board: Board, val nextPlayer: Player, val previous: Gam
         return moveList
     }
 
-    fun winner(): Player? {
-        if (!isOver())
-            return null
-        if (lastMove is Move.Resign)
-            return nextPlayer
-
-        val gameResult = computeGameResultFullBoard(this)
-        return gameResult.winner()
-    }
 
     fun isAnEye(point: Point): Boolean {
         return Evaluator.isAnEye(board, point, nextPlayer)
