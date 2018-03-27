@@ -45,8 +45,7 @@ internal class EvaluatorTest{
     fun selfGame(){
         val boardSize = 19
         val startingState = GameState.newGame(boardSize)
-
-        val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
+        val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
 
         val finalState = Evaluator.simulateRandomGame(startingState, bots).state
         printWholeMatch(finalState)
@@ -87,13 +86,14 @@ internal class EvaluatorTest{
     fun performanceSelfGame() {
         val boardSize = 9
         val startingState = GameState.newGame(boardSize)
-        val bots = mapOf(Player.BLACK to RandomBot(boardSize), Player.WHITE to RandomBot(boardSize))
+        val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
         //warmup
         for (i in (1..10000)) {
             Evaluator.simulateRandomGame(startingState, bots)
         }
         for (i in (1..10)) {
-            val fixedBots = mapOf(Player.BLACK to RandomBot(boardSize, 234345), Player.WHITE to RandomBot(boardSize, 767655))
+            val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
+
             PrintTest.crono("play self game ${boardSize}x${boardSize}") {
                 Evaluator.simulateRandomGame(startingState, fixedBots)
             }

@@ -45,8 +45,8 @@ internal class MCTSAgentTest {
 */
 
     private fun collectBotsMatches(mctsAgentHot: MCTSAgent, mctsAgentCold: MCTSAgent, startingState: GameState, matchesNumber: Int) {
-        val bots = mapOf(Player.BLACK to mctsAgentHot, Player.WHITE to mctsAgentCold)
-        val botsReversed = mapOf(Player.BLACK to mctsAgentCold, Player.WHITE to mctsAgentHot)
+        val bots: Array<Agent> = arrayOf(mctsAgentHot, mctsAgentCold)
+        val botsReversed: Array<Agent> = arrayOf(mctsAgentCold, mctsAgentHot)
 
         val tots = mutableMapOf<String, Int>()
 

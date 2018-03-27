@@ -69,10 +69,10 @@ class Evaluator {
             return true
         }
 
-        fun simulateRandomGame(game: GameState, bots: Map<Player, Agent>): EndGame {
+        fun simulateRandomGame(game: GameState, bots: Array<Agent>): EndGame {
             var currGame = game
             while (!currGame.isOver()) {
-                currGame = bots[game.nextPlayer]!!.playNextMove(currGame)
+                currGame = bots[game.nextPlayer.toInt()].playNextMove(currGame)
             }
 
             return EndGame(currGame)

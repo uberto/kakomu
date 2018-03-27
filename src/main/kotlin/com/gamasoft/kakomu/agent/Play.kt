@@ -27,7 +27,7 @@ fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
 private fun askMove(game: GameState): Move {
     while (true) {
         print("insert move coords:")
-        val humanMove = readLine()!!.trim().toLowerCase()
+        val humanMove = readLine()?.trim()?.toLowerCase().orEmpty()
         when (humanMove) {
             "resign" -> return Move.Resign
             "pass" -> return Move.Pass

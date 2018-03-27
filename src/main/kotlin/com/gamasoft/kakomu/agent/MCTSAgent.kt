@@ -17,13 +17,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     //for concurrency
     private val currentlyEvaluatingNodes: MutableSet<MCTS.Node> = mutableSetOf()
 
-    val bots: Map<Player, Agent>
+    val bots: Array<Agent>
 
 
     init {
-        bots = mapOf<Player, Agent>(
-                Player.BLACK to RandomBot(boardSize),
-                Player.WHITE to RandomBot(boardSize))
+        bots = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
     }
 
     fun selectChild(node: MCTS.Node): MCTS.Node {
@@ -95,7 +93,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
 
     private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
-        var i = AtomicInteger(0)
+        val i = AtomicInteger(0)
         val start = System.currentTimeMillis()
         val maxMillis = secondsForMove * 1000
         while (System.currentTimeMillis() - start < maxMillis) {
@@ -107,7 +105,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     }
 
     private fun exploreTreeConcurrency(root: MCTS.Node): Int {
-        var i = AtomicInteger(0)
+        val i = AtomicInteger(0)
         val start = System.currentTimeMillis()
         val maxMillis = secondsForMove * 1000
 
