@@ -6,7 +6,6 @@ import com.gamasoft.kakomu.model.*
 
 fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
     var game = GameState.newGame(boardSize)
-//    val bot = RandomBot(boardSize)
     val bot = MCTSAgent(secondsForMove, 2.0, boardSize)
     while (!game.isOver()) {
         drawBoard(game.board, game.lastMove).forEach{ println(it)}
@@ -20,10 +19,7 @@ fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
             nextMove
         }
 
-        val newGame = game.applyMove(move)
-
-        if (newGame != null)
-            game = newGame
+        game = game.applyMove(move)?:game
 
     }
 }
@@ -46,9 +42,6 @@ private fun askMove(game: GameState): Move {
     }
 }
 
-fun validMove(humanMove: String): Boolean {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-}
 
 
 

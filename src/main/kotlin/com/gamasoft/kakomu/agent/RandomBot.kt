@@ -51,7 +51,7 @@ class RandomBot(val boardSize: Int, val seed: Long = 0): Agent {
 //        printMoveAndBoard(randomGame.state)
 //        println("")
 
-        return gameState.applyMove(Move.Pass)!!
+        return gameState.applyPass()
     }
 
 }
