@@ -12,7 +12,7 @@ fun main(args : Array<String>) {
         gtp()
     } else {
         println("hello 囲む")
-        playAgainstHuman(9, 30)
+        playAgainstHuman(9, 10)
     }
 
 }
@@ -20,7 +20,7 @@ fun main(args : Array<String>) {
 
 fun gtp(){
     // Create an instance of your go engine
-    val engine = MCTSGoEngine()
+    val engine = MCTSGoEngine(10, 2.0)
 
     // Create reader and writer for standard input and output
     val reader = BufferedReader(InputStreamReader(System.`in`));

@@ -8,9 +8,9 @@ import kotlinx.coroutines.experimental.*
 import java.util.concurrent.atomic.AtomicInteger
 
 
-class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int) : Agent {
+class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int, val debug: Boolean = true) : Agent {
 //colder will evaluate better but can miss completely the best move
-    //1.5 is a good starting point temperature
+// 1.5 is a good starting point temperature
 //hotter will explore more moves but can mis-evaluate the most promising
 
 
@@ -18,7 +18,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private val currentlyEvaluatingNodes: MutableSet<MCTS.Node> = mutableSetOf()
 
     val bots: Array<Agent>
-
 
     init {
         bots = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
@@ -51,22 +50,15 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return bestChild
     }
 
-    private fun incRollouts(i: AtomicInteger) {
-        i.incrementAndGet()
-        if (i.get() % 5000 == 0) {
-            print('.')
-        }
-    }
-
 
     override fun playNextMove(gameState: GameState): GameState {
-        println()
-        println("Thinking...")
+        printDebug("")
+        printDebug("Let me think for $secondsForMove seconds...")
 
         val root = MCTS.Node(gameState)
 
         val rolls = exploreTree(root)
-        println("Done ${rolls} rollouts")
+        printDebug("Done ${rolls} rollouts")
 
         //Having performed as many MCTS rounds as we have time for, we
         //now pick a move.
@@ -78,29 +70,35 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
                 bestPct = childPct
                 bestMove = child.gameState
             }
-            println("    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts()} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
+            printDebug("    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts()} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
         }
 
         if (bestPct <= 0.15) //let's do the right thing and resign if hopeless
             bestMove = GameState(gameState.board, gameState.nextPlayer, gameState.previous, Move.Resign)
 
-        println("Select move ${bestMove.lastMove?.humanReadable()} with win pct $bestPct")
+        printDebug("Select move ${bestMove.lastMove?.humanReadable()} with win pct $bestPct")
 
         return bestMove
 
     }
-//    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
-    private inline fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
+
+    private fun printDebug(msg: String) {
+        if (debug)
+            println(msg)
+    }
+
+    //    private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
+    private fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
 
     private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
         val i = AtomicInteger(0)
         val start = System.currentTimeMillis()
         val maxMillis = secondsForMove * 1000
         while (System.currentTimeMillis() - start < maxMillis) {
-            incRollouts(i)
+            i.incrementAndGet()
             newRolloutAndRecordWin(root)
         }
-        println(" ${i.get()} rollouts in ${System.currentTimeMillis() - start} millisecs")
+        printDebug(" ${i.get()} rollouts in ${System.currentTimeMillis() - start} millisecs")
         return i.get()
     }
 
@@ -114,7 +112,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             while (System.currentTimeMillis() - start < maxMillis) {
                 val jobs = mutableListOf<Job>()
                 repeat(10) {
-                    incRollouts(i)
+                    i.incrementAndGet()
                     jobs.add(launch { newRolloutAndRecordWin(root) })
                 }
                 jobs.forEach{it.join()}
@@ -162,11 +160,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
         //Simulate a random game from this node.
         //        printMoveAndBoard(node.gameState)
-//        println("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
+//        printDebug("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
         val randomGame = Evaluator.simulateRandomGame(node.gameState, bots)
         val winner = randomGame.winner
 
-//                println("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")
+//                printDebug("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")
 //                printMoveAndBoard(randomGame.state)
         return winner
     }
