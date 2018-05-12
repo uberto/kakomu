@@ -5,6 +5,8 @@ import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.actor
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -87,7 +89,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             println(msg)
     }
 
-    //    private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
+//        private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
     private fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
 
     private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
@@ -111,7 +113,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
             while (System.currentTimeMillis() - start < maxMillis) {
                 val jobs = mutableListOf<Job>()
-                repeat(10) {
+                repeat(100) {
                     i.incrementAndGet()
                     jobs.add(launch { newRolloutAndRecordWin(root) })
                 }
@@ -119,6 +121,50 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             }
         }
         return i.get()
+    }
+
+    private fun exploreTreeActors(root: MCTS.Node): Int {
+        val i = AtomicInteger(0)
+        val start = System.currentTimeMillis()
+        val maxMillis = secondsForMove * 1000
+
+
+        //prepare 10 actors
+
+        val rollouters = Array(10){buildRolloutWorker(it.toString())}
+
+        runBlocking {
+
+            while (System.currentTimeMillis() - start < maxMillis) {
+                //while free actors...
+                //launch { actor.send(root) }
+                            }
+        }
+
+
+        //kill them actor.close()
+
+        return i.get()
+    }
+
+    fun buildRolloutWorker(id:String) = actor<RolloutMessage> {
+
+        for (msg in channel) {
+            newRolloutAndRecordWin(msg.rootNode)
+            //send the response
+            //val response = CompletableDeferred<Int>()
+            //counter.send(GetCounter(response))
+
+        }
+
+        printDebug("Rollout worker $id has finished!")
+//        var counter = 0 // actor state
+//        for (msg in channel) { // iterate over incoming messages
+//            when (msg) {
+//                is IncCounter -> counter++
+//                is GetCounter -> msg.response.complete(counter)
+//            }
+//        }
     }
 
     private fun newRolloutAndRecordWin(root: MCTS.Node) {

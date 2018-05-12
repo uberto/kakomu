@@ -20,7 +20,7 @@ class Grid(val cols:Int, val rows:Int) {
         matrix[pointToInt(row, col)] = goString
     }
 
-    inline private fun pointToInt(row: Int, col: Int) = row + col * rows
+    private fun pointToInt(row: Int, col: Int) = row + col * rows
 
     fun copyFrom(grid: Grid) {
         System.arraycopy(grid.matrix, 0, matrix, 0, matrix.size)
