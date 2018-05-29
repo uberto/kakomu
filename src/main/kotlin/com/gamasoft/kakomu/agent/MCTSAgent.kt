@@ -88,47 +88,60 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             println(msg)
     }
 
-//        private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
-    private fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
+        private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
+//    private fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
 
-    private fun exploreTreeNoConcurrency(root: MCTS.Node): Int {
-        val i = AtomicInteger(0)
-        val start = System.currentTimeMillis()
-        val maxMillis = secondsForMove * 1000
-        while (System.currentTimeMillis() - start < maxMillis) {
-            i.incrementAndGet()
-            newRolloutAndRecordWin(root)
-        }
-        printDebug(" ${i.get()} rollouts in ${System.currentTimeMillis() - start} millisecs")
-        return i.get()
-    }
 
-    private fun exploreTreeConcurrency(root: MCTS.Node): Int {
-        var i = 0
+
+    private fun exploreTreeNoConcurrency(root: MCTS.Node): Int = exploreTree(root, rolloutsSingleThread)
+
+    private fun exploreTreeConcurrency(root: MCTS.Node): Int = exploreTree(root, rolloutsParallels)
+
+    private fun exploreTree(root: MCTS.Node, rolloutsMicroBatch: suspend (MCTS.Node) -> Int ): Int {
+        var iter = 0
         val start = System.currentTimeMillis()
         val expectedEnd = start + secondsForMove * 1000
-
         var lastSec = start
 
         runBlocking {
 
             while (System.currentTimeMillis() < expectedEnd) {
-                val jobs = mutableListOf<Job>()
-                repeat(20) {
-                    i++
-                    jobs.add(launch { newRolloutAndRecordWin(root) })
-                }
-                jobs.forEach{it.join()}
 
-                if (System.currentTimeMillis() - lastSec >= 1000) {
-                    lastSec += 1000
-                    val remSec = (expectedEnd - lastSec ) / 1000
-                    printDebug("$remSec...   runouts $i")
-                }
+                iter += rolloutsMicroBatch(root)
 
+                lastSec = updateRolloutsStatus(expectedEnd, iter, lastSec)
             }
         }
-        return i
+        return iter
+    }
+
+
+
+
+    val rolloutsSingleThread: suspend (MCTS.Node) -> Int = { root: MCTS.Node ->
+        newRolloutAndRecordWin(root)
+        1
+    }
+
+    val rolloutsParallels: suspend (MCTS.Node) -> Int = {root: MCTS.Node ->
+        val jobs = mutableListOf<Job>()
+        repeat(20) {
+            jobs.add(launch { newRolloutAndRecordWin(root) })
+        }
+        jobs.forEach { it.join() }
+        20
+    }
+
+    private val UPDATE_INTERVAL_MS = 1000
+
+    private fun updateRolloutsStatus(expectedEnd: Long, iterations: Int, lastUpdate: Long): Long {
+        if (System.currentTimeMillis() - lastUpdate >= UPDATE_INTERVAL_MS) {
+            val remSec = (expectedEnd - lastUpdate) / UPDATE_INTERVAL_MS
+            printDebug("$remSec...   runouts $iterations")
+            return lastUpdate + UPDATE_INTERVAL_MS
+        } else {
+            return lastUpdate
+        }
     }
 
     private fun newRolloutAndRecordWin(root: MCTS.Node) {
