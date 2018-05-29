@@ -25,7 +25,7 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
         if (game.isOver())
             return Move.RESIGN
 
-        val nextMove = bot.playNextMove(game).lastMove!!
+        val nextMove = bot.playNextMove(game).lastMove()!!
         //    println(drawMove(player, nextMove))
 
         game = game.applyMove(nextMove)?:game

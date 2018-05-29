@@ -1,10 +1,24 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.model.Board
+import com.gamasoft.kakomu.model.Evaluator
+import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 internal class EvaluatorTest{
+
+    companion object {
+        fun <T> crono(msg: String, function: () -> T): T {
+            val start = System.nanoTime()
+            val res = function()
+            val elapsed = (System.nanoTime() - start) / 1000000.0
+            println("$msg in $elapsed millisec")
+            return res
+        }
+    }
+
 
     @Test
     fun trueEyeOnTheCorner(){
@@ -50,7 +64,7 @@ internal class EvaluatorTest{
         val finalState = Evaluator.simulateRandomGame(startingState, bots).state
         printWholeMatch(finalState)
 
-        Assertions.assertTrue(finalState.lastMove!! is Move.Pass)
+        Assertions.assertTrue(finalState.lastMove()!! is Move.Pass)
         val scoreWhite = Evaluator.countTerritoryAndStones(finalState.board, Player.WHITE)
         val scoreBlack = Evaluator.countTerritoryAndStones(finalState.board, Player.BLACK)
 
@@ -94,7 +108,7 @@ internal class EvaluatorTest{
         for (i in (1..10)) {
             val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
 
-            PrintTest.crono("play self game ${boardSize}x${boardSize}") {
+            crono("play self game ${boardSize}x${boardSize}") {
                 Evaluator.simulateRandomGame(startingState, fixedBots)
             }
         }
@@ -108,7 +122,7 @@ on my laptop i7 2Ghz (in millisec on 9x9 and 19x19)
 3.5     38   neighbors map
 1.5     31   faster isAnEye
 1.3     27   simpleKo
-1.25    25   selectMove returning State
+1.25    25   selectMove returning MoveChain
 0.7     12   remove System.nanotime
 0.5    4.5   RandomBot evaluating single move
 0.33   2.4   single swap instead of shuffle

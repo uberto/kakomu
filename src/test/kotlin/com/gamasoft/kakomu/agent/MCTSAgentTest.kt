@@ -57,7 +57,7 @@ internal class MCTSAgentTest {
             println(winner1)
             val res2 = simulateRandomGame(startingState, botsReversed)
             val winner2 = if (res2.winner == Player.WHITE) "first" else "second"
-            tots.compute(winner2) { p, v -> 1 + (v ?: 0) }
+            tots.compute(winner2) { _, v -> 1 + (v ?: 0) }
             println(winner2)
 
         }

@@ -8,15 +8,15 @@ fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
     var game = GameState.newGame(boardSize)
     val bot = MCTSAgent(secondsForMove, 2.0, boardSize)
     while (!game.isOver()) {
-        drawBoard(game.board, game.lastMove).forEach{ println(it)}
+        drawBoard(game.board, game.lastMove()).forEach{ println(it)}
 
         val player = game.nextPlayer
         val move = if (player == Player.BLACK){
             askMove(game)
         } else {
-            val nextMove = bot.playNextMove(game).lastMove!!
-            println(drawMove(player, nextMove))
-            nextMove
+            val nextMove = bot.playNextMove(game)
+            println(drawMove(player, nextMove.lastMoveDesc()))
+            nextMove.lastMove()!! //TODO have a better GameState with move
         }
 
         game = game.applyMove(move)?:game

@@ -173,5 +173,9 @@ class Board (val numCols: Int, val numRows: Int,
         return zHash
     }
 
+    fun cloneEmpty(): Board {
+        return Board(numCols, numRows, neighborsMap)
+    }
+
 
 }

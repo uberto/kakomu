@@ -1,5 +1,6 @@
 package com.gamasoft.kakomu.model
 
+import com.gamasoft.kakomu.agent.EvaluatorTest.Companion.crono
 import com.gamasoft.kakomu.agent.PrintTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -10,13 +11,11 @@ class ZobristTest{
     @Test
     fun createFullTable(){
 
-        val t = PrintTest.crono("calculate table 19x19"){  Zobrist.calcTable(19)}
+        val t = crono("calculate table 19x19"){  Zobrist.calcTable(19)}
 
         val eb = t.getValue(Point(1,1))
         assertTrue(eb > 0)
 
-
-     //   println(t)
     }
 
     @Test

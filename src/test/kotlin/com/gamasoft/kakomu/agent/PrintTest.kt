@@ -6,16 +6,6 @@ import org.junit.jupiter.api.Test
 
 internal class PrintTest {
 
-    companion object {
-        fun <T> crono(msg: String, function: () -> T): T {
-            val start = System.nanoTime()
-            val res = function()
-            val elapsed = (System.nanoTime() - start) / 1000000.0
-            println("$msg in $elapsed millisec")
-            return res
-        }
-    }
-
 
 
     @Test
@@ -37,14 +27,14 @@ internal class PrintTest {
 
     @Test
     fun drawMoveResign(){
-        val resign = drawMove(Player.BLACK, Move.Resign)
+        val resign = drawMove(Player.BLACK, "resigns")
 
         assertEquals("BLACK resigns", resign)
     }
 
     @Test
     fun drawMove(){
-        val tenten = drawMove(Player.WHITE, Move.Play(Point(10, 10)))
+        val tenten = drawMove(Player.WHITE, Move.Play(Point(10, 10)).humanReadable())
 
         assertEquals("WHITE K10", tenten)
     }
