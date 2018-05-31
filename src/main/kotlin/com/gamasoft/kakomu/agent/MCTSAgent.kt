@@ -3,6 +3,8 @@ package com.gamasoft.kakomu.agent
 import com.gamasoft.kakomu.model.*
 import kotlinx.coroutines.experimental.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.actor
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -91,7 +93,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private fun printDebug(msg: String) {
         if (debug)
         println(msg)
-
     }
 
     private fun exploreTree(root: MCTS.Node, rolloutsMicroBatch: suspend (MCTS.Node) -> Int ): Int {
@@ -111,7 +112,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         }
         return iter
     }
-
 
 
 
@@ -153,6 +153,26 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         } else {
             return lastUpdate
         }
+    }
+
+    fun buildRolloutWorker(id:String) = actor<RolloutMessage> {
+
+        for (msg in channel) {
+            newRolloutAndRecordWin(msg.rootNode)
+            //send the response
+            //val response = CompletableDeferred<Int>()
+            //counter.send(GetCounter(response))
+
+        }
+
+        printDebug("Rollout worker $id has finished!")
+//        var counter = 0 // actor state
+//        for (msg in channel) { // iterate over incoming messages
+//            when (msg) {
+//                is IncCounter -> counter++
+//                is GetCounter -> msg.response.complete(counter)
+//            }
+//        }
     }
 
     private fun newRolloutAndRecordWin(root: MCTS.Node) {

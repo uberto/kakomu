@@ -55,14 +55,13 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
 
 
     override fun addMove(aMove: Move, aPlayer: Player): Boolean {
-        val move = translateMove(aMove)
+        translateMove(aMove)?.let {
+            val newState = game.applyMove(it)?.let { game = it  }
 
-        if (move == null){
-            return false
+            return newState!=null
+
         }
-
-        game = game.applyMove(move)?:game
-        return true
+        return false
     }
 
 

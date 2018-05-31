@@ -25,18 +25,7 @@ fun evaluateTerritory(board:Board): Territory {
                     Player.BLACK -> TerritoryEnum.BLACK
                 }
             } else {
-                val (group, neighbours) = collectRegion(p, board)
-                val fillWith = if (neighbours.size == 1){//Completely surrended by black or white
-                    if (neighbours.first() == Player.WHITE)
-                        TerritoryEnum.TerritoryW
-                    else
-                        TerritoryEnum.TerritoryB
-                } else {
-                    TerritoryEnum.Dame
-                }
-                for (pos in group){
-                    status[pos] = fillWith
-                }
+                assignRegionToPlayer(p, board, status)
             }
 
         }
@@ -44,6 +33,21 @@ fun evaluateTerritory(board:Board): Territory {
     }
 
     return Territory(status)
+}
+
+private fun assignRegionToPlayer(startingPoint: Point, board: Board, status: MutableMap<Point, TerritoryEnum>) {
+    val (group, neighbours) = collectRegion(startingPoint, board)
+    val fillWith = if (neighbours.size == 1) {//Completely surrended by black or white
+        if (neighbours.first() == Player.WHITE)
+            TerritoryEnum.TerritoryW
+        else
+            TerritoryEnum.TerritoryB
+    } else {
+        TerritoryEnum.Dame
+    }
+    for (pos in group) {
+        status[pos] = fillWith
+    }
 }
 
 fun collectRegion(startPos: Point, board: Board, visited: MutableMap<Point, Boolean> = mutableMapOf()): Pair<Set<Point>, Set<Player>> {
@@ -55,25 +59,26 @@ fun collectRegion(startPos: Point, board: Board, visited: MutableMap<Point, Bool
     val allPoints = mutableSetOf<Point>()
     val allBorders = mutableSetOf<Player>()
     visited[startPos] = true
-    val here = board.getString(startPos)?.color //not completely sure if can be null
+    val here = board.getString(startPos)?.color //can be null
     val deltas = listOf(Pair(-1,0), Pair(1,0), Pair(0, -1), Pair(0, 1))
     for (d in deltas){
         val deltaRow = d.first
         val deltaCol = d.second
         val nextPoint = Point(row = startPos.row + deltaRow,
                                 col = startPos.col + deltaCol)
-        if (board.isOnTheGrid(nextPoint)){
+        if (board.isOnTheGrid(nextPoint)) {
             val neighbor = board.getString(nextPoint)?.color
-            if (neighbor == here){
+            if (neighbor == here) {
                 val pb = collectRegion(nextPoint, board, visited)
                 allPoints.addAll(pb.first)
                 allBorders.addAll(pb.second)
-            } else if (neighbor != null)
-                allBorders.add(neighbor)
+            } else {
+                neighbor?.let { allBorders.add(it) }
             }
         }
-    return Pair(allPoints, allBorders)
     }
+    return Pair(allPoints, allBorders)
+}
 
 fun computeGameResult(gameState: GameState): GameResult {
     val territory = evaluateTerritory(gameState.board)
