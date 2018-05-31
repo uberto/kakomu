@@ -21,6 +21,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         bots = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
     }
 
+//        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsWorkers)
+//        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsSingleThread)
+    private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsParallels)
+
+
     fun selectChild(node: MCTS.Node): MCTS.Node {
         //Select a child according to the upper confidence bound for trees (UCT) metric.
 
@@ -85,17 +90,9 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
     private fun printDebug(msg: String) {
         if (debug)
-            println(msg)
+        println(msg)
+
     }
-
-        private fun exploreTree(root: MCTS.Node): Int = exploreTreeNoConcurrency(root)
-//    private fun exploreTree(root: MCTS.Node): Int = exploreTreeConcurrency(root)
-
-
-
-    private fun exploreTreeNoConcurrency(root: MCTS.Node): Int = exploreTree(root, rolloutsSingleThread)
-
-    private fun exploreTreeConcurrency(root: MCTS.Node): Int = exploreTree(root, rolloutsParallels)
 
     private fun exploreTree(root: MCTS.Node, rolloutsMicroBatch: suspend (MCTS.Node) -> Int ): Int {
         var iter = 0
@@ -131,6 +128,20 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         jobs.forEach { it.join() }
         20
     }
+
+
+    val rolloutsWorkers: suspend (MCTS.Node) -> Int = {root: MCTS.Node ->
+        val jobs = mutableListOf<Job>()
+        repeat(4) {
+            jobs.add(launch {
+                repeat(200){newRolloutAndRecordWin(root)}
+            })
+        }
+        jobs.forEach { it.join() }
+
+        400
+    }
+
 
     private val UPDATE_INTERVAL_MS = 1000
 

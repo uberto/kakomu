@@ -12,7 +12,7 @@ fun main(args : Array<String>) {
         gtp()
     } else {
         println("hello 囲む")
-        playAgainstHuman(9, 10)
+        playAgainstHuman(19, 100)
     }
 
 }

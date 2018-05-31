@@ -8,6 +8,9 @@ sealed class MoveChain {}
 data class MoveChainZHash(val previous: MoveChain, val zHash: Long, val move: Move): MoveChain()
 object EmptyBoard: MoveChain()
 
+
+
+
 data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: MoveChain) {
 //data class GameState(val board: Board, val nextPlayer: Player, val previous: GameState?, val lastMove: Move?) {
 
