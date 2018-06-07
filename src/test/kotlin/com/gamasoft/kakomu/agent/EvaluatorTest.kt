@@ -55,6 +55,65 @@ internal class EvaluatorTest{
 
     }
 
+
+
+    /*
+    W W W W . .
+    W B B W W .
+    W B . B W W
+    W B B . B W
+    . W B B B W
+    . W W W W W
+     */
+    @Test
+    fun trueEyesWithSingleStone(){
+
+        val board = Board(9,9)
+        board.placeStone(Player.WHITE, Point(2, 2))
+        board.placeStone(Player.WHITE, Point(2, 3))
+        board.placeStone(Player.WHITE, Point(2, 4))
+        board.placeStone(Player.WHITE, Point(2, 5))
+
+        board.placeStone(Player.WHITE, Point(3, 2))
+        board.placeStone(Player.BLACK, Point(3, 3))
+        board.placeStone(Player.BLACK, Point(3, 4))
+        board.placeStone(Player.BLACK, Point(3, 5))
+        board.placeStone(Player.WHITE, Point(3, 6))
+        board.placeStone(Player.WHITE, Point(3, 7))
+
+        board.placeStone(Player.WHITE, Point(4, 2))
+        board.placeStone(Player.BLACK, Point(4, 3))
+        board.placeStone(Player.BLACK, Point(4, 5))
+        board.placeStone(Player.BLACK, Point(4, 6))
+        board.placeStone(Player.WHITE, Point(4, 7))
+
+        board.placeStone(Player.WHITE, Point(5, 2))
+        board.placeStone(Player.WHITE, Point(5, 3))
+        board.placeStone(Player.BLACK, Point(5, 4))
+        board.placeStone(Player.BLACK, Point(5, 6))
+        board.placeStone(Player.WHITE, Point(5, 7))
+
+        board.placeStone(Player.WHITE, Point(6, 3))
+        board.placeStone(Player.WHITE, Point(6, 4))
+        board.placeStone(Player.BLACK, Point(6, 5))
+        board.placeStone(Player.BLACK, Point(6, 6))
+        board.placeStone(Player.WHITE, Point(6, 7))
+
+        board.placeStone(Player.WHITE, Point(7, 4))
+        board.placeStone(Player.WHITE, Point(7, 5))
+        board.placeStone(Player.WHITE, Point(7, 6))
+        board.placeStone(Player.WHITE, Point(7, 7))
+
+        val p1 = Point(4, 4)
+        assert(board.isFree(p1))
+        assert(Evaluator.isAnEye(board, p1, Player.BLACK))
+
+        val p2 = Point(5, 5)
+        assert(board.isFree(p2))
+        assert(Evaluator.isAnEye(board, p2, Player.BLACK))
+
+    }
+
     @Test
     fun selfGame(){
         val boardSize = 9
@@ -102,7 +161,7 @@ internal class EvaluatorTest{
         val startingState = GameState.newGame(boardSize)
         val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
         //warmup
-        for (i in (1..10000)) {
+        for (i in (1..30000)) {
             Evaluator.simulateRandomGame(startingState, bots)
         }
         for (i in (1..10)) {
@@ -116,7 +175,7 @@ internal class EvaluatorTest{
 
 /*
 
-on my laptop i7 2Ghz (in millisec on 9x9 and 19x19)
+on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
 10     160   validmove without deepcopy
 6       65   immutable goStrings
 3.5     38   neighbors map
@@ -126,7 +185,8 @@ on my laptop i7 2Ghz (in millisec on 9x9 and 19x19)
 0.7     12   remove System.nanotime
 0.5    4.5   RandomBot evaluating single move
 0.33   2.4   single swap instead of shuffle
-0.27   2.1   array instead of map for winCount
+0.27   2.0   array instead of map for winCount
+0.26   1.8   no board in gameState
 
  */
 
