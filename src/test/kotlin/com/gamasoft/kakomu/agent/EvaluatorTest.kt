@@ -157,7 +157,7 @@ internal class EvaluatorTest{
 
     @Test
     fun performanceSelfGame() {
-        val boardSize = 9
+        val boardSize = 19
         val startingState = GameState.newGame(boardSize)
         val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
         //warmup
@@ -187,6 +187,10 @@ on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
 0.33   2.4   single swap instead of shuffle
 0.27   2.0   array instead of map for winCount
 0.26   1.8   no board in gameState
+
+//JVM 10
+0.33   2.3  G1
+0.28   1.8  -XX:+UseConcMarkSweepGC
 
  */
 

@@ -3,21 +3,12 @@ version '1.0-SNAPSHOT'
 
 
 buildscript {
-    ext.kotlin_version = '1.1.0'
-//    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.41'
 
     repositories {
         mavenCentral()
         jcenter()
-
-        maven {
-            url 'http://sabrebuild1.uk.standardchartered.com:8081/nexus/content/repositories/public'
-        }
     }
-
-//    <nexus.snapshots.url>http://sabrebuild1.uk.standardchartered.com:8081/nexus/content/repositories/snapshots</nexus.snapshots.url>
-//    <nexus.releases.url>http://sabrebuild1.uk.standardchartered.com:8081/nexus/content/repositories/releases</nexus.releases.url>
-
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -27,9 +18,8 @@ buildscript {
 
 
 apply plugin: 'com.github.johnrengelman.shadow'
-//apply plugin: 'kotlin2js'
 apply plugin: 'java'
-//apply plugin: 'kotlin'
+apply plugin: 'kotlin'
 apply plugin: 'application'
 
 sourceCompatibility = 1.8
@@ -56,8 +46,13 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.1'
 
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.1'
-//    compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
 
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
 //
 //compileKotlin {
