@@ -1,7 +1,6 @@
 package com.gamasoft.kakomu.model
 
-import com.gamasoft.kakomu.agent.EvaluatorTest.Companion.crono
-import com.gamasoft.kakomu.agent.PrintTest
+import com.gamasoft.kakomu.Performance.Companion.crono
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 

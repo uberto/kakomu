@@ -1,5 +1,6 @@
 package com.gamasoft.kakomu.gtp
 
+import com.gamasoft.kakomu.agent.DebugLevel
 import com.gamasoft.kakomu.agent.MCTSAgent
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Point
@@ -12,11 +13,11 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
 
     var boardSize: Int = 9
     var game = GameState.newGame(boardSize)
-    var bot = MCTSAgent(this.secondsForMove, temperature, boardSize, false)
+    var bot = MCTSAgent(this.secondsForMove, temperature, boardSize, DebugLevel.NONE)
 
     override fun newGame() {
         game = GameState.newGame(boardSize)
-        bot = MCTSAgent(this.secondsForMove, temperature, boardSize, false)
+        bot = MCTSAgent(this.secondsForMove, temperature, boardSize, DebugLevel.NONE)
 
     }
 

@@ -1,5 +1,7 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.Performance.Companion.simulateRandomGames
+import com.gamasoft.kakomu.Performance.Companion.warmup
 import com.gamasoft.kakomu.model.Board
 import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.Player
@@ -8,17 +10,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 internal class EvaluatorTest{
-
-    companion object {
-        fun <T> crono(msg: String, function: () -> T): T {
-            val start = System.nanoTime()
-            val res = function()
-            val elapsed = (System.nanoTime() - start) / 1000000.0
-            println("$msg in $elapsed millisec")
-            return res
-        }
-    }
-
 
     @Test
     fun trueEyeOnTheCorner(){
@@ -116,6 +107,7 @@ internal class EvaluatorTest{
 
     @Test
     fun selfGame(){
+
         val boardSize = 9
         val startingState = GameState.newGame(boardSize)
         val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
@@ -157,20 +149,9 @@ internal class EvaluatorTest{
 
     @Test
     fun performanceSelfGame() {
-        val boardSize = 19
-        val startingState = GameState.newGame(boardSize)
-        val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
-        //warmup
-        for (i in (1..30000)) {
-            Evaluator.simulateRandomGame(startingState, bots)
-        }
-        for (i in (1..10)) {
-            val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
+        warmup()
 
-            crono("play self game ${boardSize}x${boardSize}") {
-                Evaluator.simulateRandomGame(startingState, fixedBots)
-            }
-        }
+        simulateRandomGames(9)
     }
 
 /*
@@ -191,6 +172,17 @@ on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
 //JVM 10
 0.33   2.3  G1
 0.28   1.8  -XX:+UseConcMarkSweepGC
+
+
+-XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=50 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40
+-XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=10 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:+UseJVMCICompiler
+-ea -XX:+UseConcMarkSweepGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+
+G1: c2 0.34  graal 0.34
+CMS: c2 0.28  graal 0.27
+Ser: c2 0.26 graal 0.25
+
+9x9 30 sec about 230k/240k
 
  */
 
