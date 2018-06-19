@@ -2,8 +2,7 @@ package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.*
 import kotlinx.coroutines.experimental.*
-import java.util.concurrent.ConcurrentHashMap
-import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.experimental.channels.*
 
 
 class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int, val debugLevel: DebugLevel = DebugLevel.INFO) : Agent {
@@ -19,7 +18,8 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsWorkers)
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsSingleThread)
-    private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsParallels)
+//    private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsParallels)
+    private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, rolloutsActors)
 
 
     fun selectChild(node: MCTS.Node): MCTS.Node {
@@ -31,7 +31,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         var bestScore = -1.0
         var bestChild: MCTS.Node = node
         //Loop over each child.
-        for (child in node.children.elements()) {
+        for (child in node.children) {
             // Calculate the UCT score.
             val winPercentage = child.winningPct(node.gameState.nextPlayer)
             val explorationFactor = Math.sqrt(logRollouts / child.rollouts())
@@ -59,7 +59,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         var bestMove: GameState = gameState
         var bestPct = -1.0
         var expectedCont = ""
-        for (child in root.children.elements().toList().sortedBy { it.showMove() }) {
+        for (child in root.children.sortedBy { it.showMove() }) {
             val childPct = child.winningPct(gameState.nextPlayer)
             if (childPct > bestPct) {
                 bestPct = childPct
@@ -99,6 +99,8 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
                 lastSec = updateRolloutsStatus(expectedEnd, iter, lastSec)
             }
+
+            coroutineContext.cancelChildren()
         }
         return iter
     }
@@ -122,14 +124,17 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
     val rolloutsWorkers: suspend (MCTS.Node) -> Int = {root: MCTS.Node ->
         val jobs = mutableListOf<Job>()
-        repeat(4) {
+        val batchForWorker = 250
+        val workers = 4
+
+        repeat(workers) {
             jobs.add(launch {
-                repeat(200){newRolloutAndRecordWin(root)}
+                repeat(batchForWorker){newRolloutAndRecordWin(root)}
             })
         }
         jobs.forEach { it.join() }
 
-        400
+        batchForWorker*workers
     }
 
 
@@ -144,25 +149,47 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             return lastUpdate
         }
     }
+    val rolloutsActors: suspend (MCTS.Node) -> Int = {root: MCTS.Node ->
+        var iter = 0
+        val workers = 6
 
-    fun buildRolloutWorker(id:String) = actor<RolloutMessage> {
+        val workChannel = Channel<RolloutMessage>(workers*2)
 
-        for (msg in channel) {
-            newRolloutAndRecordWin(msg.rootNode)
-            //send the response
-            //val response = CompletableDeferred<Int>()
-            //counter.send(GetCounter(response))
+        val respChannel = Channel<RolloutRespMessage>(workers*2)
 
+        (1 .. workers).map { buildActor("actor $it", workChannel, respChannel) }
+
+        var lastSec = System.currentTimeMillis()
+        val end = lastSec + 1000*30+1
+        while (System.currentTimeMillis() < end) {
+            while (!workChannel.isFull) {
+                val node = selectNextNode(root)
+                workChannel.send(RolloutMessage(node))
+            }
+
+            while (!respChannel.isEmpty) {
+                val resp = respChannel.receive()
+                propagateResult(resp.node, resp.winner)
+                iter++
+            }
+
+            if (iter % 100 == 0) {
+                lastSec = updateRolloutsStatus(end, iter, lastSec)
+            }
         }
 
-        printDebug(DebugLevel.TRACE,"Rollout worker $id has finished!")
-//        var counter = 0 // actor state
-//        for (msg in channel) { // iterate over incoming messages
-//            when (msg) {
-//                is IncCounter -> counter++
-//                is GetCounter -> msg.response.complete(counter)
-//            }
-//        }
+iter
+
+    }
+
+    fun buildActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = launch {
+
+        requestChannel.consumeEach {
+            val winner = getWinnerOfRandomPlay(it.node)
+            respChannel.send(RolloutRespMessage(it.node, winner))
+        }
+
+        printDebug(DebugLevel.TRACE,"Actor $id has finished!")
     }
 
     private fun newRolloutAndRecordWin(root: MCTS.Node) {

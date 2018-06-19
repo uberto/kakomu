@@ -19,7 +19,7 @@ sealed class MCTS {
 
         private val rollouts: AtomicInteger = AtomicInteger()
 
-        val children = ConcurrentHashMap<Point, Node>() //   mutableSetOf<Node>()
+        val children = mutableListOf<Node>() //ConcurrentHashMap<Point, Node>() //   mutableSetOf<Node>()
 
         private val unvisitedMoves = gameState.allMoves()
 
@@ -27,11 +27,9 @@ sealed class MCTS {
             var newGameState: GameState? = null
             var point: Point = pos
             while (newGameState == null) {
-                synchronized(this) {
-                    if (unvisitedMoves.isEmpty()) //no more children
-                        return this
-                    point = unvisitedMoves.removeAt(0) //
-                }
+                if (unvisitedMoves.isEmpty()) //no more children
+                    return this
+                point = unvisitedMoves.removeAt(0) //
                 if (!gameState.isValidPointToPlay(point))
                     continue
 
@@ -39,7 +37,7 @@ sealed class MCTS {
                 newGameState = gameState.applyMove(newMove)
             }
             val newNode = Node(point, newGameState, this)
-            children.put(newNode.pos, newNode)
+            children.add(newNode)
             return newNode
         }
 
@@ -72,7 +70,7 @@ sealed class MCTS {
         private fun selectBestChild(): Node? {
             var bestPct = -1.0
             var bestChild: Node? = null
-            for (child in children.elements()) {
+            for (child in children) {
                 val childPct = child.winningPct(gameState.nextPlayer)
                 if (childPct > bestPct) {
                     bestPct = childPct
