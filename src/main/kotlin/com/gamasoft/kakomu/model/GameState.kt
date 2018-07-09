@@ -6,9 +6,8 @@ import java.util.concurrent.ConcurrentLinkedDeque
 sealed class MoveChain {}
 
 data class MoveChainZHash(val previous: MoveChain, val zHash: Long, val move: Move): MoveChain()
+
 object EmptyBoard: MoveChain()
-
-
 
 
 data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: MoveChain) {
@@ -92,14 +91,20 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
 
 
      fun doesMoveViolateKo(nextBoard: Board): Boolean {
+//
+//         return when(moveInfo){
+//             EmptyBoard -> false
+//             is MoveChainZHash -> when (moveInfo.previous) {
+//                 EmptyBoard -> false
+//                 is MoveChainZHash -> nextBoard.zobristHash() == moveInfo.previous.zHash
+//             }
+//         }
 
          return when(moveInfo){
              EmptyBoard -> false
-             is MoveChainZHash -> when (moveInfo.previous) {
-                 EmptyBoard -> false
-                 is MoveChainZHash -> nextBoard.zobristHash() == moveInfo.previous.zHash
-             }
+             is MoveChainZHash -> nextBoard.zobristHash() == moveInfo.zHash
          }
+
 
 //        return nextBoard.zobristHash() in previousStates   //superKo
 

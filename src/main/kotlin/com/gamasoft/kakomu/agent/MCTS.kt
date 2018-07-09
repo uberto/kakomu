@@ -4,7 +4,6 @@ import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Move
 import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.Point
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicIntegerArray
 
@@ -13,7 +12,8 @@ sealed class MCTS {
 
     object ROOT: MCTS()
 
-    data class Node(val pos: Point, val gameState: GameState, val parent: MCTS = ROOT): MCTS() {
+    data class Node(val pos: Point, val gameState: GameState,
+                    val parent: MCTS = ROOT): MCTS() {
 
         private val winCounts: AtomicIntegerArray = AtomicIntegerArray(2)
 

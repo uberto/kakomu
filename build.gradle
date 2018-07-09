@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
+    ext.kotlin_version = '1.2.51'
 
     repositories {
         mavenCentral()
@@ -30,9 +30,6 @@ repositories {
     mavenCentral()
     jcenter()
 
-    maven {
-        url 'http://sabrebuild1.uk.standardchartered.com:8081/nexus/content/repositories/public'
-    }
 }
 
 dependencies {

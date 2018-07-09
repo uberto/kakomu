@@ -1,5 +1,6 @@
 package com.gamasoft.kakomu.agent
 
+import assertk.assert
 import com.gamasoft.kakomu.model.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -36,7 +37,7 @@ internal class PrintTest {
     fun drawMove(){
         val tenten = drawMove(Player.WHITE, Move.Play(Point(10, 10)).humanReadable())
 
-        assertEquals("WHITE K10", tenten)
+        assert(tenten).equals("WHITE K10")
     }
 
     @Test
