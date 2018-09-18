@@ -15,7 +15,7 @@ class Performance {
             val start = System.nanoTime()
             val res = function()
             val elapsed = (System.nanoTime() - start) / 1000000.0
-            println("$msg in $elapsed millisec")
+        //    println("$msg in $elapsed millisec")
             times.add(elapsed)
             return res
         }
@@ -36,7 +36,7 @@ class Performance {
             println("Done $iters random rollouts on $boardSize board")
         }
 
-        fun simulateRandomGames(boardSize: Int) {
+        fun simulateRandomGames(boardSize: Int, rollouts: Int) {
 
             println("=====================================")
             println("==          Random Rollouts        ==")
@@ -44,7 +44,7 @@ class Performance {
 
             val times = mutableListOf<Double>()
             val startingState = GameState.newGame(boardSize)
-            for (i in (1..1000)) {
+            for (i in (1..rollouts)) {
                 val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
 
                 crono(times, "play random rollout ${boardSize}x${boardSize}") {

@@ -1,7 +1,6 @@
 
 import com.gamasoft.kakomu.Performance.Companion.cpuVsCpuRealGame
 import com.gamasoft.kakomu.Performance.Companion.simulateRandomGames
-import com.gamasoft.kakomu.Performance.Companion.warmup
 import com.gamasoft.kakomu.agent.*
 import com.gamasoft.kakomu.gtp.MCTSGoEngine
 import org.lisoft.gonector.GoTextProtocol
@@ -27,7 +26,7 @@ fun main(args : Array<String>) {
 fun performanceTest() {
     //warmup()
     cpuVsCpuRealGame()
-    simulateRandomGames(9)
+    simulateRandomGames(9, 1000)
 }
 
 

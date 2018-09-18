@@ -151,7 +151,7 @@ internal class EvaluatorTest{
     fun performanceSelfGame() {
         warmup()
 
-        simulateRandomGames(9)
+        simulateRandomGames(9, 10000)
     }
 
 /*
@@ -174,8 +174,8 @@ on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
 0.28   1.8  -XX:+UseConcMarkSweepGC
 
 
--XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=50 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40
--XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=10 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:+UseJVMCICompiler
+-XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=1000 -XX:G1NewSizePercent=50 -XX:G1MaxNewSizePercent=50
+-XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=1000 -XX:G1NewSizePercent=50 -XX:G1MaxNewSizePercent=50 -XX:+UseJVMCICompiler
 -ea -XX:+UseConcMarkSweepGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
 
 G1: c2 0.34  graal 0.34
@@ -183,6 +183,19 @@ CMS: c2 0.28  graal 0.27
 Ser: c2 0.26 graal 0.25
 
 9x9 30 sec about 230k/240k
+
+
+NoGraal (GC1 1M runs)
+Best time 0.299683
+Worst time 19.884893
+Average time 0.3226826691669979
+Median time 0.311509
+
+Graal (GC1 1M runs)
+Best time 0.300905
+Worst time 23.722634
+Average time 0.32404833120800614
+Median time 0.311947
 
  */
 

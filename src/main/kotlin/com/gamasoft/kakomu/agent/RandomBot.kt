@@ -25,7 +25,7 @@ class RandomBot(val boardSize: Int, val seed: Long = 0): Agent {
         val points = mutableListOf<Point>()
         for (r in 1 .. boardSize){
             for (c in 1 ..boardSize) {
-                points.add(Point(row = r, col = c))
+                points.add(Point(r, c))
             }
         }
         return points.toTypedArray()

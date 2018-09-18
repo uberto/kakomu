@@ -3,10 +3,10 @@ package com.gamasoft.kakomu.model
 import com.gamasoft.kakomu.agent.COLS
 
 //flyweight? alias of Int?
-data class Point(val col: Int, val row: Int) {
+data class KPoint(val col: Int, val row: Int) {
 
     companion object {
-        fun fromCoords(coords: String): Point? {
+        fun fromCoords(coords: String): KPoint? {
 
             if (coords.length < 2 || coords.length > 3)
                 return null
@@ -19,11 +19,11 @@ data class Point(val col: Int, val row: Int) {
             if (row == null)
                 return null
 
-            return Point(row = row, col = col)
+            return KPoint(row = row, col = col)
 
         }
 
-        fun toCoords(point: Point): String{
+        fun toCoords(point: KPoint): String{
             return COLS[point.col - 1] + point.row.toString()
         }
     }
