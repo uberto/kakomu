@@ -20,11 +20,11 @@ class Performance {
             return res
         }
 
-        fun warmup() {
+        fun warmup(iters: Int = 10000) {
             println("=====================================")
             println("==              Warmup             ==")
             println("=====================================")
-            val iters = 30000
+
             val boardSize = 9
             val startingState = GameState.newGame(boardSize)
             val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
@@ -66,7 +66,7 @@ class Performance {
             println("=====================================")
             val boardSize = 9
             val startingState = GameState.newGame(boardSize)
-            val secondsForMove = 3
+            val secondsForMove = 60
             val debugLevel = DebugLevel.INFO
             val fixedBots = Agents(MCTSAgent(secondsForMove, 1.8, boardSize, debugLevel),
                     MCTSAgent(secondsForMove, 1.2, boardSize, debugLevel))

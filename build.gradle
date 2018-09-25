@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 
 buildscript {
-    ext.kotlin_version = '1.2.51'
+    ext.kotlin_version = '1.2.70'
 
     repositories {
         mavenCentral()
@@ -35,7 +35,7 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "com.google.code.gson:gson:2.8.2"
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.2'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.26.1'
     compile 'org.li-soft.gonector:gonector:1.0.0'
 
 

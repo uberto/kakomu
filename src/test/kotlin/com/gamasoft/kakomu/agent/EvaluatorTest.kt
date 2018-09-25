@@ -146,46 +146,80 @@ internal class EvaluatorTest{
     //4,4  52378
 
 
+/*
 
+    on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
+    10     160   validmove without deepcopy
+    6       65   immutable goStrings
+    3.5     38   neighbors map
+    1.5     31   faster isAnEye
+    1.3     27   simpleKo
+    1.25    25   selectMove returning MoveChain
+    0.7     12   remove System.nanotime
+    0.5    4.5   RandomBot evaluating single move
+    0.33   2.4   single swap instead of shuffle
+    0.27   2.0   array instead of map for winCount
+    0.26   1.8   no board in gameState
+
+    //JVM 10
+    0.33   2.3  G1
+    0.28   1.8  -XX:+UseConcMarkSweepGC
+
+
+    -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=50 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40
+    -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=10 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:+UseJVMCICompiler
+    -ea -XX:+UseConcMarkSweepGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+
+    G1: c2 0.34  graal 0.34
+    CMS: c2 0.28  graal 0.27
+    Ser: c2 0.26 graal 0.25
+
+    9x9 60 sec 2nd move (4gb) (runs greater is better):
+    -Xms6g
+    -Xmx6g
+    -Xlog:gc:gc.log
+    -Xlog:gc+age=trace
+    -XX:-PrintGCDetails
+    -XX:-PrintTenuringDistribution
+    -XX:-PrintGCTimeStamps
+
+
+    545030 Parallel+Graal
+    539026 ParallelOld+Graal
+    262078 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
+    399746 -XX:+UseShenandoahGC
+    440784 -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=passive
+    481320 -XX:+UseG1GC
+    510611 -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler -XX:+UseG1GC
+    541031 -XX:+UseParallelOldGC
+    573797 -XX:+UseConcMarkSweepGC
+
+     */
     @Test
     fun performanceSelfGame() {
-        warmup()
+        warmup(100000)
 
         simulateRandomGames(9)
     }
 
+
 /*
+-Xmx4g jvm 8
+0.273 -XX:+UseParallelOldGC
+0.276 -XX:+UseConcMarkSweepGC
 
-on my laptop i7 2Ghz (in millisec on 9x9 and 19x19) OpenJvm 1.8
-10     160   validmove without deepcopy
-6       65   immutable goStrings
-3.5     38   neighbors map
-1.5     31   faster isAnEye
-1.3     27   simpleKo
-1.25    25   selectMove returning MoveChain
-0.7     12   remove System.nanotime
-0.5    4.5   RandomBot evaluating single move
-0.33   2.4   single swap instead of shuffle
-0.27   2.0   array instead of map for winCount
-0.26   1.8   no board in gameState
+jvm 11 18-09-2018
 
-//JVM 10
-0.33   2.3  G1
-0.28   1.8  -XX:+UseConcMarkSweepGC
+9x9 1000 times after 30k warmup. median (lower is better)
 
-
--XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=50 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40
--XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=10 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:+UseJVMCICompiler
--ea -XX:+UseConcMarkSweepGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
-
-G1: c2 0.34  graal 0.34
-CMS: c2 0.28  graal 0.27
-Ser: c2 0.26 graal 0.25
-
-9x9 30 sec about 230k/240k
-
- */
-
-
+0.372 -XX:+UseG1GC
+0.340 -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+0.277 -XX:+UseConcMarkSweepGC (doesn't work with graalvm)
+0.279 -XX:+UseParallelOldGC
+0.255 -XX:+UseParallelOldGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+0.487 -XX:+UseShenandoahGC
+0.366 -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC (only 10k warmup)
+0.297 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC (no graal)
+*/
 
 }
