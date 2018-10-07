@@ -166,7 +166,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private val nop: () -> Unit = {}
 
     private val prepareActors: () -> ActorChannels = {
-        val workers = 6
+        val workers = Runtime.getRuntime().availableProcessors() //heuristic
 
         val workChannel = Channel<RolloutMessage>(workers * 2)
 

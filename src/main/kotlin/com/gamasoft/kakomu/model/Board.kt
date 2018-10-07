@@ -108,21 +108,23 @@ class Board (val numCols: Int, val numRows: Int,
         }
     }
 
-    fun clone(): Board {
-        val newBoard = Board(numCols, numRows, neighborsMap)
-        newBoard.grid.copyFrom(grid)
-        newBoard.zHash = zHash
-        return newBoard
-    }
+    fun clone(): Board = copyOnto(Board(numCols, numRows, neighborsMap))
 
-    fun isOnTheGrid(p: Point): Boolean{
-        return p.row in (1 .. numRows) && p.col in (1 ..numCols)
-    }
+    fun copyOnto(newBoard: Board) =
+        newBoard.also {
+            it.grid.copyFrom(grid)
+            it.zHash = zHash
+        }
 
 
-     fun neighbors(point: Point): Set<Point>{
-        return neighborsMap.getValue(point)
-    }
+    fun isOnTheGrid(p: Point): Boolean =
+        p.row in (1 .. numRows) && p.col in (1 ..numCols)
+
+
+
+     fun neighbors(point: Point): Set<Point> =
+        neighborsMap.getValue(point)
+
 
      fun isFree(point: Point) = grid[point] == null
 

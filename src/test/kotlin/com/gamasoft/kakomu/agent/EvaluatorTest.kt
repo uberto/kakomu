@@ -197,7 +197,7 @@ internal class EvaluatorTest{
      */
     @Test
     fun performanceSelfGame() {
-        warmup(100000)
+        warmup(10000)
 
         simulateRandomGames(9)
     }

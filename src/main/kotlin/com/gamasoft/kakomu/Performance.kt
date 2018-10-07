@@ -42,9 +42,10 @@ class Performance {
             println("==          Random Rollouts        ==")
             println("=====================================")
 
-            val times = mutableListOf<Double>()
+            val iter = 1000
+            val times = ArrayList<Double>(iter)
             val startingState = GameState.newGame(boardSize)
-            for (i in (1..1000)) {
+            for (i in (1..iter)) {
                 val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
 
                 crono(times, "play random rollout ${boardSize}x${boardSize}") {
@@ -66,7 +67,7 @@ class Performance {
             println("=====================================")
             val boardSize = 9
             val startingState = GameState.newGame(boardSize)
-            val secondsForMove = 60
+            val secondsForMove = 30
             val debugLevel = DebugLevel.INFO
             val fixedBots = Agents(MCTSAgent(secondsForMove, 1.8, boardSize, debugLevel),
                     MCTSAgent(secondsForMove, 1.2, boardSize, debugLevel))
