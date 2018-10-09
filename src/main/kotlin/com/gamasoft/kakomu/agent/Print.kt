@@ -52,6 +52,9 @@ fun printWholeMatch(finalState: GameState) {
     val moves = getMovesList(finalState)
 
     drawBoard(finalState.board).forEach { println(it) }
+    println()
+    println()
+
     var board = finalState.board.cloneEmpty()
     var p = Player.BLACK
     for (m in moves) {

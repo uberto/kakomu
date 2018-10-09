@@ -38,7 +38,6 @@ dependencies {
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.26.1'
     compile 'org.li-soft.gonector:gonector:1.0.0'
 
-
     testCompile 'com.willowtreeapps.assertk:assertk:0.9'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.1'
 

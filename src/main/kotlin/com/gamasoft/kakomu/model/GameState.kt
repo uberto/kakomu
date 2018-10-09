@@ -61,7 +61,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
             is Move.Play -> {
                 val nextBoard = board.clone()
                 nextBoard.placeStone(nextPlayer, move.point)
-                if (doesMoveViolateKo(nextBoard))
+                if (doesMoveViolateKo(nextBoard.zobristHash()))
                     null
                 else
                     GameState(nextBoard, nextPlayer.other(), moveInfo(move))
@@ -90,21 +90,16 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
      }
 
 
-     fun doesMoveViolateKo(nextBoard: Board): Boolean {
-//
-//         return when(moveInfo){
-//             EmptyBoard -> false
-//             is MoveChainZHash -> when (moveInfo.previous) {
-//                 EmptyBoard -> false
-//                 is MoveChainZHash -> nextBoard.zobristHash() == moveInfo.previous.zHash
-//             }
-//         }
-
-         return when(moveInfo){
+     fun doesMoveViolateKo(zobristHash: Long): Boolean =
+         when(moveInfo){
              EmptyBoard -> false
-             is MoveChainZHash -> nextBoard.zobristHash() == moveInfo.zHash
+             is MoveChainZHash -> when (moveInfo.previous) {
+                 EmptyBoard -> false
+                 is MoveChainZHash -> {
+                     zobristHash == moveInfo.zHash || zobristHash == moveInfo.previous.zHash
+                 }
+             }
          }
-
 
 //        return nextBoard.zobristHash() in previousStates   //superKo
 
@@ -116,7 +111,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
 //            pastState = pastState.previous
 //        }
 //        return false
-    }
+
 
      fun isValidPointToPlay(point: Point):Boolean {
         return (board.isFree(point) &&
@@ -176,12 +171,12 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
         return mn
     }
 
-    fun lastMove(): Move? {
-        return (moveInfo as? MoveChainZHash)?.move
-    }
+    fun lastMove(): Move? = (moveInfo as? MoveChainZHash)?.move
 
-    fun lastMoveDesc(): String {
-        return lastMove()?.humanReadable().orEmpty()
-    }
+
+    fun lastMoveDesc(): String = lastMove()?.humanReadable().orEmpty()
+
+
+    fun clone(): GameState = GameState(board.clone(), nextPlayer, moveInfo)
 
 }

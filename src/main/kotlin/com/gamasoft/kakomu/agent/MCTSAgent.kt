@@ -13,11 +13,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 // 1.5 is a good starting point temperature
 //hotter will explore more moves but can mis-evaluate the most promising
 
-    val bots: Array<Agent>
-
-    init {
-        bots = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
-    }
 
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsLoops)
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsSingleThread)
@@ -102,8 +97,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
                 iter += rolloutsMicroBatch(context, root)
                 lastSec = updateRolloutsStatus(expectedEnd, iter, lastSec)
             }
-
-
 
             coroutineContext.cancelChildren()
         }
@@ -235,7 +228,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         //Simulate a random game from this node.
         //        printMoveAndBoard(node.gameState)
 //        printDebug("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
-        val randomGame = Evaluator.simulateRandomGame(node.gameState, bots)
+        val randomGame = Evaluator.simulateRandomGame(node.gameState)
         val winner = randomGame.winner
 
 //                printDebug("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")

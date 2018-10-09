@@ -2,9 +2,8 @@ package com.gamasoft.kakomu.model
 
 import com.gamasoft.kakomu.agent.Agent
 
-class Evaluator {
 
-    companion object {
+object Evaluator {
 
         val MAX_SCORE = 999999
         val MIN_SCORE = -999999
@@ -13,8 +12,8 @@ class Evaluator {
             //count all stones and eyes, works only after all possible stones are placed
             var tot = 0
 
-            for(col in 1 .. board.numCols){
-                for (row in 1.. board.numRows){
+            for (col in 1..board.numCols) {
+                for (row in 1..board.numRows) {
                     val point = Point(col, row)
                     val string = board.getString(point)
                     if (string == null) {
@@ -27,7 +26,7 @@ class Evaluator {
             return tot
         }
 
-        fun computeGameResultFullBoard(gameState: GameState):GameResult{
+        fun computeGameResultFullBoard(gameState: GameState): GameResult {
             val black = countTerritoryAndStones(gameState.board, Player.BLACK)
             val white = countTerritoryAndStones(gameState.board, Player.WHITE)
             return GameResult(black, white, komi = 7.5)  //TODO komi configurable
@@ -51,7 +50,7 @@ class Evaluator {
             return true
         }
 
-        fun isSelfCapture(board: Board, point: Point, player: Player): Boolean{
+        fun isSelfCapture(board: Board, point: Point, player: Player): Boolean {
             //if one of neighbors is same color and with more than 1 liberty is not self capture
             //if one of neighbors is different color and with exactly 1 liberty is not self capture
             for (neighbor in board.neighbors(point)) {
@@ -69,14 +68,26 @@ class Evaluator {
             return true
         }
 
-        fun simulateRandomGame(game: GameState, bots: Array<Agent>): EndGame {
-            var currGame = game
-            while (!currGame.isOver()) {
-                currGame = bots[game.nextPlayer.toInt()].playNextMove(currGame)
+        fun simulateRandomGame(game: GameState, seed: Long? = null): EndGame {
+
+            val runner = RandomRun(game.board.numCols, seed)
+            var currGame = game.clone()
+
+            runner.run {
+                while (!currGame.isOver()) {
+                    currGame = randomMoveOnBoard(currGame)
+                }
             }
 
             return EndGame(currGame)
         }
-    }
 
+    fun simulateAutoGame(game: GameState, bots: Array<Agent>): EndGame {
+        var currGame = game
+        while (!currGame.isOver()) {
+            currGame = bots[game.nextPlayer.toInt()].playNextMove(currGame)
+        }
+
+        return EndGame(currGame)
+    }
 }

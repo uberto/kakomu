@@ -27,9 +27,8 @@ class Performance {
 
             val boardSize = 9
             val startingState = GameState.newGame(boardSize)
-            val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
             for (i in (1..iters)) {
-                Evaluator.simulateRandomGame(startingState, bots)
+                Evaluator.simulateRandomGame(startingState)
             }
 
             System.gc()
@@ -46,10 +45,8 @@ class Performance {
             val times = ArrayList<Double>(iter)
             val startingState = GameState.newGame(boardSize)
             for (i in (1..iter)) {
-                val fixedBots: Array<Agent> = arrayOf(RandomBot(boardSize, 234345), RandomBot(boardSize, 767655))
-
                 crono(times, "play random rollout ${boardSize}x${boardSize}") {
-                    Evaluator.simulateRandomGame(startingState, fixedBots)
+                    Evaluator.simulateRandomGame(startingState, 234345)  //767655
                 }
             }
 
@@ -61,13 +58,13 @@ class Performance {
 
         }
 
-        fun cpuVsCpuRealGame() {
+        fun cpuVsCpuRealGame(secondsForMove: Int = 60) {
             println("=====================================")
             println("==          CPU vs CPU game        ==")
             println("=====================================")
             val boardSize = 9
             val startingState = GameState.newGame(boardSize)
-            val secondsForMove = 30
+
             val debugLevel = DebugLevel.INFO
             val fixedBots = Agents(MCTSAgent(secondsForMove, 1.8, boardSize, debugLevel),
                     MCTSAgent(secondsForMove, 1.2, boardSize, debugLevel))

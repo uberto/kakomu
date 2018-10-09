@@ -10,6 +10,8 @@ class Board (val numCols: Int, val numRows: Int,
 
         val empytBoardHash = 0L
 
+        val playerXor = zobristTable.getValue(Zobrist.PLAYER_BLACK)
+
         fun newBoard(size: Int): Board{
             val neighbors = calculateNeighborsMap(size, size)
 
@@ -65,6 +67,9 @@ class Board (val numCols: Int, val numRows: Int,
         assert(isOnTheGrid(point)){ println(point)}
         assert(isFree(point))
 
+        //Update hash code with player color and point
+        zHash = zHash xor playerXor xor zobristTable.getValue(point)
+
         //0. Examine the adjacent points.
         val adjacentSameColor = mutableListOf<GoString>()
         val adjacentOppositeColor = mutableListOf<GoString>()
@@ -81,14 +86,12 @@ class Board (val numCols: Int, val numRows: Int,
             }
         }
 
-        //Update hash code.
-        zHash = zHash.xor(zobristTable.getValue(Zobrist.PLAYER_BLACK)) //every move it switch
-        zHash = zHash.xor(zobristTable.getValue(point))
-
         // 1. Merge any adjacent strings of the same color.
         val newString = GoString(player, setOf(point), liberties)
                 .mergeWith(adjacentSameColor)
         updateStringOnGrid(newString)
+
+
 
         //2. Reduce liberties of any adjacent strings of the opposite color.
         for (otherColorString in adjacentOppositeColor) {

@@ -6,12 +6,10 @@ data class GoString(val color: Player, val stones: Set<Point>, val liberties: Se
 
     fun mergeWith(strings: List<GoString>): GoString {
         val newStones = stones.toMutableSet()
+        val newLiberties = liberties.toMutableSet()
+
         for (string in strings){
             newStones.addAll(string.stones)
-        }
-
-        val newLiberties = liberties.toMutableSet()
-        for (string in strings){
             newLiberties.addAll(string.liberties)
         }
         newLiberties.removeAll(newStones)

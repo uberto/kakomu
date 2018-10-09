@@ -44,7 +44,7 @@ internal class GoStringTest {
 
 
 
-        val newString = s0.mergeWith(listOf(s1, s2, s3,s4))
+        val newString = s0.mergeWith(listOf(s1, s2, s3, s4))
 
         println("Final liberties ${newString.liberties}")
 

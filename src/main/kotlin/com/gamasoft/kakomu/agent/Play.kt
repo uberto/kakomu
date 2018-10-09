@@ -1,7 +1,7 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.*
-import com.gamasoft.kakomu.model.Evaluator.Companion.computeGameResultFullBoard
+import com.gamasoft.kakomu.model.Evaluator.computeGameResultFullBoard
 
 
 fun playAgainstHuman(boardSize: Int, secondsForMove: Int){

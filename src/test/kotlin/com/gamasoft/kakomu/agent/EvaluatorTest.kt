@@ -110,9 +110,8 @@ internal class EvaluatorTest{
 
         val boardSize = 9
         val startingState = GameState.newGame(boardSize)
-        val bots: Array<Agent> = arrayOf(RandomBot(boardSize), RandomBot(boardSize))
 
-        val finalState = Evaluator.simulateRandomGame(startingState, bots).state
+        val finalState = Evaluator.simulateRandomGame(startingState).state
         printWholeMatch(finalState)
 
         Assertions.assertTrue(finalState.lastMove()!! is Move.Pass)
@@ -184,20 +183,21 @@ internal class EvaluatorTest{
     -XX:-PrintGCTimeStamps
 
 
-    545030 Parallel+Graal
-    539026 ParallelOld+Graal
-    262078 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
-    399746 -XX:+UseShenandoahGC
-    440784 -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=passive
-    481320 -XX:+UseG1GC
-    510611 -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler -XX:+UseG1GC
-    541031 -XX:+UseParallelOldGC
-    573797 -XX:+UseConcMarkSweepGC
+
+    875932 -XX:+UseParallelOldGC
+    766808 -XX:+UseParallelOldGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+    430467 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
+    562714 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -XX:ConcGCThreads=3
+    600122 -XX:+UseShenandoahGC
+    697724 -XX:+UseShenandoahGC -XX:+UnlockDiagnosticVMOptions -XX:ShenandoahGCHeuristics=passive
+    645366 -XX:+UseG1GC
+    655670 -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler -XX:+UseG1GC
+    772507 -XX:+UseConcMarkSweepGC
 
      */
     @Test
     fun performanceSelfGame() {
-        warmup(10000)
+        warmup(50000)
 
         simulateRandomGames(9)
     }

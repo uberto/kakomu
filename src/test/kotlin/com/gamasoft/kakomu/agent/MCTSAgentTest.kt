@@ -1,6 +1,7 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.Evaluator.Companion.simulateRandomGame
+import com.gamasoft.kakomu.model.Evaluator.simulateAutoGame
+import com.gamasoft.kakomu.model.Evaluator.simulateRandomGame
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
 import org.junit.jupiter.api.Test
@@ -51,11 +52,11 @@ internal class MCTSAgentTest {
         val tots = mutableMapOf<String, Int>()
 
         for (i in (1..matchesNumber)) {
-            val res1 = simulateRandomGame(startingState, bots)
+            val res1 = simulateAutoGame(startingState, bots)
             val winner1 = if (res1.winner == Player.BLACK) "first" else "second"
             tots.compute(winner1) { p, v -> 1 + (v ?: 0) }
             println(winner1)
-            val res2 = simulateRandomGame(startingState, botsReversed)
+            val res2 = simulateAutoGame(startingState, botsReversed)
             val winner2 = if (res2.winner == Player.WHITE) "first" else "second"
             tots.compute(winner2) { _, v -> 1 + (v ?: 0) }
             println(winner2)
