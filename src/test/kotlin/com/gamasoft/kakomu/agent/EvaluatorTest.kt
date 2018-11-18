@@ -214,9 +214,13 @@ jvm 11 18-09-2018
 
 0.372 -XX:+UseG1GC
 0.340 -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+0.286 same with 1.8
 0.277 -XX:+UseConcMarkSweepGC (doesn't work with graalvm)
 0.279 -XX:+UseParallelOldGC
+0.268  same with 1.8 output
 0.255 -XX:+UseParallelOldGC -XX:+UnlockExperimentalVMOptions  -XX:+UseJVMCICompiler
+0.239  same with 1.8 output
+
 0.487 -XX:+UseShenandoahGC
 0.366 -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC (only 10k warmup)
 0.297 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC (no graal)

@@ -1,8 +1,8 @@
 package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.*
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import java.util.*
 
 
@@ -111,7 +111,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     val rolloutsParallels: suspend (Unit, MCTS.Node) -> Int = {_, root: MCTS.Node ->
         val jobs = mutableListOf<Job>()
         repeat(20) {
-            jobs.add(launch { newRolloutAndRecordWin(root) })
+            jobs.add(GlobalScope.launch { newRolloutAndRecordWin(root) })
         }
         jobs.forEach { it.join() }
         20
@@ -125,7 +125,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         val workers = 4
 
         repeat(workers) {
-            jobs.add(launch {
+            jobs.add(GlobalScope.launch {
                 repeat(batchForWorker){newRolloutAndRecordWin(root)}
             })
         }
@@ -181,7 +181,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         }
     }
 
-    fun buildRolloutActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = launch {
+    fun buildRolloutActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = GlobalScope.launch {
 
         requestChannel.consumeEach {
             val winner = getWinnerOfRandomPlay(it.node)
@@ -191,7 +191,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         printDebug(DebugLevel.TRACE,"Actor $id has finished!")
     }
 
-    fun buildStubActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = launch {
+    fun buildStubActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = GlobalScope.launch {
         val rnd = Random()
 
         requestChannel.consumeEach {
