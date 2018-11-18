@@ -25,8 +25,7 @@ fun main(args : Array<String>) {
 }
 
 fun performanceTest() {
-    //warmup()
-    cpuVsCpuRealGame()
+    cpuVsCpuRealGame(10)
     simulateRandomGames(9)
 }
 

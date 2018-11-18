@@ -14,9 +14,9 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 //hotter will explore more moves but can mis-evaluate the most promising
 
 
-//        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsLoops)
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsSingleThread)
-//    private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsParallels)
+//private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsParallels)
+//        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsLoops)
     private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, prepareActors, rolloutsActors)
 
 
@@ -229,11 +229,10 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         //        printMoveAndBoard(node.gameState)
 //        printDebug("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
         val randomGame = Evaluator.simulateRandomGame(node.gameState)
-        val winner = randomGame.winner
 
 //                printDebug("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")
 //                printMoveAndBoard(randomGame.state)
-        return winner
+        return randomGame.winner
     }
 
 }
