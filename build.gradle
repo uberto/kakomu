@@ -1,36 +1,25 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.3.31"
+    id "application"
+
+}
+
+
 group 'com.gamasoft.kakomu'
 version '1.0-SNAPSHOT'
-
 
 
 ext {
     jvmVersion = "1.8"
     junitVersion = '5.4.2'
+    kotlin_version = '1.3.31'
+
 }
 
-buildscript {
-    ext.kotlin_version = '1.3.31'
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
-    }
+application {
+    mainClassName = 'MainKt'
 }
 
-
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'application'
-
-sourceCompatibility = 1.8
-
-mainClassName = 'MainKt'
 
 repositories {
     mavenCentral()
@@ -44,7 +33,7 @@ wrapper {
 
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
     compile "com.google.code.gson:gson:2.8.2"
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1'
     compile 'org.li-soft.gonector:gonector:1.0.0'
@@ -69,5 +58,11 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = "${jvmVersion}"
     }
+}
+
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
