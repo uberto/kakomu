@@ -142,9 +142,10 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         val end = System.currentTimeMillis() + 99
         var iter = 0
         while (System.currentTimeMillis() < end) {
-            while (!workChannel.isFull) {
+            while (true) {
                 val node = selectNextNode(root)
-                workChannel.send(RolloutMessage(node))
+                if (!workChannel.offer(RolloutMessage(node)))
+                    break
             }
 
             while (!respChannel.isEmpty) {

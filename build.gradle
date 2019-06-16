@@ -5,11 +5,11 @@ version '1.0-SNAPSHOT'
 
 ext {
     jvmVersion = "1.8"
-    junitVersion = '5.1.1'
+    junitVersion = '5.4.2'
 }
 
 buildscript {
-    ext.kotlin_version = '1.3.21'
+    ext.kotlin_version = '1.3.31'
 
     repositories {
         mavenCentral()
@@ -39,17 +39,17 @@ repositories {
 }
 
 wrapper {
-    gradleVersion = "5.2.1"
+    gradleVersion = "5.3.1"
 }
 
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "com.google.code.gson:gson:2.8.2"
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M1'
     compile 'org.li-soft.gonector:gonector:1.0.0'
 
-    testCompile 'com.willowtreeapps.assertk:assertk:0.9'
+    testCompile 'com.willowtreeapps.assertk:assertk-jvm:0.17'
     testCompile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
