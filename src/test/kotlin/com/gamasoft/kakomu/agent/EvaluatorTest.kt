@@ -123,7 +123,7 @@ internal class EvaluatorTest{
 
     }
 
-
+//
 //    @Test
 //    fun selfGameValuation(){
 //
@@ -172,6 +172,14 @@ internal class EvaluatorTest{
     G1: c2 0.34  graal 0.34
     CMS: c2 0.28  graal 0.27
     Ser: c2 0.26 graal 0.25
+
+
+    new pc 4Ghz median
+    -Xms6g -Xmx6g -XX:+UseParallelOldGC
+    graalvm rc16  0.1765
+    jdk11         0.2268
+
+
 
     9x9 60 sec 2nd move (4gb) (runs greater is better):
     -Xms6g
