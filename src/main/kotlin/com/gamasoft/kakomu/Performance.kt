@@ -66,8 +66,8 @@ class Performance {
             val startingState = GameState.newGame(boardSize)
 
             val debugLevel = DebugLevel.INFO
-            val fixedBots = Agents(MCTSAgent(secondsForMove, 1.8, boardSize, debugLevel),
-                    MCTSAgent(secondsForMove, 1.2, boardSize, debugLevel))
+            val fixedBots = Agents(MCTSAgent(secondsForMove, 1.8, debugLevel),
+                    MCTSAgent(secondsForMove, 1.2, debugLevel))
 
             val res = crono("play self game ${boardSize}x${boardSize} with $secondsForMove sec for move") {
                 playCompleteGame(startingState, fixedBots)

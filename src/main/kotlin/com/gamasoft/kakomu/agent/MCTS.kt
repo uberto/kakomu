@@ -10,10 +10,12 @@ import java.util.concurrent.atomic.AtomicIntegerArray
 
 sealed class MCTS {
 
-    object ROOT: MCTS()
+    object ROOT : MCTS()
 
-    data class Node(val pos: Point, val gameState: GameState,
-                    val parent: MCTS = ROOT): MCTS() {
+    data class Node(
+        val pos: Point, val gameState: GameState,
+        val parent: MCTS = ROOT
+    ) : MCTS() {
 
         private val winCounts: AtomicIntegerArray = AtomicIntegerArray(2)
 
@@ -27,6 +29,7 @@ sealed class MCTS {
             var newGameState: GameState? = null
             var point: Point = pos
             while (newGameState == null) {
+
                 if (unvisitedMoves.isEmpty()) //no more children
                     return this
                 point = unvisitedMoves.removeAt(0) //
@@ -82,8 +85,7 @@ sealed class MCTS {
 
         fun showMove(): String = gameState.lastMoveDesc()
 
-        fun  rollouts(): Int = rollouts.get()
-
+        fun rollouts(): Int = rollouts.get()
 
 
     }

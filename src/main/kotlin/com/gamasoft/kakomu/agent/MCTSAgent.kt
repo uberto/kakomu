@@ -1,20 +1,27 @@
 package com.gamasoft.kakomu.agent
 
-import com.gamasoft.kakomu.model.*
+import com.gamasoft.kakomu.model.Evaluator
+import com.gamasoft.kakomu.model.GameState
+import com.gamasoft.kakomu.model.Player
+import com.gamasoft.kakomu.model.Point
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.consumeEach
 import java.util.*
 
 
 typealias ActorChannels = Pair<Channel<RolloutMessage>, Channel<RolloutRespMessage>>
 
-class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize: Int, val debugLevel: DebugLevel = DebugLevel.INFO) : Agent {
+class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel: DebugLevel = DebugLevel.INFO) :
+    Agent {
 //colder will evaluate better but can miss completely the best move
 // 1.5 is a good starting point temperature
 //hotter will explore more moves but can mis-evaluate the most promising
 
 
-//        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsSingleThread)
+    //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsSingleThread)
 //private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsParallels)
 //        private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, nop, rolloutsLoops)
     private fun exploreTree(root: MCTS.Node): Int = exploreTree(root, prepareActors, rolloutsActors)
@@ -46,9 +53,9 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 
 
     override fun playNextMove(gameState: GameState): GameState {
-        printDebug(DebugLevel.INFO,"Let me think for $secondsForMove seconds...")
+        printDebug(DebugLevel.INFO, "Let me think for $secondsForMove seconds...")
 
-        val root = MCTS.Node(Point(0,0), gameState) //TODO startPoint
+        val root = MCTS.Node(Point(0, 0), gameState) //TODO startPoint
 
         val rolls = exploreTree(root)
 
@@ -64,15 +71,18 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
                 bestMove = child.gameState
                 expectedCont = child.getBestMoveSequence()
             }
-            printDebug(DebugLevel.TRACE, "    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts()} rollouts. Best continuation: ${child.getBestMoveSequence()} ")
+            printDebug(
+                DebugLevel.TRACE,
+                "    considered move ${child.showMove()} with win pct $childPct on ${child.rollouts()} rollouts. Best continuation: ${child.getBestMoveSequence()} "
+            )
         }
 
         if (bestPct <= 0.25) //let's do the right thing and resign if hopeless
             bestMove = gameState.applyResign()
 
         printDebug(DebugLevel.DEBUG, "Done ${rolls} rollouts")
-        printDebug(DebugLevel.DEBUG,"Select move ${bestMove.lastMoveDesc()} with win pct $bestPct")
-        printDebug(DebugLevel.DEBUG,"Best continuation expected $expectedCont")
+        printDebug(DebugLevel.DEBUG, "Select move ${bestMove.lastMoveDesc()} with win pct $bestPct")
+        printDebug(DebugLevel.DEBUG, "Best continuation expected $expectedCont")
 
         return bestMove
 
@@ -83,7 +93,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
             println(msg)
     }
 
-    private fun <T> exploreTree(root: MCTS.Node, init: () -> T, rolloutsMicroBatch: suspend (T, MCTS.Node) -> Int ): Int {
+    private fun <T> exploreTree(
+        root: MCTS.Node,
+        init: () -> T,
+        rolloutsMicroBatch: suspend (T, MCTS.Node) -> Int
+    ): Int {
         var iter = 0
         val start = System.currentTimeMillis()
         val expectedEnd = start + secondsForMove * 1000
@@ -103,12 +117,12 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         return iter
     }
 
-    val rolloutsSingleThread: suspend (Unit, MCTS.Node) -> Int = {_, root: MCTS.Node ->
+    val rolloutsSingleThread: suspend (Unit, MCTS.Node) -> Int = { _, root: MCTS.Node ->
         newRolloutAndRecordWin(root)
         1
     }
 
-    val rolloutsParallels: suspend (Unit, MCTS.Node) -> Int = {_, root: MCTS.Node ->
+    val rolloutsParallels: suspend (Unit, MCTS.Node) -> Int = { _, root: MCTS.Node ->
         val jobs = mutableListOf<Job>()
         repeat(20) {
             jobs.add(GlobalScope.launch { newRolloutAndRecordWin(root) })
@@ -118,34 +132,37 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     }
 
 
-
-    val rolloutsLoops: suspend (Unit, MCTS.Node) -> Int = {_, root: MCTS.Node ->
+    val rolloutsLoops: suspend (Unit, MCTS.Node) -> Int = { _, root: MCTS.Node ->
         val jobs = mutableListOf<Job>()
         val batchForWorker = 250
         val workers = 4
 
         repeat(workers) {
             jobs.add(GlobalScope.launch {
-                repeat(batchForWorker){newRolloutAndRecordWin(root)}
+                repeat(batchForWorker) { newRolloutAndRecordWin(root) }
             })
         }
         jobs.forEach { it.join() }
 
-        batchForWorker*workers
+        batchForWorker * workers
     }
 
 
-    val rolloutsActors: suspend (ActorChannels, MCTS.Node) -> Int = {
-        (workChannel, respChannel), root: MCTS.Node ->
+    val rolloutsActors: suspend (ActorChannels, MCTS.Node) -> Int = { (workChannel, respChannel), root: MCTS.Node ->
 
 
         val end = System.currentTimeMillis() + 99
         var iter = 0
+        var pendingNode: MCTS.Node? = null
         while (System.currentTimeMillis() < end) {
+
             while (true) {
-                val node = selectNextNode(root)
-                if (!workChannel.offer(RolloutMessage(node)))
+                val node = pendingNode ?: selectNextNode(root)
+                pendingNode = null
+                if (!workChannel.offer(RolloutMessage(node))) {
+                    pendingNode = node //otherwise this node would never be offered again
                     break
+                }
             }
 
             while (!respChannel.isEmpty) {
@@ -175,24 +192,32 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
     private fun updateRolloutsStatus(expectedEnd: Long, iterations: Int, lastUpdate: Long): Long {
         if (System.currentTimeMillis() - lastUpdate >= UPDATE_INTERVAL_MS) {
             val remSec = (expectedEnd - lastUpdate) / UPDATE_INTERVAL_MS
-            printDebug(DebugLevel.INFO,"$remSec...   runouts $iterations")
+            printDebug(DebugLevel.INFO, "$remSec...   runouts $iterations")
             return lastUpdate + UPDATE_INTERVAL_MS
         } else {
             return lastUpdate
         }
     }
 
-    fun buildRolloutActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = GlobalScope.launch {
+    fun buildRolloutActor(
+        id: String,
+        requestChannel: ReceiveChannel<RolloutMessage>,
+        respChannel: SendChannel<RolloutRespMessage>
+    ) = GlobalScope.launch {
 
         requestChannel.consumeEach {
             val winner = getWinnerOfRandomPlay(it.node)
             respChannel.send(RolloutRespMessage(it.node, winner))
         }
 
-        printDebug(DebugLevel.TRACE,"Actor $id has finished!")
+        printDebug(DebugLevel.TRACE, "Actor $id has finished!")
     }
 
-    fun buildStubActor(id:String, requestChannel: ReceiveChannel<RolloutMessage>, respChannel: SendChannel<RolloutRespMessage>) = GlobalScope.launch {
+    fun buildStubActor(
+        id: String,
+        requestChannel: ReceiveChannel<RolloutMessage>,
+        respChannel: SendChannel<RolloutRespMessage>
+    ) = GlobalScope.launch {
         val rnd = Random()
 
         requestChannel.consumeEach {
@@ -208,22 +233,27 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
         val winner = getWinnerOfRandomPlay(node)
 
         propagateResult(node, winner)
+
     }
 
     tailrec private fun propagateResult(node: MCTS.Node, winner: Player) {
         node.recordWin(winner)
 
-        if (node.parent is MCTS.Node)
+        if (node.parent is MCTS.Node) {
             propagateResult(node.parent, winner)
+        }
     }
 
-    tailrec private fun selectNextNode(node: MCTS.Node): MCTS.Node {
-        return if (node.completelyVisited() && !node.isTerminal()) {
-            selectNextNode(selectChild(node))
+    tailrec private fun selectNextNode(node: MCTS.Node): MCTS.Node =
+        if (node.completelyVisited() && !node.isTerminal()) {
+            val child = selectChild(node)
+            if (child == node)
+                node
+            else
+                selectNextNode(child)
         } else {
             node.addRandomChild()
         }
-    }
 
     private fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
         //Simulate a random game from this node.
@@ -235,5 +265,6 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val boardSize:
 //                printMoveAndBoard(randomGame.state)
         return randomGame.winner
     }
+
 
 }

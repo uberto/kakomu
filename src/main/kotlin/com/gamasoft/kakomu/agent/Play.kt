@@ -7,7 +7,7 @@ import com.gamasoft.kakomu.model.Evaluator.computeGameResultFullBoard
 fun playAgainstHuman(boardSize: Int, secondsForMove: Int){
     val game = GameState.newGame(boardSize)
     val dl = DebugLevel.TRACE
-    val bot = MCTSAgent(secondsForMove, 2.0, boardSize, dl)
+    val bot = MCTSAgent(secondsForMove, 1.5, dl)
     val human = HumanPlayerAgent()
 
     playCompleteGame(game, Agents(human, bot))

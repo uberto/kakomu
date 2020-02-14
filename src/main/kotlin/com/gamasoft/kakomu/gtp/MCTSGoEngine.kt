@@ -13,11 +13,11 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
 
     var boardSize: Int = 9
     var game = GameState.newGame(boardSize)
-    var bot = MCTSAgent(this.secondsForMove, temperature, boardSize, DebugLevel.NONE)
+    var bot = MCTSAgent(this.secondsForMove, temperature, DebugLevel.NONE)
 
     override fun newGame() {
         game = GameState.newGame(boardSize)
-        bot = MCTSAgent(this.secondsForMove, temperature, boardSize, DebugLevel.NONE)
+        bot = MCTSAgent(this.secondsForMove, temperature, DebugLevel.NONE)
 
     }
 
