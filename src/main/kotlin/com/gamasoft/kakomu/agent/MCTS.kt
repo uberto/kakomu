@@ -17,9 +17,9 @@ sealed class MCTS {
         val parent: MCTS = ROOT
     ) : MCTS() {
 
-        private val winCounts: AtomicIntegerArray = AtomicIntegerArray(2)
+        private val winCounts: IntArray = IntArray(2){0} // AtomicIntegerArray = AtomicIntegerArray(2)
 
-        private val rollouts: AtomicInteger = AtomicInteger()
+        private var rollouts: Int = 0 // AtomicInteger = AtomicInteger()
 
         val children = mutableListOf<Node>() //ConcurrentHashMap<Point, Node>() //   mutableSetOf<Node>()
 
@@ -44,12 +44,10 @@ sealed class MCTS {
             return newNode
         }
 
-        fun recordWin(winner: Player) {
-
-            winCounts.incrementAndGet(winner.toInt())
-            rollouts.incrementAndGet()
-//        println("winner $winner ${winCounts[winner]} $rollouts")
-
+        fun recordWin(batchResult: BatchResult) {
+            winCounts[0] += batchResult.blackWin
+            winCounts[1] += batchResult.whiteWin
+            rollouts += batchResult.size
         }
 
         fun isTerminal(): Boolean {
@@ -85,7 +83,7 @@ sealed class MCTS {
 
         fun showMove(): String = gameState.lastMoveDesc()
 
-        fun rollouts(): Int = rollouts.get()
+        fun rollouts(): Int = rollouts
 
 
     }

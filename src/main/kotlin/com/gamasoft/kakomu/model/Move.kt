@@ -12,7 +12,7 @@ sealed class Move {
         return when (this) {
             Pass -> "pass"
             Resign -> "resign"
-            is Play -> Point.toCoords(this.point)
+            is Play -> this.point.toCoords()
         }
     }
 }

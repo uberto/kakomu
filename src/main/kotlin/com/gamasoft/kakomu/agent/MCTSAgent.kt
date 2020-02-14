@@ -2,7 +2,6 @@ package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.model.Evaluator
 import com.gamasoft.kakomu.model.GameState
-import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.Point
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -38,9 +37,12 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
         //Loop over each child.
         for (child in node.children) {
             // Calculate the UCT score.
-            val winPercentage = child.winningPct(node.gameState.nextPlayer)
+            val winPercentage = child.winningPct(node.gameState.nextPlayer)  // win/rolls
             val explorationFactor = Math.sqrt(logRollouts / child.rollouts())
             val uctScore = winPercentage + temperature * explorationFactor
+
+//            println("     from ${node.pos.toCoords()}  curr: ${child.pos.toCoords()}  $uctScore  rools: ${child.rollouts()}")
+
             // Check if this is the largest we've seen so far.
             if (uctScore > bestScore) {
                 bestScore = uctScore
@@ -48,6 +50,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
             }
         }
 
+//        println("select from ${node.pos.toCoords()}  best: ${bestChild.pos.toCoords()}  $bestScore  among ${node.children.size}")
         return bestChild
     }
 
@@ -96,7 +99,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     private fun <T> exploreTree(
         root: MCTS.Node,
         init: () -> T,
-        rolloutsMicroBatch: suspend (T, MCTS.Node) -> Int
+        rolloutsMicroBatch: suspend (T, MCTS.Node, Boolean) -> Int
     ): Int {
         var iter = 0
         val start = System.currentTimeMillis()
@@ -108,9 +111,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
         runBlocking {
 
             while (System.currentTimeMillis() < expectedEnd) {
-                iter += rolloutsMicroBatch(context, root)
+                iter += rolloutsMicroBatch(context, root, true)
                 lastSec = updateRolloutsStatus(expectedEnd, iter, lastSec)
             }
+            iter += rolloutsMicroBatch(context, root, false)
+            printDebug(DebugLevel.INFO, "final runouts $iter")
 
             coroutineContext.cancelChildren()
         }
@@ -148,40 +153,39 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     }
 
 
-    val rolloutsActors: suspend (ActorChannels, MCTS.Node) -> Int = { (workChannel, respChannel), root: MCTS.Node ->
+    val rolloutsActors: suspend (ActorChannels, MCTS.Node, Boolean) -> Int =
+        { (workChannel, respChannel), root: MCTS.Node, produce ->
+            val end = System.currentTimeMillis() + 99
+            var iter = 0
+            while (System.currentTimeMillis() < end) {
 
+                if (produce) {
+                    val node = selectNextNode(root)
+//                println("offering ${Point.toCoords(node.pos)}")
+                    while (!workChannel.offer(RolloutMessage(node))) {
+                        delay(1)
+                    }
+//                    println("accepted ${Point.toCoords(node.pos)}")
+                }
 
-        val end = System.currentTimeMillis() + 99
-        var iter = 0
-        var pendingNode: MCTS.Node? = null
-        while (System.currentTimeMillis() < end) {
-
-            while (true) {
-                val node = pendingNode ?: selectNextNode(root)
-                pendingNode = null
-                if (!workChannel.offer(RolloutMessage(node))) {
-                    pendingNode = node //otherwise this node would never be offered again
-                    break
+                while (!respChannel.isEmpty) {
+                    val resp = respChannel.receive()
+                    propagateResult(resp.node, resp.batchResult)
+//                println("received resp ${Point.toCoords(resp.node.pos)}  ${resp.node.rollouts()}")
+                    iter += resp.batchResult.size
                 }
             }
-
-            while (!respChannel.isEmpty) {
-                val resp = respChannel.receive()
-                propagateResult(resp.node, resp.winner)
-                iter++
-            }
+            iter
         }
-        iter
-    }
 
     private val nop: () -> Unit = {}
 
     private val prepareActors: () -> ActorChannels = {
         val workers = Runtime.getRuntime().availableProcessors() //heuristic
 
-        val workChannel = Channel<RolloutMessage>(workers * 2)
+        val workChannel = Channel<RolloutMessage>(workers) //we don't want to select nodes obsolete
 
-        val respChannel = Channel<RolloutRespMessage>(workers * 2)
+        val respChannel = Channel<RolloutRespMessage>(workers * 10) //we don't want to delay production here
 
         (1..workers).map { buildRolloutActor("actor $it", workChannel, respChannel) }
 
@@ -206,8 +210,8 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     ) = GlobalScope.launch {
 
         requestChannel.consumeEach {
-            val winner = getWinnerOfRandomPlay(it.node)
-            respChannel.send(RolloutRespMessage(it.node, winner))
+            val batchResult = getWinnerOfRandomPlay(it.node)
+            respChannel.send(RolloutRespMessage(it.node, batchResult))
         }
 
         printDebug(DebugLevel.TRACE, "Actor $id has finished!")
@@ -221,7 +225,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
         val rnd = Random()
 
         requestChannel.consumeEach {
-            val winner = if (rnd.nextDouble() > 0.5) Player.WHITE else Player.BLACK
+            val winner = if (rnd.nextDouble() > 0.5) BatchResult(0, 1) else BatchResult(1, 0)
             respChannel.send(RolloutRespMessage(it.node, winner))
         }
 
@@ -230,17 +234,17 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     private fun newRolloutAndRecordWin(root: MCTS.Node) {
         val node = selectNextNode(root)
 
-        val winner = getWinnerOfRandomPlay(node)
+        val batchResult = getWinnerOfRandomPlay(node)
 
-        propagateResult(node, winner)
+        propagateResult(node, batchResult)
 
     }
 
-    tailrec private fun propagateResult(node: MCTS.Node, winner: Player) {
-        node.recordWin(winner)
+    tailrec private fun propagateResult(node: MCTS.Node, batchResult: BatchResult) {
+        node.recordWin(batchResult)
 
         if (node.parent is MCTS.Node) {
-            propagateResult(node.parent, winner)
+            propagateResult(node.parent, batchResult)
         }
     }
 
@@ -255,16 +259,18 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
             node.addRandomChild()
         }
 
-    private fun getWinnerOfRandomPlay(node: MCTS.Node): Player {
-        //Simulate a random game from this node.
-        //        printMoveAndBoard(node.gameState)
-//        printDebug("getWinnerOfRandomPlay move number before ${node.gameState.moveNumber()}")
-        val randomGame = Evaluator.simulateRandomGame(node.gameState)
-
-//                printDebug("getWinnerOfRandomPlay  $winner  move number after ${randomGame.state.moveNumber()}")
-//                printMoveAndBoard(randomGame.state)
-        return randomGame.winner
-    }
-
+    private fun getWinnerOfRandomPlay(node: MCTS.Node): BatchResult =
+        //Simulate a random game from this node. 10 times
+        BatchResult(0, 0)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
+            .add(Evaluator.simulateRandomGame(node.gameState).winner)
 
 }

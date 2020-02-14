@@ -10,6 +10,23 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
+/*
+
+Todo:
+10 runout for node
+channel size about 1000
+still bug in unvisited nodes!!!  (loosing/never answer is possible???)
+improve the code
+
+-
+profile with flame
+
+optimizations:
+remove coroutines for threads?
+Point using inline class?
+Non playble positions kept updated in board (faster select next node)
+
+ */
 
 fun main(args : Array<String>) {
     println("hello 囲む")
@@ -19,7 +36,7 @@ fun main(args : Array<String>) {
     } else if (args.size > 0 && args[0].toLowerCase() == "test") {
         performanceTest()
     } else {
-        playAgainstHuman(9, 30)
+        playAgainstHuman(9, 10)
     }
 
 }
