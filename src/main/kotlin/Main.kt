@@ -1,8 +1,7 @@
 
 import com.gamasoft.kakomu.Performance.Companion.cpuVsCpuRealGame
 import com.gamasoft.kakomu.Performance.Companion.simulateRandomGames
-import com.gamasoft.kakomu.Performance.Companion.warmup
-import com.gamasoft.kakomu.agent.*
+import com.gamasoft.kakomu.agent.playAgainstHuman
 import com.gamasoft.kakomu.gtp.MCTSGoEngine
 import org.lisoft.gonector.GoTextProtocol
 import java.io.BufferedReader
@@ -36,7 +35,7 @@ fun main(args : Array<String>) {
     } else if (args.size > 0 && args[0].toLowerCase() == "test") {
         performanceTest()
     } else {
-        playAgainstHuman(9, 10)
+        playAgainstHuman(9, 1)
     }
 
 }

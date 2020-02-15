@@ -162,9 +162,11 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
                 if (produce) {
                     val node = selectNextNode(root)
 //                println("offering ${Point.toCoords(node.pos)}")
-                    while (!workChannel.offer(RolloutMessage(node))) {
-                        delay(1)
-                    }
+
+                    workChannel.send(RolloutMessage(node))
+//                    while (!workChannel.offer(RolloutMessage(node))) {
+//                        delay(1)
+//                    }
 //                    println("accepted ${Point.toCoords(node.pos)}")
                 }
 
@@ -183,11 +185,13 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     private val prepareActors: () -> ActorChannels = {
         val workers = Runtime.getRuntime().availableProcessors() //heuristic
 
-        val workChannel = Channel<RolloutMessage>(workers) //we don't want to select nodes obsolete
+        val workChannel = Channel<RolloutMessage>(workers) //small queue bc we don't want to select nodes obsolete
 
-        val respChannel = Channel<RolloutRespMessage>(workers * 10) //we don't want to delay production here
+        val respChannel = Channel<RolloutRespMessage>(workers * 10) //big queue bc we don't want to delay production here
 
         (1..workers).map { buildRolloutActor("actor $it", workChannel, respChannel) }
+
+        printDebug(DebugLevel.TRACE, "Started $workers Actors")
 
         ActorChannels(workChannel, respChannel)
     }
@@ -207,7 +211,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
         id: String,
         requestChannel: ReceiveChannel<RolloutMessage>,
         respChannel: SendChannel<RolloutRespMessage>
-    ) = GlobalScope.launch {
+    ) = GlobalScope.launch(newSingleThreadContext("ThreadActor$id"))  {
 
         requestChannel.consumeEach {
             val batchResult = getWinnerOfRandomPlay(it.node)
