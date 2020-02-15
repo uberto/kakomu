@@ -2,9 +2,6 @@ package com.gamasoft.kakomu.agent
 
 import com.gamasoft.kakomu.Performance.Companion.simulateRandomGames
 import com.gamasoft.kakomu.Performance.Companion.warmup
-import com.gamasoft.kakomu.model.Board
-import com.gamasoft.kakomu.model.Evaluator
-import com.gamasoft.kakomu.model.Player
 import com.gamasoft.kakomu.model.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -232,6 +229,21 @@ jvm 11 18-09-2018
 0.487 -XX:+UseShenandoahGC
 0.366 -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC (only 10k warmup)
 0.297 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC (no graal)
+
+15/2/2020
+-Xms6g -Xmx6g -XX:+UseParallelOldGC -XX:+UseJVMCICompiler
+GraalVM 19.3.11
+
+Best time 0.187801
+Worst time 0.3197
+Average time 0.1962556690000002
+Median time 0.193885
+
+-Xms6g -Xmx6g -XX:+UseParallelOldGC -XX:-UseJVMCICompiler
+Best time 0.198384
+Worst time 0.406209
+Average time 0.23225534500000014
+Median time 0.205275
 */
 
 }
