@@ -14,7 +14,7 @@ fun evaluateTerritory(board:Board): Territory {
 
     for (r in 1.. board.numRows){
         for (c in 1.. board.numCols){
-            val p = Point(row = r, col = c)
+            val p = Point.of(row = r, col = c)
             if (p in status){
                 continue //already done
             }
@@ -64,8 +64,8 @@ fun collectRegion(startPos: Point, board: Board, visited: MutableMap<Point, Bool
     for (d in deltas){
         val deltaRow = d.first
         val deltaCol = d.second
-        val nextPoint = Point(row = startPos.row + deltaRow,
-                                col = startPos.col + deltaCol)
+        val nextPoint = Point.of(row = startPos.row() + deltaRow,
+                                col = startPos.col() + deltaCol)
         if (board.isOnTheGrid(nextPoint)) {
             val neighbor = board.getString(nextPoint)?.color
             if (neighbor == here) {

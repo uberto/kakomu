@@ -9,14 +9,14 @@ class Grid(val cols:Int, val rows:Int) {
     }
 
     operator fun get(point: Point): GoString? {
-        val col = point.col - 1
-        val row = point.row - 1
+        val col = point.col() - 1
+        val row = point.row() - 1
         return matrix[pointToInt(row, col)]
     }
 
     operator fun set(point: Point, goString: GoString?) {
-        val col = point.col - 1
-        val row = point.row - 1
+        val col = point.col() - 1
+        val row = point.row() - 1
         matrix[pointToInt(row, col)] = goString
     }
 

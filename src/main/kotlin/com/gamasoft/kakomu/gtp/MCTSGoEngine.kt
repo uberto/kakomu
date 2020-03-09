@@ -37,7 +37,7 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
         when (kakomuMove){
             com.gamasoft.kakomu.model.Move.Pass -> Move.PASS
             com.gamasoft.kakomu.model.Move.Resign -> Move.RESIGN
-            is com.gamasoft.kakomu.model.Move.Play -> Move(kakomuMove.point.col - 1, kakomuMove.point.row - 1)
+            is com.gamasoft.kakomu.model.Move.Play -> Move(kakomuMove.point.col() - 1, kakomuMove.point.row() - 1)
         }
 
     private fun translateMove(gtpMove: Move): com.gamasoft.kakomu.model.Move? =
@@ -45,7 +45,7 @@ class MCTSGoEngine(val secondsForMove: Int, val temperature: Double) : GoEngine 
             Move.PASS -> com.gamasoft.kakomu.model.Move.Pass
             Move.RESIGN -> com.gamasoft.kakomu.model.Move.Resign
             else -> {
-                val p = Point(gtpMove.x + 1, gtpMove.y + 1)
+                val p = Point.of(gtpMove.x + 1, gtpMove.y + 1)
                 if (!game.board.isOnTheGrid(p) || !game.isValidPointToPlay(p))
                     null
                 else

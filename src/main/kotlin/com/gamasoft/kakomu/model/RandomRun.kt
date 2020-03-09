@@ -27,7 +27,7 @@ class RandomRun(val boardSize: Int, val seed: Long? = null) {
         val points = mutableListOf<Point>()
         for (r in 1 .. boardSize){
             for (c in 1 ..boardSize) {
-                points.add(Point(row = r, col = c))
+                points.add(Point.of(row = r, col = c))
             }
         }
         return points.toTypedArray()

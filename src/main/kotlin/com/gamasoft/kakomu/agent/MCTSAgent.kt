@@ -58,7 +58,7 @@ class MCTSAgent(val secondsForMove: Int, val temperature: Double, val debugLevel
     override fun playNextMove(gameState: GameState): GameState {
         printDebug(DebugLevel.INFO, "Let me think for $secondsForMove seconds...")
 
-        val root = MCTS.Node(Point(0, 0), gameState) //TODO startPoint
+        val root = MCTS.Node(Point.of(0, 0), gameState) //TODO startPoint
 
         val rolls = exploreTree(root)
 

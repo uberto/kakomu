@@ -1,7 +1,8 @@
 package com.gamasoft.kakomu.model
 
 import com.gamasoft.kakomu.Performance.Companion.crono
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class ZobristTest{
@@ -12,7 +13,7 @@ class ZobristTest{
 
         val t = crono("calculate table 19x19"){  Zobrist.calcTable(19)}
 
-        val eb = t.getValue(Point(1,1))
+        val eb = t.getValue(Point.of(1,1))
         assertTrue(eb > 0)
 
     }

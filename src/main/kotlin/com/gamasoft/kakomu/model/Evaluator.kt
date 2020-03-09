@@ -14,7 +14,7 @@ object Evaluator {
 
             for (col in 1..board.numCols) {
                 for (row in 1..board.numRows) {
-                    val point = Point(col, row)
+                    val point = Point.of(col, row)
                     val string = board.getString(point)
                     if (string == null) {
                         if (isAnEye(board, point, player))

@@ -20,15 +20,15 @@ fun drawBoard(board: Board, lastMove: Move? = null): List<String> {
     for (row in (board.numRows downTo 1)){
         val line = StringBuilder()
         for (col in (1 ..board.numCols)){
-            val stone = board.getString(Point(row=row, col=col))?.color
+            val stone = board.getString(Point.of(row=row, col=col))?.color
             line.append(STONE_TO_CHAR[stone])
             if (lastMove is Move.Play &&
-                    lastMove.point.row == row &&
-                    lastMove.point.col == col)
+                    lastMove.point.row() == row &&
+                    lastMove.point.col() == col)
                 line.append(")")
             else if (lastMove is Move.Play &&
-                    lastMove.point.row == row &&
-                    lastMove.point.col == col + 1)
+                    lastMove.point.row() == row &&
+                    lastMove.point.col() == col + 1)
                 line.append("(")
             else
                 line.append(" ")

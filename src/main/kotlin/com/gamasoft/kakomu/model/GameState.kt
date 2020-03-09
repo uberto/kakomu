@@ -1,7 +1,6 @@
 package com.gamasoft.kakomu.model
 
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedDeque
 
 sealed class MoveChain {}
 
@@ -131,7 +130,7 @@ data class GameState(val board: Board, val nextPlayer: Player, val moveInfo: Mov
         val moves = mutableSetOf<Point>()
         for (row in 1 .. board.numRows){
             for (col in 1 .. board.numCols){
-                val point = Point(row, col)
+                val point = Point.of(row, col)
                 val string = board.getString(point)
                 if (string == null) {
                     moves.add(point)

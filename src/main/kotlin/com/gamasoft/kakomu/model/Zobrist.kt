@@ -1,10 +1,9 @@
 package com.gamasoft.kakomu.model
 
 import com.google.gson.Gson
-import java.util.concurrent.ThreadLocalRandom
-import com.google.gson.LongSerializationPolicy
 import com.google.gson.GsonBuilder
-
+import com.google.gson.LongSerializationPolicy
+import java.util.concurrent.ThreadLocalRandom
 
 
 class Zobrist {
@@ -13,7 +12,7 @@ class Zobrist {
 
         val MAX63 = 0x7fffffffffffffff
 
-        val PLAYER_BLACK = Point(-1, -1)
+        val PLAYER_BLACK = Point.of(-1, -1)
 
         fun calcTable(boardSize: Int): Map<Point, Long> {
             val table = mutableMapOf<Point, Long>()
@@ -25,7 +24,7 @@ class Zobrist {
                     for (player in players) {
                         val code = ThreadLocalRandom.current().nextLong(0, MAX63)
 
-                        table[Point(row, col)] = code
+                        table[Point.of(row, col)] = code
                     }
                 }
             }

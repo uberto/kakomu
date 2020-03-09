@@ -1,8 +1,7 @@
 package com.gamasoft.kakomu.model
 
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 internal class BoardTest {
 
@@ -11,41 +10,41 @@ internal class BoardTest {
 
         val board = Board(9,9)
 
-        assertTrue(board.isOnTheGrid(Point(5,5)))
-        assertTrue(board.isOnTheGrid(Point(1,1)))
-        assertTrue(board.isOnTheGrid(Point(1,9)))
-        assertTrue(board.isOnTheGrid(Point(9,9)))
-        assertTrue(board.isOnTheGrid(Point(9,1)))
+        assertTrue(board.isOnTheGrid(Point.of(5,5)))
+        assertTrue(board.isOnTheGrid(Point.of(1,1)))
+        assertTrue(board.isOnTheGrid(Point.of(1,9)))
+        assertTrue(board.isOnTheGrid(Point.of(9,9)))
+        assertTrue(board.isOnTheGrid(Point.of(9,1)))
 
-        assertFalse(board.isOnTheGrid(Point(9,0)))
-        assertFalse(board.isOnTheGrid(Point(10,3)))
-        assertFalse(board.isOnTheGrid(Point(0,4)))
-        assertFalse(board.isOnTheGrid(Point(5,10)))
+        assertFalse(board.isOnTheGrid(Point.of(9,0)))
+        assertFalse(board.isOnTheGrid(Point.of(10,3)))
+        assertFalse(board.isOnTheGrid(Point.of(0,4)))
+        assertFalse(board.isOnTheGrid(Point.of(5,10)))
     }
 
     @Test
     fun neighborsOfAPoint() {
-        val p1 = Point(3,5)
+        val p1 = Point.of(3,5)
         val b = Board(9,9)
         val n = b.neighbors(p1)
 
         assertEquals(4, n.size)
-        assertTrue(n.contains(Point(3,4)))
-        assertTrue(n.contains(Point(3,6)))
-        assertTrue(n.contains(Point(2,5)))
-        assertTrue(n.contains(Point(4,5)))
+        assertTrue(n.contains(Point.of(3,4)))
+        assertTrue(n.contains(Point.of(3,6)))
+        assertTrue(n.contains(Point.of(2,5)))
+        assertTrue(n.contains(Point.of(4,5)))
 
     }
 
     @Test
     fun neighborsOfCorners() {
-        val p1 = Point(3,5)
+        val p1 = Point.of(3,5)
         val b = Board(9,9)
 
-        assertEquals(2, b.neighbors(Point(1,1)).size)
-        assertEquals(2, b.neighbors(Point(1,9)).size)
-        assertEquals(2, b.neighbors(Point(9,1)).size)
-        assertEquals(2, b.neighbors(Point(9,9)).size)
+        assertEquals(2, b.neighbors(Point.of(1,1)).size)
+        assertEquals(2, b.neighbors(Point.of(1,9)).size)
+        assertEquals(2, b.neighbors(Point.of(9,1)).size)
+        assertEquals(2, b.neighbors(Point.of(9,9)).size)
 
     }
 
@@ -58,25 +57,25 @@ internal class BoardTest {
          .  .  .
          */
         val board = Board(9,9)
-        board.placeStone(Player.BLACK,Point(1, 1))
-        board.placeStone(Player.BLACK,Point(2, 2))
-        board.placeStone(Player.BLACK,Point(3, 1))
-        board.placeStone(Player.BLACK,Point(2, 3))
+        board.placeStone(Player.BLACK,Point.of(1, 1))
+        board.placeStone(Player.BLACK,Point.of(2, 2))
+        board.placeStone(Player.BLACK,Point.of(3, 1))
+        board.placeStone(Player.BLACK,Point.of(2, 3))
 
-        assertEquals(2, board.getString(Point(1, 1))!!.libertiesCount())
-        assertEquals(3, board.getString(Point(3, 1))!!.libertiesCount())
-        assertEquals(6, board.getString(Point(2, 2))!!.libertiesCount())
-        assertEquals(2, board.getString(Point(2, 3))!!.stones.size)
+        assertEquals(2, board.getString(Point.of(1, 1))!!.libertiesCount())
+        assertEquals(3, board.getString(Point.of(3, 1))!!.libertiesCount())
+        assertEquals(6, board.getString(Point.of(2, 2))!!.libertiesCount())
+        assertEquals(2, board.getString(Point.of(2, 3))!!.stones.size)
 
 
-        board.placeStone(Player.BLACK,Point(2, 1))
-        val goString = board.getString(Point(2, 1))!!
+        board.placeStone(Player.BLACK,Point.of(2, 1))
+        val goString = board.getString(Point.of(2, 1))!!
         assertEquals(6, goString.libertiesCount())
         assertEquals(5, goString.stones.size)
-        assertEquals(goString, board.getString(Point(1, 1))!!)
-        assertEquals(goString, board.getString(Point(3, 1))!!)
-        assertEquals(goString, board.getString(Point(2, 2))!!)
-        assertEquals(goString, board.getString(Point(2, 3))!!)
+        assertEquals(goString, board.getString(Point.of(1, 1))!!)
+        assertEquals(goString, board.getString(Point.of(3, 1))!!)
+        assertEquals(goString, board.getString(Point.of(2, 2))!!)
+        assertEquals(goString, board.getString(Point.of(2, 3))!!)
     }
 
 
@@ -87,15 +86,15 @@ internal class BoardTest {
          .  W4 .
          */
         val board = Board(9,9)
-        board.placeStone(Player.BLACK,Point(1, 1))
-        board.placeStone(Player.BLACK,Point(2, 1))
-        board.placeStone(Player.BLACK,Point(3, 1))
-        assertEquals(4, board.getString(Point(1, 1))!!.libertiesCount())
+        board.placeStone(Player.BLACK,Point.of(1, 1))
+        board.placeStone(Player.BLACK,Point.of(2, 1))
+        board.placeStone(Player.BLACK,Point.of(3, 1))
+        assertEquals(4, board.getString(Point.of(1, 1))!!.libertiesCount())
 
 
-        board.placeStone(Player.WHITE,Point(2, 2))
-        assertEquals(3, board.getString(Point(2, 1))!!.libertiesCount())
-        assertEquals(3, board.getString(Point(2, 2))!!.libertiesCount())
+        board.placeStone(Player.WHITE,Point.of(2, 2))
+        assertEquals(3, board.getString(Point.of(2, 1))!!.libertiesCount())
+        assertEquals(3, board.getString(Point.of(2, 2))!!.libertiesCount())
     }
 
     @Test
@@ -106,24 +105,24 @@ internal class BoardTest {
          .  .  .  .
          */
         val board = Board(9,9)
-        board.placeStone(Player.BLACK,Point(1, 1))
-        assertEquals(2, board.getString(Point(1, 1))!!.libertiesCount())
-        board.placeStone(Player.WHITE,Point(1, 2))
-        assertEquals(1, board.getString(Point(1, 1))!!.libertiesCount())
-        board.placeStone(Player.BLACK,Point(2, 1))
-        assertEquals(2, board.getString(Point(1, 1))!!.libertiesCount())
-        board.placeStone(Player.WHITE,Point(3, 1))
-        assertEquals(1, board.getString(Point(1, 1))!!.libertiesCount())
-        board.placeStone(Player.BLACK,Point(4, 1))
-        assertEquals(2, board.getString(Point(1, 2))!!.libertiesCount())
+        board.placeStone(Player.BLACK,Point.of(1, 1))
+        assertEquals(2, board.getString(Point.of(1, 1))!!.libertiesCount())
+        board.placeStone(Player.WHITE,Point.of(1, 2))
+        assertEquals(1, board.getString(Point.of(1, 1))!!.libertiesCount())
+        board.placeStone(Player.BLACK,Point.of(2, 1))
+        assertEquals(2, board.getString(Point.of(1, 1))!!.libertiesCount())
+        board.placeStone(Player.WHITE,Point.of(3, 1))
+        assertEquals(1, board.getString(Point.of(1, 1))!!.libertiesCount())
+        board.placeStone(Player.BLACK,Point.of(4, 1))
+        assertEquals(2, board.getString(Point.of(1, 2))!!.libertiesCount())
 
 
-        board.placeStone(Player.WHITE,Point(2, 2))
-        assertTrue(board.isFree(Point(1, 1)))
-        assertTrue(board.isFree(Point(2, 1)))
+        board.placeStone(Player.WHITE,Point.of(2, 2))
+        assertTrue(board.isFree(Point.of(1, 1)))
+        assertTrue(board.isFree(Point.of(2, 1)))
 
-        assertEquals(5, board.getString(Point(2, 2))!!.libertiesCount())
-        assertEquals(2, board.getString(Point(3, 1))!!.libertiesCount())
+        assertEquals(5, board.getString(Point.of(2, 2))!!.libertiesCount())
+        assertEquals(2, board.getString(Point.of(3, 1))!!.libertiesCount())
     }
 
 
@@ -138,49 +137,49 @@ internal class BoardTest {
         val board = Board(9,9)
 
         //1
-        board.placeStone(Player.BLACK,Point(1, 1))
-        assertFalse(board.isFree(Point(1, 1)))
-        board.placeStone(Player.WHITE,Point(2, 1))
+        board.placeStone(Player.BLACK,Point.of(1, 1))
+        assertFalse(board.isFree(Point.of(1, 1)))
+        board.placeStone(Player.WHITE,Point.of(2, 1))
 
         //3
-        board.placeStone(Player.BLACK,Point(3, 1))
-        board.placeStone(Player.WHITE,Point(2, 2))
+        board.placeStone(Player.BLACK,Point.of(3, 1))
+        board.placeStone(Player.WHITE,Point.of(2, 2))
 
         //5
-        board.placeStone(Player.BLACK,Point(1, 3))
-        board.placeStone(Player.WHITE,Point(1, 2))
-        assertTrue(board.isFree(Point(1, 1)))
+        board.placeStone(Player.BLACK,Point.of(1, 3))
+        board.placeStone(Player.WHITE,Point.of(1, 2))
+        assertTrue(board.isFree(Point.of(1, 1)))
 
         //7
-        board.placeStone(Player.BLACK,Point(2, 3))
-        board.placeStone(Player.WHITE,Point(4, 1))
+        board.placeStone(Player.BLACK,Point.of(2, 3))
+        board.placeStone(Player.WHITE,Point.of(4, 1))
 
         //9
-        board.placeStone(Player.BLACK,Point(3, 2))
-        board.placeStone(Player.WHITE,Point(4, 2))
+        board.placeStone(Player.BLACK,Point.of(3, 2))
+        board.placeStone(Player.WHITE,Point.of(4, 2))
 
         //11
-        board.placeStone(Player.BLACK,Point(1, 1))
-        assertFalse(board.isFree(Point(1, 1)))
-        assertTrue(board.isFree(Point(2, 2)))
-        assertTrue(board.isFree(Point(1, 2)))
-        assertTrue(board.isFree(Point(2, 1)))
+        board.placeStone(Player.BLACK,Point.of(1, 1))
+        assertFalse(board.isFree(Point.of(1, 1)))
+        assertTrue(board.isFree(Point.of(2, 2)))
+        assertTrue(board.isFree(Point.of(1, 2)))
+        assertTrue(board.isFree(Point.of(2, 1)))
     }
 
     @Test
     fun deepCopyDuplicateTheGoStrings() {
 
         val board1 = Board(4,4)
-        board1.placeStone(Player.BLACK, Point(1, 1))
-        board1.placeStone(Player.BLACK, Point(2, 1))
+        board1.placeStone(Player.BLACK, Point.of(1, 1))
+        board1.placeStone(Player.BLACK, Point.of(2, 1))
 
         val board2 = board1.clone()
-        val string2 = board2.getString(Point(1, 1))!!
+        val string2 = board2.getString(Point.of(1, 1))!!
         assertEquals(3, string2.libertiesCount())
 
-        board1.placeStone(Player.WHITE, Point(1, 2))
+        board1.placeStone(Player.WHITE, Point.of(1, 2))
 
-        val string1 = board1.getString(Point(1, 1))!!
+        val string1 = board1.getString(Point.of(1, 1))!!
         assertEquals(2, string1.libertiesCount())
         assertEquals(2, string1.stones.size)
 

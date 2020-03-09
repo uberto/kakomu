@@ -23,8 +23,8 @@ class Board (val numCols: Int, val numRows: Int,
 
             for (col in 1..numCols)
                 for (row in 1..numRows)
-                    neighbors.getOrPut(Point(col, row)) {
-                        calculateNeighbors(Point(col, row), numCols, numRows)
+                    neighbors.getOrPut(Point.of(col, row)) {
+                        calculateNeighbors(Point.of(col, row), numCols, numRows)
                     }
             return neighbors
         }
@@ -32,16 +32,16 @@ class Board (val numCols: Int, val numRows: Int,
         fun calculateNeighbors(point: Point, numCols: Int, numRows: Int):Set<Point>{
 
             fun isOnTheGrid(p: Point): Boolean{
-                return p.row in (1 .. numRows) && p.col in (1 ..numCols)
+                return p.row() in (1 .. numRows) && p.col() in (1 ..numCols)
             }
 
-            val col = point.col
-            val row = point.row
+            val col = point.col()
+            val row = point.row()
 
-            val p1 = Point(col, row - 1)
-            val p2 = Point(col, row + 1)
-            val p3 = Point(col - 1, row)
-            val p4 = Point(col + 1, row)
+            val p1 = Point.of(col, row - 1)
+            val p2 = Point.of(col, row + 1)
+            val p3 = Point.of(col - 1, row)
+            val p4 = Point.of(col + 1, row)
 
             val set = mutableSetOf<Point>()
             if (isOnTheGrid(p1))
@@ -121,7 +121,7 @@ class Board (val numCols: Int, val numRows: Int,
 
 
     fun isOnTheGrid(p: Point): Boolean =
-        p.row in (1 .. numRows) && p.col in (1 ..numCols)
+        p.row() in (1 .. numRows) && p.col() in (1 ..numCols)
 
 
 
