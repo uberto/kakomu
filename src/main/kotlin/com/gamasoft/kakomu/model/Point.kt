@@ -5,7 +5,7 @@ import com.gamasoft.kakomu.agent.COLS
 //flyweight? alias of Int?
 data class Point(val col: Int, val row: Int) {
 
-    fun toCoords(): String = "${COLS[col]}${row + 1}"
+    fun toCoords(): String = "${COLS[col - 1]}${row}"
 
     companion object {
         fun fromCoords(coords: String): Point? {
