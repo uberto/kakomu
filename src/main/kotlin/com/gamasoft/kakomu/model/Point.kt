@@ -8,7 +8,7 @@ inline class Point(val pos: Int){
     fun col() = pos % 256
     fun row() = pos shr 8
 
-    fun toCoords(): String = "${COLS[col()]}${row() + 1}"
+    fun toCoords(): String = "${COLS[col() - 1]}${row() + 1}"
 
     companion object {
 
