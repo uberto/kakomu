@@ -244,6 +244,13 @@ Best time 0.198384
 Worst time 0.406209
 Average time 0.23225534500000014
 Median time 0.205275
+
+GraalEE
+-Xms6g -Xmx6g -XX:+UseParallelOldGC -XX:-UseJVMCICompiler
+Best time 0.171832
+Worst time 0.528295
+Average time 0.2063537159999998
+Median time 0.19625
 */
 
 }
