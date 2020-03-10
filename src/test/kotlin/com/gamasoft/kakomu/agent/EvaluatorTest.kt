@@ -247,10 +247,10 @@ Median time 0.205275
 
 Graal CE 19.2
 -Xms6g -Xmx6g -XX:+UseParallelOldGC -XX:-UseJVMCICompiler
-Best time 0.12027
-Worst time 0.332346
-Average time 0.1625245040000001
-Median time 0.159818
+Best time 0.179008
+Worst time 0.337747
+Average time 0.20632156799999996
+Median time 0.194439
 
 
 Graaal EE 20
