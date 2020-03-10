@@ -9,9 +9,9 @@ internal class PointTest{
     fun inline(){
         val p0 = Point.of(1,1)
         assertEquals(Point(257), p0)
-        val p1 = Point.of(1,2)
+        val p1 = Point.of(2,1)
         assertEquals(Point(258), p1)
-        val p3 = Point.of(2,1)
+        val p3 = Point.of(1,2)
         assertEquals(Point(513), p3)
 
         assertEquals(p3.row(), 2)

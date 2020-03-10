@@ -254,10 +254,10 @@ Median time 0.159818
 
 
 Graaal EE 20
-Best time 0.128442
-Worst time 0.269197
-Average time 0.14832954000000018
-Median time 0.146489
+Best time 0.166554
+Worst time 0.311859
+Average time 0.194234679
+Median time 0.195794
 
 */
 

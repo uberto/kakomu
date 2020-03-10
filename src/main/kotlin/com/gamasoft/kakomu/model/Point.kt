@@ -8,11 +8,12 @@ inline class Point(val pos: Int){
     fun col() = pos % 256
     fun row() = pos shr 8
 
-    fun toCoords(): String = "${COLS[col() - 1]}${row() + 1}"
+    //1 based
+    fun toCoords(): String = "${COLS[col() - 1]}${row()}"
 
     companion object {
 
-        fun of(row: Int, col:Int)=
+        fun of(col:Int, row: Int)=
             Point((row shl 8) + col)
 
         fun fromCoords(coords: String): Point? {
