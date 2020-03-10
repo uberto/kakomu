@@ -102,6 +102,8 @@ internal class EvaluatorTest{
 
     }
 
+
+
     @Test
     fun selfGame(){
 

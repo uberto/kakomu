@@ -1,17 +1,84 @@
 package com.gamasoft.kakomu.agent
 
+import com.gamasoft.kakomu.model.Board
+import com.gamasoft.kakomu.model.EmptyBoard
 import com.gamasoft.kakomu.model.Evaluator.simulateAutoGame
-import com.gamasoft.kakomu.model.Evaluator.simulateRandomGame
 import com.gamasoft.kakomu.model.GameState
 import com.gamasoft.kakomu.model.Player
+import com.gamasoft.kakomu.model.Point.Companion.fromCoords
 import org.junit.jupiter.api.Test
 
 internal class MCTSAgentTest {
+
+
+
+
+
 
     val matchesNumber = 5
     val boardSize = 9
     val startingState = GameState.newGame(boardSize)
     val secondsForMove = 1
+
+
+
+
+    /*
+    . . . . . . . W .
+    . . . B . W W B .
+    . . . B . B W B .
+    . . . . . B W B B
+    . . . . . B B W W
+    . . . . . . W W .
+    . . . . . . . . .
+    . . . . . . . . .
+    . . . . . . . . .
+    sol: J8, E8, D9
+
+     */
+    @Test
+    fun tsumego(){
+
+
+        val board = Board(boardSize,boardSize)
+        board.placeStone(Player.WHITE, fromCoords("h9")!!)
+
+        board.placeStone(Player.BLACK, fromCoords("d8")!!)
+        board.placeStone(Player.WHITE, fromCoords("f8")!!)
+        board.placeStone(Player.WHITE, fromCoords("g8")!!)
+        board.placeStone(Player.BLACK, fromCoords("h8")!!)
+
+        board.placeStone(Player.BLACK, fromCoords("d7")!!)
+        board.placeStone(Player.BLACK, fromCoords("f7")!!)
+        board.placeStone(Player.WHITE, fromCoords("g7")!!)
+        board.placeStone(Player.BLACK, fromCoords("h7")!!)
+
+        board.placeStone(Player.BLACK, fromCoords("f6")!!)
+        board.placeStone(Player.WHITE, fromCoords("g6")!!)
+        board.placeStone(Player.BLACK, fromCoords("h6")!!)
+        board.placeStone(Player.BLACK, fromCoords("j6")!!)
+
+        board.placeStone(Player.BLACK, fromCoords("f5")!!)
+        board.placeStone(Player.BLACK, fromCoords("g5")!!)
+        board.placeStone(Player.WHITE, fromCoords("h5")!!)
+        board.placeStone(Player.WHITE, fromCoords("j5")!!)
+
+        board.placeStone(Player.WHITE, fromCoords("g4")!!)
+        board.placeStone(Player.WHITE, fromCoords("h4")!!)
+
+        val gameState = GameState(board, Player.BLACK, EmptyBoard)
+
+        val bot = MCTSAgent(5, 1.4)
+        val newGameState = bot.playNextMove(gameState)
+        //assert...
+
+        printMoveAndBoard(newGameState)
+
+    }
+
+
+
+
 
     /*
 
